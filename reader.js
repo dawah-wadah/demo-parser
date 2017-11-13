@@ -4,39 +4,46 @@ const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
 
-function parseDemofile(file) {
+let deaths = {};
+let counter = 1;
+
+function parseDemofile(file, callback) {
   fs.readFile(file, function(err, buffer) {
     assert.ifError(err);
-
     var demoFile = new demo.DemoFile();
     demoFile.on("start", () => {
       console.log("Starting");
     });
 
     demoFile.on("end", () => {
-      console.log("Finished.");
+      console.log("Finished. Heres the deaths of this demo:");
+      // fs.writeFile("./data.json", JSON.stringify(deaths), "utf8");
+      return callback();
     });
 
     demoFile.gameEvents.on("player_death", e => {
+      let data = {};
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
       if (victim && attacker) {
-        if (victim.steam64Id == 76561198027906568) {
-          // console.log(
-          //   "%s killed %s with %s (attacker has %d hp remaining)",
-          //   attacker.name,
-          //   victim.name,
-          //   e.weapon,
-          //   attacker.health
-          // );
-          console.log("Victim Info");
-          console.log(victim.name);
-          console.log(victim.position.x);
-          console.log(victim.position.y);
-          console.log("Killer Info");
-          console.log(attacker.name);
-          console.log(attacker.position.x);
-          console.log(attacker.position.y);
+        if (victim.steam64Id == 76561198027906568 || victim.steam64Id == 76561198171618625) {
+          data = {
+            victim: victim.name,
+            killer: attacker.name,
+            location: {
+              victim: {
+                x: victim.position.x,
+                y: victim.position.y
+              },
+              killer: {
+                x: attacker.position.x,
+                y: attacker.position.y
+              }
+            }
+          };
+
+          deaths[counter] = data;
+          counter++;
         }
       }
     });
@@ -45,8 +52,15 @@ function parseDemofile(file) {
 }
 
 fs.readdir(dir, function(err, items) {
-  items.forEach(item => {
-    console.log("Demo Name: " + item);
-    parseDemofile(`./demos/${item}`);
-  });
+  let promises = [];
+  for (var i = 0; i < items.length; i++) {
+    promises.push(
+      new Promise(function(resolve, reject) {
+        parseDemofile(`./demos/${items[i]}`, resolve);
+      })
+    );
+  }
+  Promise.all(promises).then(
+    () => fs.writeFile("./data.json", JSON.stringify(deaths), "utf8")
+  );
 });

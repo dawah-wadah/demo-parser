@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "demofile": "^0.4.9"
+    "demofile": "git+https://github.com/dawah-wadah/demofile.git"
   }
 }
