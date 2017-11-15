@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "demofile": "git+https://github.com/dawah-wadah/demofile.git"
+    "demofile": "git+https://github.com/dawah-wadah/demofile.git",
+    "firebase": "^4.6.2",
+    "heatmap.js": "^2.0.5"
   }
 }
