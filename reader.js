@@ -4,7 +4,16 @@ const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
 
-let deaths = {};
+let globalData = {
+  "Taylor Swift": {
+    Terrorist: { kills: {}, deaths: {} },
+    "Counter-Terrorist": { kills: {}, deaths: {} }
+  },
+  hlebopek: {
+    Terrorist: { kills: {}, deaths: {} },
+    "Counter-Terrorist": { kills: {}, deaths: {} }
+  }
+};
 let counter = 1;
 
 function parseDemofile(file, callback) {
@@ -26,9 +35,15 @@ function parseDemofile(file, callback) {
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
       if (victim && attacker) {
-        if (victim.steam64Id == 76561198027906568 || victim.steam64Id == 76561198171618625) {
-          data = {
-            victim: victim.name,
+        if (
+          victim.steam64Id == 76561198027906568 ||
+          victim.steam64Id == 76561198171618625
+        ) {
+          let victimTeam =
+            victim.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
+          let attackerTeam =
+            attacker.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
+          let miniData = {
             killer: attacker.name,
             location: {
               victim: {
@@ -41,8 +56,31 @@ function parseDemofile(file, callback) {
               }
             }
           };
+            globalData[victim.name][attackerTeam].deaths[counter] = miniData;
+          counter++;
+        } else if (
+          attacker.steam64Id == 76561198027906568 ||
+          attacker.steam64Id == 76561198171618625
+        ) {
+          let victimTeam =
+            victim.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
+          let attackerTeam =
+            attacker.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
+          let miniData = {
+            victim: victim.name,
+            location: {
+              victim: {
+                x: victim.position.x,
+                y: victim.position.y
+              },
+              killer: {
+                x: attacker.position.x,
+                y: attacker.position.y
+              }
+            }
+          };
 
-          deaths[counter] = data;
+          globalData[attacker.name][attackerTeam].kills[counter] = miniData;
           counter++;
         }
       }
@@ -60,7 +98,7 @@ fs.readdir(dir, function(err, items) {
       })
     );
   }
-  Promise.all(promises).then(
-    () => fs.writeFile("./data.json", JSON.stringify(deaths), "utf8")
+  Promise.all(promises).then(() =>
+    fs.writeFile("./data.json", JSON.stringify(globalData), "utf8")
   );
 });

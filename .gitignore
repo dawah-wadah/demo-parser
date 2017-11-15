@@ -1,0 +1,11 @@
+.DS_Store
+
+node_modules/
+demos/
+not working/
+working/
+shit/
+
+
+vlad.js
+vlad.js.map
