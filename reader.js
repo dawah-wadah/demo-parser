@@ -3,6 +3,7 @@ const assert = require("assert");
 const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
+const ProgressBar = require("ascii-progress");
 
 const defaultMapData = () => ({
   Terrorist: { kills: {}, deaths: {} },
@@ -34,9 +35,13 @@ function storeData(attacker, victim, status) {
     }
   };
   if (status === "kills") {
-    globalData.kills[attacker.name].dust_2[attacker.side][status][counter] = killData;
+    globalData.kills[attacker.name].dust_2[attacker.side][status][
+      counter
+    ] = killData;
   } else {
-    globalData.kills[victim.name].dust_2[victim.side][status][counter] = killData;
+    globalData.kills[victim.name].dust_2[victim.side][status][
+      counter
+    ] = killData;
   }
   counter++;
 }
@@ -44,7 +49,7 @@ function storeData(attacker, victim, status) {
 function hasKilled(victim, attacker, ...playerID) {
   playerID.forEach(id => {
     if (attacker.steam64Id == id) {
-      console.log("%s killed %s", attacker.name, victim.name);
+      // console.log("%s killed %s", attacker.name, victim.name);
       storeData(attacker, victim, "kills");
     }
   });
@@ -52,7 +57,7 @@ function hasKilled(victim, attacker, ...playerID) {
 function wasKilled(victim, attacker, ...playerID) {
   playerID.forEach(id => {
     if (victim.steam64Id == id) {
-      console.log("%s was killed by %s", victim.name, attacker.name);
+      // console.log("%s was killed by %s", victim.name, attacker.name);
       storeData(attacker, victim, "deaths");
     }
   });
@@ -66,16 +71,39 @@ function storeGrenadeData(evt) {
   counter++;
 }
 
+function updateProgress(bar, demoFile) {
+  bar.current = demoFile.currentTick;
+  bar.tick();
+}
+
+function randomColor() {
+  let colors = "red cyan blue grey white black green yellow magenta brightRed brightBlue brightCyan brightWhite brightBlack brightGreen brightYellow brightMagenta".split(
+    " "
+  );
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
 function parseDemofile(file, callback) {
   fs.readFile(file, function(err, buffer) {
     assert.ifError(err);
+    let percentage = 0;
+    let bar = new ProgressBar({
+      schema:
+        ` [:bar.` +
+        randomColor() +
+
+        `] :current/:total :percent :elapseds :etas`,
+      total: 10
+    });
+
     var demoFile = new demo.DemoFile();
     demoFile.on("start", () => {
-      console.log("Starting");
+      bar.total = demoFile.header.playbackTicks;
+      console.log("Loaded " + file);
     });
 
     demoFile.on("end", () => {
-      console.log("Finished.");
+      updateProgress(bar, demoFile);
       return callback();
     });
 
@@ -107,19 +135,19 @@ function parseDemofile(file, callback) {
             break;
           default:
         }
-        console.log("%s detonated", e.name);
         storeGrenadeData(e);
+        updateProgress(bar, demoFile);
       });
     });
 
     demoFile.gameEvents.on("player_death", e => {
-      let data = {};
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
       if (victim && attacker) {
         hasKilled(victim, attacker, 76561198027906568, 76561198171618625);
         wasKilled(victim, attacker, 76561198027906568, 76561198171618625);
       }
+      updateProgress(bar, demoFile);
     });
     demoFile.parse(buffer);
   });
