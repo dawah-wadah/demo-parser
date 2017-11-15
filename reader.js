@@ -4,21 +4,24 @@ const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
 
+const defaultMapData = () => ({
+  Terrorist: { kills: {}, deaths: {} },
+  "Counter-Terrorist": { kills: {}, deaths: {} }
+});
+
 let globalData = {
-  "Taylor Swift": {
-    Terrorist: { kills: {}, deaths: {} },
-    "Counter-Terrorist": { kills: {}, deaths: {} }
+  kills: {
+    "Taylor Swift": { dust_2: defaultMapData() },
+    hlebopek: { dust_2: defaultMapData() }
   },
-  hlebopek: {
-    Terrorist: { kills: {}, deaths: {} },
-    "Counter-Terrorist": { kills: {}, deaths: {} }
-  }
+  grenades: { dust_2: {} }
 };
 let counter = 1;
 
 function storeData(attacker, victim, status) {
   let killData = {
-    killer: victim.name,
+    killer: attacker.name,
+    victim: victim.name,
     location: {
       victim: {
         x: victim.position.x,
@@ -30,7 +33,11 @@ function storeData(attacker, victim, status) {
       }
     }
   };
-  globalData[attacker.name][attacker.side][status][counter] = killData;
+  if (status === "kills") {
+    globalData.kills[attacker.name].dust_2[attacker.side][status][counter] = killData;
+  } else {
+    globalData.kills[victim.name].dust_2[victim.side][status][counter] = killData;
+  }
   counter++;
 }
 
@@ -50,6 +57,14 @@ function wasKilled(victim, attacker, ...playerID) {
     }
   });
 }
+function storeGrenadeData(evt) {
+  if (globalData.grenades.dust_2[evt.name] === undefined) {
+    globalData.grenades.dust_2[evt.name] = {};
+  }
+  let location = { x: evt.x, y: evt.y };
+  globalData.grenades.dust_2[evt.name][counter] = location;
+  counter++;
+}
 
 function parseDemofile(file, callback) {
   fs.readFile(file, function(err, buffer) {
@@ -60,9 +75,41 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.on("end", () => {
-      console.log("Finished. Heres the deaths of this demo:");
-      // fs.writeFile("./data.json", JSON.stringify(deaths), "utf8");
+      console.log("Finished.");
       return callback();
+    });
+
+    let grenades = [
+      "hegrenade",
+      "flashbang",
+      "smokegrenade",
+      "molotov",
+      "decoy"
+    ];
+
+    grenades.forEach(grenade => {
+      demoFile.gameEvents.on(`${grenade}_detonate`, e => {
+        switch (grenade) {
+          case "hegrenade":
+            e.name = "High Explosive Grenade";
+            break;
+          case "flashbang":
+            e.name = "Flashbang";
+            break;
+          case "smokegrenade":
+            e.name = "Smoke Grenade";
+            break;
+          case "molotov":
+            e.name = "Molotov";
+            break;
+          case "decoy":
+            e.name = "Decoy";
+            break;
+          default:
+        }
+        console.log("%s detonated", e.name);
+        storeGrenadeData(e);
+      });
     });
 
     demoFile.gameEvents.on("player_death", e => {
@@ -70,54 +117,6 @@ function parseDemofile(file, callback) {
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
       if (victim && attacker) {
-        //   if (
-        //     victim.steam64Id == 76561198027906568 ||
-        //     victim.steam64Id == 76561198171618625
-        //   ) {
-        //     let victimTeam =
-        //       victim.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
-        //     let attackerTeam =
-        //       attacker.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
-        //     let miniData = {
-        //       killer: attacker.name,
-        //       location: {
-        //         victim: {
-        //           x: victim.position.x,
-        //           y: victim.position.y
-        //         },
-        //         killer: {
-        //           x: attacker.position.x,
-        //           y: attacker.position.y
-        //         }
-        //       }
-        //     };
-        //     globalData[victim.name][attackerTeam].deaths[counter] = miniData;
-        //     counter++;
-        //   } else if (
-        //     attacker.steam64Id == 76561198027906568 ||
-        //     attacker.steam64Id == 76561198171618625
-        //   ) {
-        //     let victimTeam =
-        //       victim.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
-        //     let attackerTeam =
-        //       attacker.teamNumber === 2 ? "Terrorist" : "Counter-Terrorist";
-        //     let miniData = {
-        //       victim: victim.name,
-        //       location: {
-        //         victim: {
-        //           x: victim.position.x,
-        //           y: victim.position.y
-        //         },
-        //         killer: {
-        //           x: attacker.position.x,
-        //           y: attacker.position.y
-        //         }
-        //       }
-        //     };
-        //
-        //     globalData[attacker.name][attackerTeam].kills[counter] = miniData;
-        //     counter++;
-        //   }
         hasKilled(victim, attacker, 76561198027906568, 76561198171618625);
         wasKilled(victim, attacker, 76561198027906568, 76561198171618625);
       }

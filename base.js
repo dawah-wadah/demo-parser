@@ -1,5 +1,5 @@
 import * as firebase from "firebase";
-import * as deaths from './data.json';
+import * as deaths from "./data.json";
 
 export const initializeFB = () => {
   const firebaseConfig = {
@@ -12,4 +12,4 @@ export const initializeFB = () => {
   };
 
   firebase.initializeApp(firebaseConfig);
-}
+};
