@@ -4,6 +4,9 @@ const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
 const ProgressBar = require("ascii-progress");
+const firebase = require("firebase");
+
+const initializeFB = require("./base.js");
 
 const defaultMapData = () => ({
   Terrorist: { kills: {}, deaths: {} },
@@ -35,13 +38,17 @@ function storeData(attacker, victim, status) {
     }
   };
   if (status === "kills") {
-    globalData.kills[attacker.name].dust_2[attacker.side][status][
-      counter
-    ] = killData;
+    firebase
+      .database()
+      .ref(
+        "/" + attacker.name + "/de_dust2/" + attacker.side + "/" + status + "/"
+      )
+      .push(killData);
   } else {
-    globalData.kills[victim.name].dust_2[victim.side][status][
-      counter
-    ] = killData;
+    firebase
+      .database()
+      .ref("/" + victim.name + "/de_dust2/" + victim.side + "/" + status + "/")
+      .push(killData);
   }
   counter++;
 }
@@ -63,11 +70,15 @@ function wasKilled(victim, attacker, ...playerID) {
   });
 }
 function storeGrenadeData(evt) {
-  if (globalData.grenades.dust_2[evt.name] === undefined) {
-    globalData.grenades.dust_2[evt.name] = {};
-  }
+  // if (globalData.grenades.dust_2[evt.name] === undefined) {
+  //   globalData.grenades.dust_2[evt.name] = {};
+  // }
   let location = { x: evt.x, y: evt.y };
-  globalData.grenades.dust_2[evt.name][counter] = location;
+  // globalData.grenades.dust_2[evt.name][counter] = location;
+  firebase
+    .database()
+    .ref("/grenades/de_dust2/" + evt.name + "/")
+    .push(location);
   counter++;
 }
 
@@ -91,7 +102,6 @@ function parseDemofile(file, callback) {
       schema:
         ` [:bar.` +
         randomColor() +
-
         `] :current/:total :percent :elapseds :etas`,
       total: 10
     });
@@ -104,6 +114,7 @@ function parseDemofile(file, callback) {
 
     demoFile.on("end", () => {
       updateProgress(bar, demoFile);
+      // console.log("Finished with " + file);
       return callback();
     });
 
@@ -155,6 +166,7 @@ function parseDemofile(file, callback) {
 
 fs.readdir(dir, function(err, items) {
   let promises = [];
+  initializeFB();
   for (var i = 0; i < items.length; i++) {
     promises.push(
       new Promise(function(resolve, reject) {
@@ -162,7 +174,10 @@ fs.readdir(dir, function(err, items) {
       })
     );
   }
-  Promise.all(promises).then(() =>
-    fs.writeFile("./data.json", JSON.stringify(globalData), "utf8")
-  );
+
+  // store data locally
+
+  // Promise.all(promises).then(() =>
+  //   fs.writeFile("./data.json", JSON.stringify(globalData), "utf8")
+  // );
 });

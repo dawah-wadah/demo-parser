@@ -1,7 +1,6 @@
-import * as firebase from "firebase";
-import * as deaths from "./data.json";
+const firebase = require("firebase");
 
-export const initializeFB = () => {
+const initializeFB = () => {
   const firebaseConfig = {
     apiKey: "AIzaSyDRCpjpBXCtkTVM9pz5SDSICn8DMw0_lvY",
     authDomain: "cs-go-33263.firebaseapp.com",
@@ -13,3 +12,5 @@ export const initializeFB = () => {
 
   firebase.initializeApp(firebaseConfig);
 };
+
+module.exports = initializeFB;
