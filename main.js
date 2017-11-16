@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const deathData = [];
   firebase
     .database()
-    .ref("/grenades/de_dust2/High Explosive Grenade")
+    .ref("/hlebopek/de_dust2/Counter-Terrorist/deaths")
     .on("value", snapshot => {
       console.log("got shit");
       grenades = snapshot.val();
