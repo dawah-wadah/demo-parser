@@ -25,16 +25,13 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const fetchGrenades = () => {
+const fetchGrenades = (callback) => {
   let grenadesData;
-
-  db
+  return db
     .ref("/grenades/de_dust2/High Explosive Grenade")
     .once("value", snapshot => {
-      grenadesData = snapshot.val();
-      console.log("1 " + grenadesData);
-    }).then(grenades => console.log(a + "after then"))
-  return grenadesData;
+      return snapshot.val()
+    }).then(() => callback())
 }
 module.exports = initializeFB;
 module.exports = fetchGrenades;
