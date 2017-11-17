@@ -17,15 +17,6 @@ const heatmapConfig = type => ({
   minOpacity: 0,
   blur: 0.75,
   gradient: configureColor(type)
-  // {
-  //   // enter n keys between 0 and 1 here
-  //   // for gradient color customization
-  //   "0": "Navy",
-  //   "0.25": "Blue",
-  //   "0.5": "Green",
-  //   "0.75": "Yellow",
-  //   "1": "Red"
-  // }
 });
 
 function configureColor(data) {
