@@ -2,14 +2,11 @@ import h337 from "heatmap.js";
 import * as firebase from "firebase";
 import initializeFB from "./base.js";
 import fetchGrenades from "./base.js";
+import { renderMap } from "./heat.js"
 // import * as deaths from "./data.json";
 
 document.addEventListener("DOMContentLoaded", () => {
-  initializeFB();
-  // firebase.database().ref('/deaths').push(deaths);
-  let grenades;
-  const yo = fetchGrenades();
-  console.log(yo + "yo");
+  renderMap();
 
   // const deathData = [];
   // firebase
