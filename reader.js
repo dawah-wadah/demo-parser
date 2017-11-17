@@ -22,7 +22,7 @@ let globalData = {
 };
 let counter = 1;
 
-function storeData(attacker, victim, status) {
+function storeData(attacker, victim, status, map) {
   let killData = {
     killer: attacker.name,
     victim: victim.name,
@@ -41,31 +41,31 @@ function storeData(attacker, victim, status) {
     firebase
       .database()
       .ref(
-        "/" + attacker.name + "/de_dust2/" + attacker.side + "/" + status + "/"
+        "/" + attacker.name + "/"+ map +"/" + attacker.side + "/" + status + "/"
       )
       .push(killData);
   } else {
     firebase
       .database()
-      .ref("/" + victim.name + "/de_dust2/" + victim.side + "/" + status + "/")
+      .ref("/" + victim.name + "/"+ map +"/" + victim.side + "/" + status + "/")
       .push(killData);
   }
   counter++;
 }
 
-function hasKilled(victim, attacker, ...playerID) {
+function hasKilled(victim, attacker,map, ...playerID) {
   playerID.forEach(id => {
     if (attacker.steam64Id == id) {
       // console.log("%s killed %s", attacker.name, victim.name);
-      storeData(attacker, victim, "kills");
+      storeData(attacker, victim, "kills", map);
     }
   });
 }
-function wasKilled(victim, attacker, ...playerID) {
+function wasKilled(victim, attacker,map, ...playerID) {
   playerID.forEach(id => {
     if (victim.steam64Id == id) {
       // console.log("%s was killed by %s", victim.name, attacker.name);
-      storeData(attacker, victim, "deaths");
+      storeData(attacker, victim, "deaths",map);
     }
   });
 }
@@ -97,6 +97,7 @@ function randomColor() {
 function parseDemofile(file, callback) {
   fs.readFile(file, function(err, buffer) {
     assert.ifError(err);
+    let map;
     let percentage = 0;
     let bar = new ProgressBar({
       schema:
@@ -108,6 +109,7 @@ function parseDemofile(file, callback) {
 
     var demoFile = new demo.DemoFile();
     demoFile.on("start", () => {
+      map = demoFile.header.mapName;
       bar.total = demoFile.header.playbackTicks;
       console.log("Loaded " + file);
     });
@@ -155,8 +157,8 @@ function parseDemofile(file, callback) {
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
       if (victim && attacker) {
-        hasKilled(victim, attacker, 76561198027906568, 76561198171618625);
-        wasKilled(victim, attacker, 76561198027906568, 76561198171618625);
+        hasKilled(victim, attacker,map, 76561198027906568, 76561198171618625);
+        wasKilled(victim, attacker,map, 76561198027906568, 76561198171618625);
       }
       updateProgress(bar, demoFile);
     });
@@ -174,6 +176,11 @@ fs.readdir(dir, function(err, items) {
       })
     );
   }
+
+  Promise.all(promises).then(() => {
+    // closes the firebase connection
+    firebase.database().goOffline();
+  });
 
   // store data locally
 
