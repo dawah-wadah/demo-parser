@@ -33,25 +33,21 @@ function configureColor(data) {
 
   switch (data) {
     case "deaths":
-      colors = {
-        ".1": "red"
-      };
+      colors = { ".3": "yellow", ".4": "orange", "1": "red" };
       break;
     case "kills":
-      colors = {
-        ".1": "blue"
-      };
+      colors = { ".3": "white", ".4": "aqua", "1": "blue" };
       break;
-    case "grenades":
-      colors = {
-        ".1": "green"
-      };
+    case "Flashbang":
+      colors = { ".2": "black", ".3": "floralwhite", ".4:": "snow", "1": "white" }
+      break;
+    case "High Explosive Grenade":
+      colors = { ".3": "wheat", ".4": "olive", "1": "seagreen" };
+      break;
+    case "Smoke Grenade":
+      colors = { ".3": "dimgray", ".4": "darkgray", "1": "gray" };
       break;
     default:
-      colors = {
-        ".1": "orange"
-      };
-      break;
   }
 
   return colors;
