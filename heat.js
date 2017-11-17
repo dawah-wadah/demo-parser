@@ -45,9 +45,10 @@ function configureColor(data) {
       colors = { ".3": "wheat", ".4": "olive", "1": "seagreen" };
       break;
     case "Smoke Grenade":
-      colors = { ".3": "dimgray", ".4": "darkgray", "1": "gray" };
+      colors = { ".3": "dimgray", ".4": "darkgray", "1": "#303030" };
       break;
     default:
+      colors = {"1": "black"};
   }
 
   return colors;
@@ -75,7 +76,7 @@ export const renderMap = () => {
   let debug = [
     { grenade: "Decoy", type: "deaths" },
     { grenade: "Smoke Grenade", type: "kills" },
-    { grenade: "Flashbang", type: "grenades" }
+    { grenade: "Flashbang", type: "Smoke Grenade" }
   ];
 
   debug.forEach(foo => {

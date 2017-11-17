@@ -5,7 +5,6 @@ const dir = "./demos";
 const demo = require("demofile");
 const ProgressBar = require("ascii-progress");
 const firebase = require("firebase");
-
 const initializeFB = require("./base.js");
 
 const defaultMapData = () => ({
@@ -37,6 +36,7 @@ function storeData(attacker, victim, status, map) {
       }
     }
   };
+
   if (status === "kills") {
     firebase
       .database()
@@ -50,25 +50,26 @@ function storeData(attacker, victim, status, map) {
       .ref("/" + victim.name + "/"+ map +"/" + victim.side + "/" + status + "/")
       .push(killData);
   }
+
   counter++;
 }
 
 function hasKilled(victim, attacker,map, ...playerID) {
   playerID.forEach(id => {
     if (attacker.steam64Id == id) {
-      // console.log("%s killed %s", attacker.name, victim.name);
       storeData(attacker, victim, "kills", map);
     }
   });
 }
+
 function wasKilled(victim, attacker,map, ...playerID) {
   playerID.forEach(id => {
     if (victim.steam64Id == id) {
-      // console.log("%s was killed by %s", victim.name, attacker.name);
       storeData(attacker, victim, "deaths",map);
     }
   });
 }
+
 function storeGrenadeData(evt) {
   // if (globalData.grenades.dust_2[evt.name] === undefined) {
   //   globalData.grenades.dust_2[evt.name] = {};

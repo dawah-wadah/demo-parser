@@ -6,6 +6,8 @@ import { renderMap } from "./heat.js";
 // import * as deaths from "./data.json";
 
 document.addEventListener("DOMContentLoaded", () => {
+  
+
   renderMap();
   // initializeFB();
   // // firebase.database().ref('/deaths').push(deaths);
