@@ -13,31 +13,35 @@ class Map {
     this.origin = { x: -2203, y: -1031 };
   }
 
-
+  // render() {
+  //   let location = (this.image.onload = () => {
+  //     this.ctx.drawImage(this.image, 0, 0, this.width, this.height);
+  //     // eslint-disable-next-line
+  //     for (var key in data) {
+  //       let marker = new Marker(
+  //         this.ctx,
+  //         this.origin,
+  //         data[key].location.victim.x,
+  //         data[key].location.victim.y,
+  //         "red"
+  //       );
+  //
+  //       let killer = new Marker(
+  //         this.ctx,
+  //         this.origin,
+  //         data[key].location.killer.x,
+  //         data[key].location.killer.y,
+  //         "green"
+  //       );
+  //       marker.render();
+  //       killer.render();
+  //     }
+  //   });
+  // }
   render() {
-    let location = (this.image.onload = () => {
+    this.image.onload = () => {
       this.ctx.drawImage(this.image, 0, 0, this.width, this.height);
-      // eslint-disable-next-line
-      for (var key in data) {
-        let marker = new Marker(
-          this.ctx,
-          this.origin,
-          data[key].location.victim.x,
-          data[key].location.victim.y,
-          "red"
-        );
-
-        let killer = new Marker(
-          this.ctx,
-          this.origin,
-          data[key].location.killer.x,
-          data[key].location.killer.y,
-          "green"
-        );
-        marker.render();
-        killer.render();
-      }
-    });
+    };
   }
 }
 
