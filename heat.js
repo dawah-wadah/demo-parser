@@ -1,7 +1,7 @@
 import h337 from "heatmap.js";
 import fetchGrenades from "./base.js";
 
-const heatmapConfig = {
+let heatmapConfig = {
   container: document.getElementById("heatmap"),
   radius: 8,
   maxOpacity: 0.9,
@@ -38,8 +38,11 @@ function configureColor(data) {
       break;
     case "Smoke Grenade":
       colors = { ".3": "dimgray", ".4": "darkgray", "1": "gray" };
-  default:
+      break;
+    default:
   }
+
+  heatmapConfig.gradiend = colors;
 }
 
 const heatmapInstance = h337.create(heatmapConfig);
