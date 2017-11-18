@@ -8,6 +8,7 @@ const initializeFB = () => {
     storageBucket: "cs-go-33263.appspot.com",
     messagingSenderId: "284821237089"
   };
+
   firebase.initializeApp(config);
 };
 
