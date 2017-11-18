@@ -22,7 +22,11 @@ class Heatmap extends React.Component {
         max: 10,
         data: []
       },
-      gameData: {}
+      gameData: {
+        grenades: {},
+        hlebopek: {},
+        'Taylor Swift': {}
+      }
     }
   }
 
@@ -31,13 +35,8 @@ class Heatmap extends React.Component {
   }
 
   componentDidMount() {
-    debugger;
-    let heatmapConfig = {...this.state.heatmapConfig}
-    // let b = this.props.hm;
-    let b = this.refs.heatmap;
-    console.log(b)
-    heatmapConfig.container = b;
-    debugger;
+    const heatmapConfig = {...this.state.heatmapConfig}
+    heatmapConfig.container = this.refs.heatmap;
     this.setState({ heatmapConfig });
   }
 
@@ -72,7 +71,16 @@ class Heatmap extends React.Component {
       .database()
       .ref("/grenades/de_dust2/" + grenade + "/")
       .once("value")
-      .then(snapshot => snapshot.val());
+      .then(snapshot => {
+        debugger;
+        this.setState({
+          ...this.state, gameData: {
+            ...this.state.gameData, grenades: {
+              ...this.state.gameData.grenades, [grenade]: snapshot.val()
+            }
+          }
+        });
+      });
   }
 
   renderMap() {
@@ -82,10 +90,12 @@ class Heatmap extends React.Component {
       { grenade: "Flashbang", type: "Smoke Grenade" }
     ];
 
-    debug.forEach(foo => {
-      this.fetchGrenades(foo.grenade)
-        .then(grenades => this.showOnMap(grenades, foo.type));
-    });
+    // debug.forEach(foo => {
+    //   this.fetchGrenades(foo.grenade)
+    //     .then(grenades => this.showOnMap(grenades, foo.type));
+    // });
+
+    this.showOnMap(this.state.gameData.Flashbang, "deaths");
   }
 
   showOnMap(data, type) {
@@ -109,7 +119,10 @@ class Heatmap extends React.Component {
 
   render() {
     return (
-      <div id="heatmap" ref="heatmap">{this.renderMap()}</div>
+      <div>
+        <div id="heatmap" ref="heatmap">{this.renderMap()}</div>
+        <button onClick={this.fetchGrenades.bind(this, "Flashbang")}>Fetch</button>
+      </div>
     )
   }
 }
