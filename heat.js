@@ -1,9 +1,11 @@
-import h337 from "heatmap.js";
-import firebase from "firebase";
-import initializeFB from "./base.js";
-
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+import assign from 'lodash/assign';
+import firebase from "firebase";
+import h337 from "heatmap.js";
+import initializeFB from "./base.js";
+
 
 class Heatmap extends React.Component {
   constructor(props) {
@@ -23,6 +25,8 @@ class Heatmap extends React.Component {
         data: []
       },
       heatmapLayers: {
+        "kills": {}, "deaths": {}, "Flashbang": {},
+        "High Explosive Grenade": {}, "Smoke Grenade": {}
       },
       gameData: {
         grenades: {},
@@ -41,11 +45,22 @@ class Heatmap extends React.Component {
   componentDidMount() {
     const heatmapConfig = {...this.state.heatmapConfig}
     heatmapConfig.container = this.refs.heatmap;
-    this.setState({ heatmapConfig });
+    this.setState({ heatmapConfig }, this.createHeatmapLayers.bind(this))
   }
 
-  createHeatMapLayers() {
+  createHeatmapLayers() {
+    const properties = [
+      "deaths", "kills", "Flashbang", "High Explosive Grenade", "Smoke Grenade"
+    ];
+    let heatmapConfig = assign({}, this.state.heatmapConfig);
+    let heatmapLayers = {}
 
+    properties.forEach(layer => {
+      heatmapConfig.gradient = this.configColors(layer);
+      heatmapLayers[layer] = h337.create(heatmapConfig);
+    });
+
+    this.setState({ heatmapLayers });
   }
 
   configColors(data) {
@@ -65,13 +80,11 @@ class Heatmap extends React.Component {
 
     if (!e.target.checked) { return }
 
-    debugger;
     return firebase
       .database()
       .ref("/grenades/de_dust2/" + grenade + "/")
       .once("value")
       .then(snapshot => {
-        debugger;
         this.setState({
           ...this.state, gameData: {
             ...this.state.gameData, grenades: {
@@ -128,10 +141,7 @@ class Heatmap extends React.Component {
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
 
-    heatmapConfig.gradient = this.configColors(type);
-    debugger;
-    let heatmapInstance = h337.create(heatmapConfig);
-    heatmapInstance.setData({ max: 10, data: mapData });
+    this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
   }
 
   render() {
