@@ -28,6 +28,8 @@ class Heatmap extends React.Component {
         'Taylor Swift': {}
       }
     }
+
+    this.fetchGrenades = this.fetchGrenades.bind(this);
   }
 
   componentWillMount() {
@@ -66,7 +68,8 @@ class Heatmap extends React.Component {
     this.setState({ ...this.state.heatmapConfig, gradient: colors });
   }
 
-  fetchGrenades(grenade) {
+  fetchGrenades(e) {
+    const grenade = e.target.value;
     return firebase
       .database()
       .ref("/grenades/de_dust2/" + grenade + "/")
@@ -121,7 +124,7 @@ class Heatmap extends React.Component {
     return (
       <div>
         <div id="heatmap" ref="heatmap">{this.renderMap()}</div>
-        <button onClick={this.fetchGrenades.bind(this, "Flashbang")}>Fetch</button>
+        <button value="Flashbang" onClick={this.fetchGrenades}>Fetch</button>
       </div>
     )
   }
