@@ -13,14 +13,16 @@ class Heatmap extends React.Component {
       heatmapConfig: {
         container: '',
         radius: 10,
-        maxOpacity: 0.5,
+        maxOpacity: 0.8,
         minOpacity: 0,
         blur: 0.75,
-        gradient: {"1": "black"}
+        gradient: {"0.2": "black"}
       },
       heatmapData: {
         max: 10,
         data: []
+      },
+      heatmapLayers: {
       },
       gameData: {
         grenades: {},
@@ -42,34 +44,28 @@ class Heatmap extends React.Component {
     this.setState({ heatmapConfig });
   }
 
+  createHeatMapLayers() {
+
+  }
+
   configColors(data) {
-    let colors;
+    let colors = {
+      "deaths": { ".3": "yellow", ".4": "orange", "1": "red" },
+      "kills": { ".3": "white", ".4": "aqua", "1": "blue" },
+      "Flashbang": { ".6": "black", ".2": "floralwhite", ".3": "snow", "1": "white" },
+      "High Explosive Grenade": { ".3": "wheat", ".4": "olive", "1": "seagreen" },
+      "Smoke Grenade": { ".3": "dimgray", ".4": "darkgray", "1": "#303030" }
+    };
 
-    switch (data) {
-      case "deaths":
-        colors = { ".3": "yellow", ".4": "orange", "1": "red" };
-        break;
-      case "kills":
-        colors = { ".3": "white", ".4": "aqua", "1": "blue" };
-        break;
-      case "Flashbang":
-        colors = { ".2": "black", ".3": "floralwhite", ".4:": "snow", "1": "white" }
-        break;
-      case "High Explosive Grenade":
-        colors = { ".3": "wheat", ".4": "olive", "1": "seagreen" };
-        break;
-      case "Smoke Grenade":
-        colors = { ".3": "dimgray", ".4": "darkgray", "1": "#303030" };
-        break;
-      default:
-        colors = {"1": "black"};
-    }
-
-    this.setState({ ...this.state.heatmapConfig, gradient: colors });
+    return colors[data];
   }
 
   fetchGrenades(e) {
     const grenade = e.target.value;
+
+    if (!e.target.checked) { return }
+
+    debugger;
     return firebase
       .database()
       .ref("/grenades/de_dust2/" + grenade + "/")
@@ -86,6 +82,17 @@ class Heatmap extends React.Component {
       });
   }
 
+  fetchCTDeaths() {
+    firebase
+      .database()
+      .ref("/hlebopek/de_dust2/Counter-Terrorist/deaths")
+      // .orderByChild('deaths')
+      .limitToFirst(5)
+      .once("value", snap => {
+        console.log(snap.val());
+      })
+  }
+
   renderMap() {
     let debug = [
       { grenade: "Decoy", type: "deaths" },
@@ -93,12 +100,17 @@ class Heatmap extends React.Component {
       { grenade: "Flashbang", type: "Smoke Grenade" }
     ];
 
+    const { grenades } = this.state.gameData;
+
+    for (let type in grenades) {
+      this.showOnMap(grenades[type], type);
+    }
     // debug.forEach(foo => {
     //   this.fetchGrenades(foo.grenade)
     //     .then(grenades => this.showOnMap(grenades, foo.type));
     // });
 
-    this.showOnMap(this.state.gameData.Flashbang, "deaths");
+    // this.showOnMap(this.state.gameData.Flashbang, "deaths");
   }
 
   showOnMap(data, type) {
@@ -115,6 +127,8 @@ class Heatmap extends React.Component {
 
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
+
+    heatmapConfig.gradient = this.configColors(type);
     debugger;
     let heatmapInstance = h337.create(heatmapConfig);
     heatmapInstance.setData({ max: 10, data: mapData });
@@ -125,82 +139,11 @@ class Heatmap extends React.Component {
       <div>
         <div id="heatmap" ref="heatmap">{this.renderMap()}</div>
         <button value="Flashbang" onClick={this.fetchGrenades}>Fetch</button>
+        <button onClick={this.fetchCTDeaths.bind(this)}>Hlebopek CT</button>
+        <input type="checkbox" value="Flashbang" onChange={this.fetchGrenades}/>
       </div>
     )
   }
 }
 
 export default Heatmap;
-
-// const fetchGrenades = grenade => {
-//   return firebase
-//     .database()
-//     .ref("/grenades/de_dust2/" + grenade + "/")
-//     .once("value")
-//     .then(snapshot => snapshot.val());
-// };
-
-// const heatmapConfig = type => ({
-//   container: document.getElementById("heatmap"),
-//   radius: 10,
-//   maxOpacity: 0.5,
-//   minOpacity: 0,
-//   blur: 0.75,
-//   gradient: configureColor(type)
-// });
-
-// function configureColor(data) {
-//   let colors;
-//
-//   switch (data) {
-//     case "deaths":
-//       colors = { ".3": "yellow", ".4": "orange", "1": "red" };
-//       break;
-//     case "kills":
-//       colors = { ".3": "white", ".4": "aqua", "1": "blue" };
-//       break;
-//     case "Flashbang":
-//       colors = { ".2": "black", ".3": "floralwhite", ".4:": "snow", "1": "white" }
-//       break;
-//     case "High Explosive Grenade":
-//       colors = { ".3": "wheat", ".4": "olive", "1": "seagreen" };
-//       break;
-//     case "Smoke Grenade":
-//       colors = { ".3": "dimgray", ".4": "darkgray", "1": "#303030" };
-//       break;
-//     default:
-//       colors = {"1": "black"};
-//   }
-//
-//   return colors;
-// }
-
-// export const showOnMap = (data, type) => {
-//   let mapData = [];
-//
-//   for (let key in data) {
-//     const { x, y } = data[key];
-//     let xPos = Math.floor(Math.abs(x - -2203) / 3764 * 840 + 64.7);
-//     let yPos = Math.floor(969.7 - Math.abs((y - -1031) / 4090 * 923.7));
-//
-//     mapData.push({ x: xPos, y: yPos, value: 10 });
-//   }
-//
-//   let heatmapInstance = h337.create(heatmapConfig(type));
-//   heatmapInstance.setData({ max: 10, data: mapData });
-// };
-//
-// export const renderMap = () => {
-//   initializeFB();
-//   // testing to see if i can have multiple heatmaps
-//   // the answer is yet, have fun customizing it
-//   let debug = [
-//     { grenade: "Decoy", type: "deaths" },
-//     { grenade: "Smoke Grenade", type: "kills" },
-//     { grenade: "Flashbang", type: "Smoke Grenade" }
-//   ];
-//
-//   debug.forEach(foo => {
-//     fetchGrenades(foo.grenade).then(grenades => showOnMap(grenades, foo.type));
-//   });
-// };
