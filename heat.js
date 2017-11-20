@@ -1,11 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import assign from 'lodash/assign';
+import { assign, merge } from "lodash";
 import firebase from "firebase";
 import h337 from "heatmap.js";
 import initializeFB from "./base.js";
-
 
 class Heatmap extends React.Component {
   constructor(props) {
@@ -13,27 +12,26 @@ class Heatmap extends React.Component {
 
     this.state = {
       heatmapConfig: {
-        container: '',
+        container: "",
         radius: 10,
         maxOpacity: 0.8,
         minOpacity: 0,
         blur: 0.75,
-        gradient: {"0.2": "black"}
-      },
-      heatmapData: {
-        max: 10,
-        data: []
+        gradient: { "0.2": "black" }
       },
       heatmapLayers: {
-        "kills": {}, "deaths": {}, "Flashbang": {},
-        "High Explosive Grenade": {}, "Smoke Grenade": {}
+        kills: {},
+        deaths: {},
+        Flashbang: {},
+        "High Explosive Grenade": {},
+        "Smoke Grenade": {}
       },
       gameData: {
         grenades: {},
         hlebopek: {},
-        'Taylor Swift': {}
+        "Taylor Swift": {}
       }
-    }
+    };
 
     this.fetchGrenades = this.fetchGrenades.bind(this);
   }
@@ -43,17 +41,21 @@ class Heatmap extends React.Component {
   }
 
   componentDidMount() {
-    const heatmapConfig = {...this.state.heatmapConfig}
+    const heatmapConfig = { ...this.state.heatmapConfig };
     heatmapConfig.container = this.refs.heatmap;
-    this.setState({ heatmapConfig }, this.createHeatmapLayers.bind(this))
+    this.setState({ heatmapConfig }, this.createHeatmapLayers.bind(this));
   }
 
   createHeatmapLayers() {
     const properties = [
-      "deaths", "kills", "Flashbang", "High Explosive Grenade", "Smoke Grenade"
+      "deaths",
+      "kills",
+      "Flashbang",
+      "High Explosive Grenade",
+      "Smoke Grenade"
     ];
     let heatmapConfig = assign({}, this.state.heatmapConfig);
-    let heatmapLayers = {}
+    let heatmapLayers = {};
 
     properties.forEach(layer => {
       heatmapConfig.gradient = this.configColors(layer);
@@ -65,10 +67,19 @@ class Heatmap extends React.Component {
 
   configColors(data) {
     let colors = {
-      "deaths": { ".3": "yellow", ".4": "orange", "1": "red" },
-      "kills": { ".3": "white", ".4": "aqua", "1": "blue" },
-      "Flashbang": { ".6": "black", ".2": "floralwhite", ".3": "snow", "1": "white" },
-      "High Explosive Grenade": { ".3": "wheat", ".4": "olive", "1": "seagreen" },
+      deaths: { ".3": "yellow", ".4": "orange", "1": "red" },
+      kills: { ".3": "white", ".4": "aqua", "1": "blue" },
+      Flashbang: {
+        ".6": "black",
+        ".2": "floralwhite",
+        ".3": "snow",
+        "1": "white"
+      },
+      "High Explosive Grenade": {
+        ".3": "wheat",
+        ".4": "olive",
+        "1": "seagreen"
+      },
       "Smoke Grenade": { ".3": "dimgray", ".4": "darkgray", "1": "#303030" }
     };
 
@@ -77,21 +88,28 @@ class Heatmap extends React.Component {
 
   fetchGrenades(e) {
     const grenade = e.target.value;
-
-    if (!e.target.checked) { return }
+    const currentData = assign({}, this.state.gameData);
+    const checked = e.target.checked;
 
     return firebase
       .database()
       .ref("/grenades/de_dust2/" + grenade + "/")
       .once("value")
       .then(snapshot => {
+          currentData.grenades[grenade] = checked ? snapshot.val() : {}
+        // this.setState({
+        //   ...this.state,
+        //   gameData: {
+        //     ...this.state.gameData,
+        //     grenades: {
+        //       ...this.state.gameData.grenades,
+        //       [grenade]: snapshot.val()
+        //     }
+        //   }
+        // });
         this.setState({
-          ...this.state, gameData: {
-            ...this.state.gameData, grenades: {
-              ...this.state.gameData.grenades, [grenade]: snapshot.val()
-            }
-          }
-        });
+          gameData: currentData
+        })
       });
   }
 
@@ -103,19 +121,14 @@ class Heatmap extends React.Component {
       .limitToFirst(5)
       .once("value", snap => {
         console.log(snap.val());
-      })
+      });
   }
 
   renderMap() {
-    let debug = [
-      { grenade: "Decoy", type: "deaths" },
-      { grenade: "Smoke Grenade", type: "kills" },
-      { grenade: "Flashbang", type: "Smoke Grenade" }
-    ];
-
     const { grenades } = this.state.gameData;
 
     for (let type in grenades) {
+      debugger;
       this.showOnMap(grenades[type], type);
     }
     // debug.forEach(foo => {
@@ -129,7 +142,9 @@ class Heatmap extends React.Component {
   showOnMap(data, type) {
     const { heatmapConfig } = this.state;
 
-    if (!heatmapConfig.container) { return null }
+    if (!heatmapConfig.container) {
+      return null;
+    }
 
     let mapData = [];
 
@@ -140,19 +155,33 @@ class Heatmap extends React.Component {
 
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
-
+    debugger;
     this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
   }
 
   render() {
     return (
       <div>
-        <div id="heatmap" ref="heatmap">{this.renderMap()}</div>
-        <button value="Flashbang" onClick={this.fetchGrenades}>Fetch</button>
+        <div id="heatmap" ref="heatmap">
+          {this.renderMap()}
+        </div>
+        <button value="Flashbang" onClick={this.fetchGrenades}>
+          Fetch
+        </button>
         <button onClick={this.fetchCTDeaths.bind(this)}>Hlebopek CT</button>
-        <input type="checkbox" value="Flashbang" onChange={this.fetchGrenades}/>
+        <input
+          type="checkbox"
+          value="Flashbang"
+          name="Flashbang"
+          onChange={this.fetchGrenades}
+        />
+        <input
+          type="checkbox"
+          value="High Explosive Grenade"
+          onChange={this.fetchGrenades}
+        />
       </div>
-    )
+    );
   }
 }
 
