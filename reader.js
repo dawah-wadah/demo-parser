@@ -1,9 +1,10 @@
 const fs = require("fs");
+const mover = require("fs-extra")
 const assert = require("assert");
 const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
-const ProgressBar = require("ascii-progress");
+// const ProgressBar = require("ascii-progress");
 const firebase = require("firebase");
 const initializeFB = require("./base.js");
 
@@ -83,10 +84,10 @@ function storeGrenadeData(evt) {
   counter++;
 }
 
-function updateProgress(bar, demoFile) {
-  bar.current = demoFile.currentTick;
-  bar.tick();
-}
+// function updateProgress(bar, demoFile) {
+//   bar.current = demoFile.currentTick;
+//   bar.tick();
+// }
 
 function randomColor() {
   let colors = "red cyan blue grey white black green yellow magenta brightRed brightBlue brightCyan brightWhite brightBlack brightGreen brightYellow brightMagenta".split(
@@ -100,24 +101,31 @@ function parseDemofile(file, callback) {
     assert.ifError(err);
     let map;
     let percentage = 0;
-    let bar = new ProgressBar({
-      schema:
-        ` [:bar.` +
-        randomColor() +
-        `] :current/:total :percent :elapseds :etas`,
-      total: 10
-    });
+    // let bar = new ProgressBar({
+    //   schema:
+    //     ` [:bar.` +
+    //     randomColor() +
+    //     `] :current/:total :percent :elapseds :etas`,
+    //   total: 10
+    // });
 
     var demoFile = new demo.DemoFile();
     demoFile.on("start", () => {
       map = demoFile.header.mapName;
-      bar.total = demoFile.header.playbackTicks;
+      // bar.total = demoFile.header.playbackTicks;
       console.log("Loaded " + file);
     });
 
     demoFile.on("end", () => {
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
       // console.log("Finished with " + file);
+      let foo = file.toString().split("/");
+      console.log(foo[foo.length - 1])
+      mover.move(`${file}`,'done/' + foo[foo.length - 1], (err) => {
+        if (err) {
+          console.log(err)
+        }
+      })
       return callback();
     });
 
@@ -150,7 +158,7 @@ function parseDemofile(file, callback) {
           default:
         }
         storeGrenadeData(e);
-        updateProgress(bar, demoFile);
+        // updateProgress(bar, demoFile);
       });
     });
 
@@ -161,7 +169,7 @@ function parseDemofile(file, callback) {
         hasKilled(victim, attacker,map, 76561198027906568, 76561198171618625);
         wasKilled(victim, attacker,map, 76561198027906568, 76561198171618625);
       }
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
     });
     demoFile.parse(buffer);
   });
@@ -188,4 +196,4 @@ fs.readdir(dir, function(err, items) {
   // Promise.all(promises).then(() =>
   //   fs.writeFile("./data.json", JSON.stringify(globalData), "utf8")
   // );
-});
+function ()
