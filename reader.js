@@ -65,6 +65,7 @@ function storeData(attacker, victim, status, map) {
 }
 
 function storeShots(playerName, weaponsData) {
+  let promises = [];
   Object.keys(weaponsData).forEach(weapon => {
     let data = {
       totalShots: weaponsData[weapon].shots_fired,
@@ -76,12 +77,18 @@ function storeShots(playerName, weaponsData) {
       ).toFixed(2)
     };
     console.log(weapon);
-    new Promise(function(resolve, reject) {
-      firebase
-        .database()
-        .ref(`/${playerName}/Weapons Data/${weapon}`)
-        .push(data);
-    });
+    promises.push(
+      new Promise(function(resolve, reject) {
+        firebase
+          .database()
+          .ref(`/${playerName}/Weapons Data/${weapon}`)
+          .push(data)
+          .then(() => resolve(), () => reject());
+      })
+    );
+  });
+  return Promise.all(promises).then(() => {
+    return;
   });
 }
 
@@ -189,7 +196,7 @@ function parseDemofile(file, callback) {
 
     demoFile.on("end", () => {
       // updateProgress(bar, demoFile);
-      // console.log("Finished with " + file);
+      console.log("Finished with " + file);
       Promise.all([
         storeShots("Taylor Swift", shots.wadah),
         storeShots("hlebopek", shots.vlad)
@@ -279,8 +286,8 @@ function parseDemofile(file, callback) {
           shots.wadah[e.weapon].headshots++;
         }
       } else if (playa.steam64Id == 76561198171618625) {
-        if (!shots.vlad[e.weapon].shots_hit) {
-          shots.vlad[e.weapon].shots_hit = newWeapon();
+        if (!shots.vlad[e.weapon]) {
+          shots.vlad[e.weapon] = newWeapon();
         }
         if (e.hitgroup === 1 && e.health === 0) {
           shots.vlad[e.weapon].headshots++;
