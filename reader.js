@@ -41,33 +41,51 @@ function storeData(attacker, victim, status, map) {
     firebase
       .database()
       .ref(
-        "/" + attacker.name + "/"+ map +"/" + attacker.side + "/" + status + "/"
+        "/" +
+          attacker.name +
+          "/" +
+          map +
+          "/" +
+          attacker.side +
+          "/" +
+          status +
+          "/"
       )
       .push(killData);
   } else {
     firebase
       .database()
-      .ref("/" + victim.name + "/"+ map +"/" + victim.side + "/" + status + "/")
+      .ref(
+        "/" + victim.name + "/" + map + "/" + victim.side + "/" + status + "/"
+      )
       .push(killData);
   }
 
   counter++;
 }
 
-function storeShots(shots, hits, shooter, map) {
-  let data = {
-    totalShots: shots,
-    totalHits: hits,
-    accuracy: Math.round(hits / shots * 100)
-  }
-
-  firebase
-    .database()
-    .ref(`/${shooter.name}/${map}/shotsData/`)
-    .push(data);
+function storeShots(playerName, weaponsData) {
+  Object.keys(weaponsData).forEach(weapon => {
+    let data = {
+      totalShots: weaponsData[weapon].shots_fired,
+      headshots: weaponsData[weapon].headshots,
+      totalHits: weaponsData[weapon].shots_hit,
+      accuracy: (weaponsData[weapon].shots_hit /
+        weaponsData[weapon].shots_fired *
+        100
+      ).toFixed(2)
+    };
+    console.log(weapon);
+    new Promise(function(resolve, reject) {
+      firebase
+        .database()
+        .ref(`/${playerName}/Weapons Data/${weapon}`)
+        .push(data);
+    });
+  });
 }
 
-function hasKilled(victim, attacker,map, ...playerID) {
+function hasKilled(victim, attacker, map, ...playerID) {
   playerID.forEach(id => {
     if (attacker.steam64Id == id) {
       storeData(attacker, victim, "kills", map);
@@ -75,10 +93,10 @@ function hasKilled(victim, attacker,map, ...playerID) {
   });
 }
 
-function wasKilled(victim, attacker,map, ...playerID) {
+function wasKilled(victim, attacker, map, ...playerID) {
   playerID.forEach(id => {
     if (victim.steam64Id == id) {
-      storeData(attacker, victim, "deaths",map);
+      storeData(attacker, victim, "deaths", map);
     }
   });
 }
@@ -108,6 +126,47 @@ function randomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
+function newWeapon() {
+  return {
+    shots_fired: 0,
+    shots_hit: 0,
+    headshots: 0
+  };
+}
+
+function newGame() {
+  return {
+    wadah: {},
+    vlad: {}
+  };
+}
+
+/*
+player {
+  map: {
+    weapons: {
+      weapon_name: {
+        shots_fired: INT,
+        shots_hit: INT,
+        headshots: INT
+      }
+    },
+    tSide: {
+      kills: {},
+      deaths:{},
+    },
+    ctSide: {
+      kills: {},
+      deaths:{},
+    }
+  }
+}
+
+
+*/
+
+function weaponStats(weapon, player) {}
+
 function parseDemofile(file, callback) {
   fs.readFile(file, function(err, buffer) {
     assert.ifError(err);
@@ -129,9 +188,14 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.on("end", () => {
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
       // console.log("Finished with " + file);
-      return callback();
+      Promise.all([
+        storeShots("Taylor Swift", shots.wadah),
+        storeShots("hlebopek", shots.vlad)
+      ]).then(() => {
+        return callback();
+      });
     });
 
     let grenades = [
@@ -141,6 +205,8 @@ function parseDemofile(file, callback) {
       "molotov",
       "decoy"
     ];
+
+    let shots = newGame();
 
     grenades.forEach(grenade => {
       demoFile.gameEvents.on(`${grenade}_detonate`, e => {
@@ -163,7 +229,7 @@ function parseDemofile(file, callback) {
           default:
         }
         storeGrenadeData(e);
-        updateProgress(bar, demoFile);
+        // updateProgress(bar, demoFile);
       });
     });
 
@@ -171,50 +237,63 @@ function parseDemofile(file, callback) {
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
       if (victim && attacker) {
-        hasKilled(victim, attacker,map, 76561198027906568, 76561198171618625);
-        wasKilled(victim, attacker,map, 76561198027906568, 76561198171618625);
+        hasKilled(victim, attacker, map, 76561198027906568, 76561198171618625);
+        wasKilled(victim, attacker, map, 76561198027906568, 76561198171618625);
       }
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
     });
-
-    let shots = {
-      wadahFire: 0,
-      hlebopekFire: 0,
-      wadahHits: 0,
-      hlebopekHits: 0
-    }
 
     demoFile.gameEvents.on("weapon_fire", e => {
       let playa = demoFile.entities.getByUserId(e.userid);
-      let updatable = (bar.current / bar.total * 100 > 97);
-      if (!playa) { return; }
-
+      // let updatable = bar.current / bar.total * 100 > 97;
+      if (!playa) {
+        return;
+      }
+      let weapon = e.weapon.split("_")[1];
       if (playa.steam64Id == 76561198027906568) {
-        shots.wadahFire++;
-        if (updatable) {
-          storeShots(shots.wadahFire, shots.wadahHits, playa, map);
+        if (!shots.wadah[weapon]) {
+          shots.wadah[weapon] = newWeapon();
         }
+        shots.wadah[weapon].shots_fired++;
       } else if (playa.steam64Id == 76561198171618625) {
-        shots.hlebopekFire++;
-        if (updatable) {
-          storeShots(shots.hlebopekFire, shots.hlebopekHits, playa, map);
+        if (!shots.vlad[weapon]) {
+          shots.vlad[weapon] = newWeapon();
         }
+        shots.vlad[weapon].shots_fired++;
       }
 
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
     });
 
     demoFile.gameEvents.on("player_hurt", e => {
       let playa = demoFile.entities.getByUserId(e.attacker);
-      if (!playa) { return; }
-
-      if (playa.steam64Id == 76561198027906568) {
-        shots.wadahHits++;
-      } else if (playa.steam64Id == 76561198171618625) {
-        shots.hlebopekHits++;
+      if (!playa) {
+        return;
       }
+      if (playa.steam64Id == 76561198027906568) {
+        if (!shots.wadah[e.weapon]) {
+          shots.wadah[e.weapon] = newWeapon();
+        }
+        shots.wadah[e.weapon].shots_hit++;
+        if (e.hitgroup === 1 && e.health === 0) {
+          shots.wadah[e.weapon].headshots++;
+        }
+      } else if (playa.steam64Id == 76561198171618625) {
+        if (!shots.vlad[e.weapon].shots_hit) {
+          shots.vlad[e.weapon].shots_hit = newWeapon();
+        }
+        if (e.hitgroup === 1 && e.health === 0) {
+          shots.vlad[e.weapon].headshots++;
+        }
+      }
+      //
+      // if (playa.steam64Id == 76561198027906568) {
+      //   shots.wadahHits++;
+      // } else if (playa.steam64Id == 76561198171618625) {
+      //   shots.hlebopekHits++;
+      // }
 
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
     });
 
     demoFile.parse(buffer);
