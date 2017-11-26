@@ -66,6 +66,7 @@ function storeData(attacker, victim, status, map) {
 
 function storeShots(playerName, weaponsData) {
   let promises = [];
+
   Object.keys(weaponsData).forEach(weapon => {
     let data = {
       totalShots: weaponsData[weapon].shots_fired,
@@ -76,7 +77,7 @@ function storeShots(playerName, weaponsData) {
         100
       ).toFixed(2)
     };
-    console.log(weapon);
+
     promises.push(
       new Promise(function(resolve, reject) {
         firebase
@@ -87,6 +88,7 @@ function storeShots(playerName, weaponsData) {
       })
     );
   });
+
   return Promise.all(promises).then(() => {
     return;
   });
@@ -289,18 +291,11 @@ function parseDemofile(file, callback) {
         if (!shots.vlad[e.weapon]) {
           shots.vlad[e.weapon] = newWeapon();
         }
+        shots.vlad[e.weapon].shots_hit++;
         if (e.hitgroup === 1 && e.health === 0) {
           shots.vlad[e.weapon].headshots++;
         }
       }
-      //
-      // if (playa.steam64Id == 76561198027906568) {
-      //   shots.wadahHits++;
-      // } else if (playa.steam64Id == 76561198171618625) {
-      //   shots.hlebopekHits++;
-      // }
-
-      // updateProgress(bar, demoFile);
     });
 
     demoFile.parse(buffer);
