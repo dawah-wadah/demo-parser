@@ -296,14 +296,6 @@ function parseDemofile(file, callback) {
           shots.vlad[e.weapon].headshots++;
         }
       }
-      //
-      // if (playa.steam64Id == 76561198027906568) {
-      //   shots.wadahHits++;
-      // } else if (playa.steam64Id == 76561198171618625) {
-      //   shots.hlebopekHits++;
-      // }
-
-      // updateProgress(bar, demoFile);
     });
 
     demoFile.parse(buffer);
