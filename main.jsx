@@ -17,10 +17,6 @@ class App extends React.Component {
     return (
       <HashRouter>
         <div id="main-body">
-          <svg
-            width="960"
-            height="960"
-          />
           <Switch>
             <Route exact path="/" component={Heatmap} />
             <Route exact path="/player/:id" component={Data} />
