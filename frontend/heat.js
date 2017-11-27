@@ -4,7 +4,6 @@ import ReactDOM from "react-dom";
 import { assign, merge } from "lodash";
 import firebase from "firebase";
 import h337 from "heatmap.js";
-import initializeFB from "./base.js";
 
 class Heatmap extends React.Component {
   constructor(props) {
@@ -40,7 +39,6 @@ class Heatmap extends React.Component {
   }
 
   componentWillMount(){
-    initializeFB()
   }
 
   componentDidMount() {
