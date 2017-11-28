@@ -116,7 +116,7 @@ export default class Data extends React.Component {
           return +d.fired;
         })
       ])
-      .range([30, 100]);
+      .range([40, 130]);
 
     var colorCircles = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -211,6 +211,9 @@ export default class Data extends React.Component {
         .text(function(d) {
           return d.name;
         });
+
+        // background = nodes
+        //   .attr("background", )
 
       arcs
         .transition()
