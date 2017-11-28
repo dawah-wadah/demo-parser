@@ -10,6 +10,7 @@ export default class Data extends React.Component {
     this.diameter = 900;
     this.svg;
     this.received;
+    this.tooltip = this.tooltip.bind(this);
   }
 
   updateWindowDimensions() {
@@ -66,16 +67,38 @@ export default class Data extends React.Component {
     return newDataSet;
   }
 
+  tooltip(svg) {
+    svg
+      .append("div")
+      .style("position", "absolute")
+      .style("visibility", "hidden")
+      .style("color", "white")
+      .style("padding", "8px")
+      .style("background-color", "#626D71")
+      .style("border-radius", "6px")
+      .style("text-align", "center")
+      .style("font-family", "monospace")
+      .style("width", "400px")
+      .text("");
+  }
+
   makeChart(data) {
     let circles;
+    let arcs;
     let simulation = d3
       .forceSimulation()
-      .force("x", d3.forceX(this.diameter / 2).strength(0.05))
-      .force("y", d3.forceY(this.diameter / 2).strength(0.05))
-      .force("collide", d3.forceCollide(d => scaleRadius(d.fired) + 1));
+      .force("x", d3.forceX(0).strength())
+      .force("y", d3.forceY(0).strength())
+      .force("collide", d3.forceCollide(d => scaleRadius(d.fired) + 5));
 
     function ticked() {
+      arcs.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
       circles.attr("cx", d => d.x).attr("cy", d => d.y);
+    }
+    function moveArcs() {
+      arcs.attr("transform");
     }
     let scaleRadius = d3
       .scaleLinear()
@@ -87,11 +110,26 @@ export default class Data extends React.Component {
           return +d.fired;
         })
       ])
-      .range([40, 150]);
+      .range([30, 100]);
 
     var colorCircles = d3.scaleOrdinal(d3.schemeCategory20);
+
+    function arcTween(transition, newAngle) {
+      transition.attrTween("d", function(d) {
+        let accuracy = isNaN(d.hits / d.fired * 2 * Math.PI)
+          ? 0
+          : d.hits / (d.fired + 1) * 360 * Math.PI / 180;
+        var interpolate = d3.interpolate(0, accuracy);
+
+        return function(t) {
+          d.endAngle = interpolate(t);
+
+          return drawArc(d);
+        };
+      });
+    }
     if (this.svg) {
-      let shit = this.svg
+      let svg = this.svg
         .attr("height", this.diameter)
         .attr("width", this.diameter)
         .append("g")
@@ -100,19 +138,76 @@ export default class Data extends React.Component {
           "translate(" + this.diameter / 2 + "," + this.diameter / 2 + ")"
         );
 
-      var arc = d3
-        .arc()
-        .innerRadius(90)
-        .outerRadius(100)
-        .startAngle(0)
-        .endAngle(d => 2 * Math.PI * (d.hits / d.fired));
+      var tooltip = this.tooltip(this.svg);
 
-      data.forEach(weapon => {
-        shit
-          .data(data[weapon])
-          .append("path")
-          .attr("d", arc);
-      });
+      var drawArc = d3
+        .arc()
+        .innerRadius(d => scaleRadius(d.fired) -5)
+        .outerRadius(d => scaleRadius(d.fired))
+        .startAngle(0);
+
+      let nodes = svg
+        .selectAll("weapons")
+        .data(data)
+        .enter()
+        .append("g")
+        .attr("width", d => scaleRadius(d.fired))
+        .attr("height", d => scaleRadius(d.fired));
+
+      circles = nodes
+        .append("circle")
+        .style("fill", "rgba(124,240,10,0.0)")
+        .style("stroke", d => colorCircles(d.name))
+        .style("stroke-width", 1)
+        .attr("class", d => d.name)
+        .attr("r", d => scaleRadius(d.fired))
+        .call(
+            d3
+              .drag()
+              .on("start", dragstarted)
+              .on("drag", dragged)
+              .on("end", dragended)
+          );
+
+      arcs = nodes
+        .append("path")
+        .attr("fill", d => colorCircles(d.name))
+        .attr("class", "arc")
+        .each(function(d) {
+          d.endAngle = 0;
+        })
+        .attr("d", drawArc);
+      // .attr("transform", function(d) {
+      //   let self = this;
+      //   let pos = d3.select(this.parentNode);
+      //   return "translate(0,0)";
+      // });
+
+      arcs
+        .transition()
+        .duration(750)
+        .delay(300)
+        .call(arcTween, this);
+
+      function dragstarted(d) {
+        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+
+      function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+      }
+
+      function dragended(d) {
+        if (!d3.event.active) simulation.alphaTarget(0);
+        d.fx = null;
+        d.fy = null;
+      }
+
+      simulation.nodes(data).on("tick", ticked);
+      // simulation.nodes(data).on("tick", moveArcs);
     }
   }
 
