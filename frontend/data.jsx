@@ -7,6 +7,8 @@ export default class Data extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
     this.diameter = 900;
     this.svg;
   }
@@ -30,10 +32,11 @@ export default class Data extends React.Component {
   }
 
   componentDidMount() {
-    let container = d3.select("div#main-body").append("svg");
-
-    this.svg = container;
-
+    this.svg = d3.select("div#main-body")
+      .append("svg")
+      .attr("width", this.width)
+      .attr("height", this.height);
+    // debugger
     firebase
       .database()
       .ref("/Taylor Swift/Weapons Data")
@@ -65,16 +68,21 @@ export default class Data extends React.Component {
   }
 
   makeChart(data) {
+    // debugger;
     let circles;
     let simulation = d3
       .forceSimulation()
-      .force("x", d3.forceX(this.diameter / 2).strength(0.05))
-      .force("y", d3.forceY(this.diameter / 2).strength(0.05))
-      .force("collide", d3.forceCollide(d => scaleRadius(d.fired) + 1));
+      .force("forceX", d3.forceX().strength(0.1).x(this.width / 2))
+      .force("forceY", d3.forceY().strength(0.1).y(this.height / 2))
+      .force("center", d3.forceCenter(this.width / 2, this.height / 2))
+      .force('charge', d3.forceManyBody().strength(-15))
+      // .force("collide", d3.forceCollide().strength(.5).radius(d => scaleRadius(d.fired) + 2.5))
 
     function ticked() {
+      // debugger;
       circles.attr("cx", d => d.x).attr("cy", d => d.y);
     }
+
     let scaleRadius = d3
       .scaleLinear()
       .domain([
@@ -85,20 +93,25 @@ export default class Data extends React.Component {
           return +d.fired;
         })
       ])
-      .range([30, 100]);
+      .range([35, 120]);
 
-    var colorCircles = d3.scaleOrdinal(d3.schemeCategory10);
+    const colorCircles = d3.scaleOrdinal(d3.schemeCategory10);
     if (this.svg) {
-      this.svg
-        .attr("height", this.diameter)
-        .attr("width", this.diameter)
-        .append("g")
-        .attr(
-          "transform",
-          "translate(" + this.diameter / 2 + "," + this.diameter / 2 + ")"
-        );
+      let dataElement = this.svg.selectAll("g").data(data);
 
-      var tooltip = this.svg
+      let elementEnter = dataElement.enter()
+        .append("g")
+        .attr("transform", d => `translate(-${this.width / 8}, -${this.height / 8})`);
+
+        // .attr("height", this.diameter)
+        // .attr("width", this.diameter)
+        // .append("g")
+        // .attr(
+        //   `transform",
+        //   "translate(${this.width / 2}, ${this.height / 2})`
+        // );
+
+      const tooltip = this.svg
         .append("div")
         .style("position", "absolute")
         .style("visibility", "hidden")
@@ -110,27 +123,30 @@ export default class Data extends React.Component {
         .style("font-family", "monospace")
         .style("width", "400px")
         .text("");
-
-      circles = this.svg
-        .selectAll(".weapons")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("class", d => d.name)
+        debugger
+      // circles = this.svg
+      //   .selectAll(".weapons")
+      //   .data(data)
+      //   .enter()
+      //   .append("circle")
+      //   .attr("class", d => d.name)
+      //   .attr("r", d => scaleRadius(d.fired))
+      //   .style("fill", d => colorCircles(d.name))
+      //   .on("mouseover", function(d) {
+      //     tooltip.html(d.hits + "<br>" + d.name + "<br>" + d.fired);
+      //     return tooltip.style("visibility", "visible");
+      //   })
+      //   .on("mousemove", function() {
+      //     return tooltip
+      //       .style("top", d3.event.pageY - 10 + "px")
+      //       .style("left", d3.event.pageX + 10 + "px");
+      //   })
+      //   .on("mouseout", function() {
+      //     return tooltip.style("visibility", "hidden");
+      //   })
+      circles = elementEnter.append('circle')
         .attr("r", d => scaleRadius(d.fired))
         .style("fill", d => colorCircles(d.name))
-        .on("mouseover", function(d) {
-          tooltip.html(d.hits + "<br>" + d.name + "<br>" + d.fired);
-          return tooltip.style("visibility", "visible");
-        })
-        .on("mousemove", function() {
-          return tooltip
-            .style("top", d3.event.pageY - 10 + "px")
-            .style("left", d3.event.pageX + 10 + "px");
-        })
-        .on("mouseout", function() {
-          return tooltip.style("visibility", "hidden");
-        })
         .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
@@ -153,7 +169,11 @@ export default class Data extends React.Component {
           d.fy = null;
       }
 
-      simulation.nodes(data).on("tick", ticked);
+      data = data.sort((a, b) => b.fired - a.fired);
+
+      simulation.nodes(data)
+      .force("collide", d3.forceCollide().strength(.5).radius(d => scaleRadius(d.fired) + 2.5).iterations(1))
+      .on("tick", ticked);
     }
   }
 
