@@ -8,6 +8,8 @@ export default class Data extends React.Component {
     super(props);
     this.state = {};
     this.diameter = 900;
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
     this.svg;
     this.received;
     this.tooltip = this.tooltip.bind(this);
@@ -151,12 +153,12 @@ export default class Data extends React.Component {
     }
     if (this.svg) {
       let svg = this.svg
-        .attr("height", this.diameter)
-        .attr("width", this.diameter)
+        .attr("height", this.height)
+        .attr("width", this.width)
         .append("g")
         .attr(
           "transform",
-          "translate(" + this.diameter / 2 + "," + this.diameter / 2 + ")"
+          "translate(" + this.width / 2 + "," + this.height / 2 + ")"
         );
 
       var tooltip = this.tooltip(this.svg);
