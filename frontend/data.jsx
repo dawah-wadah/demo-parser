@@ -68,7 +68,8 @@ export default class Data extends React.Component {
   }
 
   render() {
-    return <svg ref={node => this.node = node} width="960" height="960" />;
-    // return (<h1>Wadah is Retarded</h1>);
+    return (
+      <svg ref={node => this.node = node} width="960" height="960" />
+    );
   }
 }
