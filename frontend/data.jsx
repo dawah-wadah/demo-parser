@@ -85,14 +85,18 @@ export default class Data extends React.Component {
   makeChart(data) {
     let circles;
     let arcs;
+    let text;
     let simulation = d3
       .forceSimulation()
-      .force("x", d3.forceX(0).strength())
-      .force("y", d3.forceY(0).strength())
+      .force("x", d3.forceX(0).strength(0.15))
+      .force("y", d3.forceY(0).strength(0.15))
       .force("collide", d3.forceCollide(d => scaleRadius(d.fired) + 5));
 
     function ticked() {
       arcs.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+      text.attr("transform", function(d) {
         return "translate(" + d.x + "," + d.y + ")";
       });
       circles.attr("cx", d => d.x).attr("cy", d => d.y);
@@ -128,6 +132,23 @@ export default class Data extends React.Component {
         };
       });
     }
+
+    function dragstarted(d) {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
+
+    function dragged(d) {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    }
+
+    function dragended(d) {
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
     if (this.svg) {
       let svg = this.svg
         .attr("height", this.diameter)
@@ -142,7 +163,7 @@ export default class Data extends React.Component {
 
       var drawArc = d3
         .arc()
-        .innerRadius(d => scaleRadius(d.fired) -5)
+        .innerRadius(d => scaleRadius(d.fired) - 5)
         .outerRadius(d => scaleRadius(d.fired))
         .startAngle(0);
 
@@ -162,12 +183,12 @@ export default class Data extends React.Component {
         .attr("class", d => d.name)
         .attr("r", d => scaleRadius(d.fired))
         .call(
-            d3
-              .drag()
-              .on("start", dragstarted)
-              .on("drag", dragged)
-              .on("end", dragended)
-          );
+          d3
+            .drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended)
+        );
 
       arcs = nodes
         .append("path")
@@ -177,11 +198,17 @@ export default class Data extends React.Component {
           d.endAngle = 0;
         })
         .attr("d", drawArc);
-      // .attr("transform", function(d) {
-      //   let self = this;
-      //   let pos = d3.select(this.parentNode);
-      //   return "translate(0,0)";
-      // });
+
+      text = nodes
+        .append("text")
+        .attr("text-anchor", "middle")
+        .style("font-size", function(d) {
+          return Math.max(d.fired / 20, 15) + "px";
+        })
+        .attr("dy", ".35em")
+        .text(function(d) {
+          return d.name;
+        });
 
       arcs
         .transition()
@@ -189,25 +216,7 @@ export default class Data extends React.Component {
         .delay(300)
         .call(arcTween, this);
 
-      function dragstarted(d) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
-
-      function dragged(d) {
-        d.fx = d3.event.x;
-        d.fy = d3.event.y;
-      }
-
-      function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-
       simulation.nodes(data).on("tick", ticked);
-      // simulation.nodes(data).on("tick", moveArcs);
     }
   }
 
