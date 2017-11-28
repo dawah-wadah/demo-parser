@@ -11,6 +11,8 @@ export default class Data extends React.Component {
     this.height = window.innerHeight;
     this.diameter = 900;
     this.svg;
+    this.received;
+    this.tooltip = this.tooltip.bind(this);
   }
 
   updateWindowDimensions() {
@@ -42,6 +44,7 @@ export default class Data extends React.Component {
       .ref("/Taylor Swift/Weapons Data")
       .once("value", snapshot => {
         this.getShit(snapshot.val());
+        this.received = true;
       });
   }
 
@@ -67,9 +70,26 @@ export default class Data extends React.Component {
     return newDataSet;
   }
 
+  tooltip(svg) {
+    svg
+      .append("div")
+      .style("position", "absolute")
+      .style("visibility", "hidden")
+      .style("color", "white")
+      .style("padding", "8px")
+      .style("background-color", "#626D71")
+      .style("border-radius", "6px")
+      .style("text-align", "center")
+      .style("font-family", "monospace")
+      .style("width", "400px")
+      .text("");
+  }
+
   makeChart(data) {
     // debugger;
     let circles;
+    let arcs;
+    let text;
     let simulation = d3
       .forceSimulation()
       .force("forceX", d3.forceX().strength(0.1).x(this.width / 2))
@@ -158,16 +178,22 @@ export default class Data extends React.Component {
           d.fy = d.y;
       }
 
-      function dragged(d) {
-          d.fx = d3.event.x;
-          d.fy = d3.event.y;
-      }
+      text = nodes
+        .append("text")
+        .attr("text-anchor", "middle")
+        .style("font-size", function(d) {
+          return Math.max(d.fired / 20, 15) + "px";
+        })
+        .attr("dy", ".35em")
+        .text(function(d) {
+          return d.name;
+        });
 
-      function dragended(d) {
-          if (!d3.event.active) simulation.alphaTarget(0);
-          d.fx = null;
-          d.fy = null;
-      }
+      arcs
+        .transition()
+        .duration(750)
+        .delay(300)
+        .call(arcTween, this);
 
       data = data.sort((a, b) => b.fired - a.fired);
 
@@ -180,12 +206,6 @@ export default class Data extends React.Component {
   render() {
     let data = this.processData(this.state);
     this.makeChart(data);
-    // let chart = this.buildChart();
-    // d3
-    //   .select("main-body")
-    //   .data(data)
-    //   .call(chart);
-
     return <h1>Wadah is Retarded</h1>;
   }
 }
