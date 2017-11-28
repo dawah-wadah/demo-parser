@@ -9,6 +9,7 @@ export default class Data extends React.Component {
     this.state = {};
     this.diameter = 900;
     this.svg;
+    this.received;
   }
 
   updateWindowDimensions() {
@@ -39,6 +40,7 @@ export default class Data extends React.Component {
       .ref("/Taylor Swift/Weapons Data")
       .once("value", snapshot => {
         this.getShit(snapshot.val());
+        this.received = true;
       });
   }
 
@@ -85,11 +87,11 @@ export default class Data extends React.Component {
           return +d.fired;
         })
       ])
-      .range([30, 300]);
+      .range([40, 150]);
 
-    var colorCircles = d3.scaleOrdinal(d3.schemeCategory10);
+    var colorCircles = d3.scaleOrdinal(d3.schemeCategory20);
     if (this.svg) {
-      this.svg
+      let shit = this.svg
         .attr("height", this.diameter)
         .attr("width", this.diameter)
         .append("g")
@@ -98,53 +100,25 @@ export default class Data extends React.Component {
           "translate(" + this.diameter / 2 + "," + this.diameter / 2 + ")"
         );
 
-      var tooltip = this.svg
-        .append("div")
-        .style("position", "absolute")
-        .style("visibility", "hidden")
-        .style("color", "white")
-        .style("padding", "8px")
-        .style("background-color", "#626D71")
-        .style("border-radius", "6px")
-        .style("text-align", "center")
-        .style("font-family", "monospace")
-        .style("width", "400px")
-        .text("");
+      var arc = d3
+        .arc()
+        .innerRadius(90)
+        .outerRadius(100)
+        .startAngle(0)
+        .endAngle(d => 2 * Math.PI * (d.hits / d.fired));
 
-      circles = this.svg
-        .selectAll(".weapons")
-        .data(data)
-        .enter()
-        .append("circle")
-        .attr("class", d => d.name)
-        .attr("r", d => scaleRadius(d.fired))
-        .style("fill", d => colorCircles(d.name))
-        .on("mouseover", function(d) {
-          tooltip.html(d.hits + "<br>" + d.name + "<br>" + d.fired);
-          return tooltip.style("visibility", "visible");
-        })
-        .on("mousemove", function() {
-          return tooltip
-            .style("top", d3.event.pageY - 10 + "px")
-            .style("left", d3.event.pageX + 10 + "px");
-        })
-        .on("mouseout", function() {
-          return tooltip.style("visibility", "hidden");
-        });
-
-      simulation.nodes(data).on("tick", ticked);
+      data.forEach(weapon => {
+        shit
+          .data(data[weapon])
+          .append("path")
+          .attr("d", arc);
+      });
     }
   }
 
   render() {
     let data = this.processData(this.state);
     this.makeChart(data);
-    // let chart = this.buildChart();
-    // d3
-    //   .select("main-body")
-    //   .data(data)
-    //   .call(chart);
-
     return <h1>Wadah is Retarded</h1>;
   }
 }
