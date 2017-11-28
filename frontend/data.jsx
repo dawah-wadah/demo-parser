@@ -116,11 +116,7 @@ export default class Data extends React.Component {
           return +d.fired;
         })
       ])
-<<<<<<< HEAD
-      .range([40, 130]);
-=======
       .range([this.height / this.width * 150, this.height / this.width * 320]);
->>>>>>> b9a2617294a5948260d4d18f910f0490362b17cf
 
     var colorCircles = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -184,7 +180,7 @@ export default class Data extends React.Component {
 
       circles = nodes
         .append("circle")
-        .style("fill", "rgba(124,240,10,0.0)")
+        .style("fill", "url(#tile-ww)")
         .style("stroke", d => colorCircles(d.name))
         .style("stroke-width", 1)
         .attr("class", d => d.name)
@@ -201,6 +197,19 @@ export default class Data extends React.Component {
         .on("mouseout", function() {
           return tooltip.style("visibility", "hidden");
         });
+
+        var defs = circles.append('svg:defs');
+              defs.append('svg:pattern')
+                  .attr('id', 'tile-ww')
+                  .attr('patternUnits', 'userSpaceOnUse')
+                  .attr('width', '40')
+                  .attr('height', '20')
+                  .append('svg:image')
+                  .attr('xlink:href', './assets/weapons/weapon_ak47.svg')
+                  .attr('x', 0)
+                  .attr('y', 0)
+                  .attr('width', 40)
+                  .attr('height', 20);
 
       nodes.call(
         d3
