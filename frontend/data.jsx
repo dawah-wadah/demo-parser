@@ -116,7 +116,7 @@ export default class Data extends React.Component {
           return +d.fired;
         })
       ])
-      .range([30, 100]);
+      .range([this.height / this.width * 150, this.height / this.width * 320]);
 
     var colorCircles = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -161,11 +161,12 @@ export default class Data extends React.Component {
           "translate(" + this.width / 2 + "," + this.height / 2 + ")"
         );
 
-      var tooltip = this.tooltip(this.svg);
 
       var drawArc = d3
         .arc()
-        .innerRadius(d => scaleRadius(d.fired) - (scaleRadius(d.fired) / 100 * 20))
+        .innerRadius(
+          d => scaleRadius(d.fired) - scaleRadius(d.fired) / 100 * 20
+        )
         .outerRadius(d => scaleRadius(d.fired))
         .startAngle(0);
 
@@ -184,13 +185,26 @@ export default class Data extends React.Component {
         .style("stroke-width", 1)
         .attr("class", d => d.name)
         .attr("r", d => scaleRadius(d.fired))
-        .call(
-          d3
-            .drag()
-            .on("start", dragstarted)
-            .on("drag", dragged)
-            .on("end", dragended)
-        );
+        .on("mouseover", function(d) {
+          tooltip.html(d.hits + "<br>" + d.name + "<br>" + d.fired);
+          return tooltip.style("visibility", "visible");
+        })
+        .on("mousemove", function() {
+          return tooltip
+            .style("top", d3.event.pageY - 10 + "px")
+            .style("left", d3.event.pageX + 10 + "px");
+        })
+        .on("mouseout", function() {
+          return tooltip.style("visibility", "hidden");
+        });
+
+      nodes.call(
+        d3
+          .drag()
+          .on("start", dragstarted)
+          .on("drag", dragged)
+          .on("end", dragended)
+      );
 
       arcs = nodes
         .append("path")
@@ -217,6 +231,19 @@ export default class Data extends React.Component {
         .duration(750)
         .delay(300)
         .call(arcTween, this);
+
+        let tooltip = this.svg
+        .append("div")
+        .style("position", "absolute")
+        .style("visibility", "hidden")
+        .style("color", "white")
+        .style("padding", "8px")
+        .style("background-color", "#626D71")
+        .style("border-radius", "6px")
+        .style("text-align", "center")
+        .style("font-family", "monospace")
+        .style("width", "400px")
+        .text("");
 
       simulation.nodes(data).on("tick", ticked);
     }
