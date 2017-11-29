@@ -21,7 +21,7 @@ let globalData = {
 };
 let counter = 1;
 
-function storeData(attacker, victim, status, map) {
+function storeData(attacker, victim, status, map, weapon) {
   let killData = {
     killer: attacker.name,
     victim: victim.name,
@@ -33,8 +33,9 @@ function storeData(attacker, victim, status, map) {
       killer: {
         x: attacker.position.x,
         y: attacker.position.y
-      }
-    }
+      },
+    },
+    weapon: weapon
   };
 
   if (status === "kills") {
@@ -94,18 +95,18 @@ function storeShots(playerName, weaponsData) {
   });
 }
 
-function hasKilled(victim, attacker, map, ...playerID) {
+function hasKilled(victim, attacker, weapon, map, ...playerID) {
   playerID.forEach(id => {
     if (attacker.steam64Id == id) {
-      storeData(attacker, victim, "kills", map);
+      storeData(attacker, victim, "kills", map, weapon);
     }
   });
 }
 
-function wasKilled(victim, attacker, map, ...playerID) {
+function wasKilled(victim, attacker, weapon, map, ...playerID) {
   playerID.forEach(id => {
     if (victim.steam64Id == id) {
-      storeData(attacker, victim, "deaths", map);
+      storeData(attacker, victim, "deaths", map, weapon);
     }
   });
 }
@@ -245,9 +246,12 @@ function parseDemofile(file, callback) {
     demoFile.gameEvents.on("player_death", e => {
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
+
+      let killerWeapon = e.weapon.split("_")[0];
+
       if (victim && attacker) {
-        hasKilled(victim, attacker, map, 76561198027906568, 76561198171618625);
-        wasKilled(victim, attacker, map, 76561198027906568, 76561198171618625);
+        hasKilled(victim, attacker, killerWeapon, map, 76561198027906568, 76561198171618625);
+        wasKilled(victim, attacker, killerWeapon, map, 76561198027906568, 76561198171618625);
       }
       // updateProgress(bar, demoFile);
     });

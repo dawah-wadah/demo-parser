@@ -59,16 +59,39 @@ export default class Data extends React.Component {
   //     }).then(res => res);
   // }
   //
-  // shouldComponentUpdate(nextProps, nextState) {
-  //     let result = true;
-  //
-  //     if (this.props.match.params.id !== nextProps.match.params.id) {
-  //
-  //       return this.yo(nextProps);
-  //     } else {
-  //       return result;
-  //     }
-  // }
+  shouldComponentUpdate(nextProps, nextState) {
+    let result;
+
+    if (nextProps.match.params.id !== this.props.match.params.id) {
+      debugger;
+      return this.findUser(nextProps.match.params.id);
+    }
+
+    return true;
+  }
+
+  componentWillUpdate() {
+    debugger;
+  }
+
+
+  findUser(username) {
+    let result = "";
+    const userData = { [username]: result };
+    return firebase
+      .database()
+      .ref(`${username}`)
+      .once("value", snapshot => {
+        return snapshot.val() === null ? false : true;
+    })
+    //   .then(response => Object.assign(userData, userData[username], result));
+    // return userData[username];
+  }
+  // const addSiteParentId = (nodeId) => {
+  //   const  data = { theParentId: "" }
+  //   relationsManagerResource.GetParentId(nodeId).then((response)=> Object.assign(data, data.theParentId, response.data)/* #1 */);
+  //   return data.theParentId;
+// }
 
   processData(state) {
     var newDataSet = [];
