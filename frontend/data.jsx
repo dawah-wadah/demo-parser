@@ -19,7 +19,7 @@ export default class Data extends React.Component {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
-  getShit(args) {
+  getData(args) {
     let data = {};
     Object.keys(args).forEach(weapon => {
       let weaponData = { fired: 0, hits: 0, headshots: 0 };
@@ -40,15 +40,34 @@ export default class Data extends React.Component {
 
     firebase
       .database()
-      .ref("/Taylor Swift/Weapons Data")
+      .ref(`/${this.props.match.params.id}/Weapons Data`)
       .once("value", snapshot => {
-        this.getShit(snapshot.val());
+        this.getData(snapshot.val());
         this.received = true;
       });
   }
 
+  // yo(nextProps) {
+  //   return firebase
+  //     .database()
+  //     .ref(`${nextProps.match.params.id}`)
+  //     .once("value", snapshot => {
+  //       // debugger;
+  //       console.log("4")
+  //       if (snapshot.val() === null) { return false };
+  //       return true;
+  //     }).then(res => res);
+  // }
+  //
   // shouldComponentUpdate(nextProps, nextState) {
-  //   return this.state !== nextState;
+  //     let result = true;
+  //
+  //     if (this.props.match.params.id !== nextProps.match.params.id) {
+  //
+  //       return this.yo(nextProps);
+  //     } else {
+  //       return result;
+  //     }
   // }
 
   processData(state) {
@@ -88,6 +107,7 @@ export default class Data extends React.Component {
     let circles;
     let arcs;
     let text;
+    let background;
     let simulation = d3
       .forceSimulation()
       .force("x", d3.forceX(0).strength(0.15))
@@ -102,6 +122,13 @@ export default class Data extends React.Component {
         return "translate(" + d.x + "," + d.y + ")";
       });
       circles.attr("cx", d => d.x).attr("cy", d => d.y);
+      background.attr("transform", function(d) {
+        return  "translate(" +
+          (d.x - scaleRadius(d.fired) / 2) +
+          "," +
+          (d.y - scaleRadius(d.fired) / 2) +
+          ")";
+      });
     }
     function moveArcs() {
       arcs.attr("transform");
@@ -116,7 +143,7 @@ export default class Data extends React.Component {
           return +d.fired;
         })
       ])
-      .range([this.height / this.width * 150, this.height / this.width * 320]);
+      .range([this.height / this.width * 100, this.height / this.width * 280]);
 
     var colorCircles = d3.scaleOrdinal(d3.schemeCategory20);
 
@@ -161,7 +188,6 @@ export default class Data extends React.Component {
           "translate(" + this.width / 2 + "," + this.height / 2 + ")"
         );
 
-
       var drawArc = d3
         .arc()
         .innerRadius(
@@ -198,18 +224,34 @@ export default class Data extends React.Component {
           return tooltip.style("visibility", "hidden");
         });
 
-        var defs = circles.append('svg:defs');
-              defs.append('svg:pattern')
-                  .attr('id', 'tile-ww')
-                  .attr('patternUnits', 'userSpaceOnUse')
-                  .attr('width', '40')
-                  .attr('height', '20')
-                  .append('svg:image')
-                  .attr('xlink:href', './assets/weapons/weapon_ak47.svg')
-                  .attr('x', 0)
-                  .attr('y', 0)
-                  .attr('width', 40)
-                  .attr('height', 20);
+      // var defs = circles.append('svg:defs');
+      //       defs.append('svg:pattern')
+      //           .attr('id', 'tile-ww')
+      //           .attr('patternUnits', 'userSpaceOnUse')
+      //           .attr('width', '40')
+      //           .attr('height', '20')
+      //           .append('svg:image')
+      //           .attr('xlink:href', './assets/weapons/weapon_ak47.svg')
+      //           .attr('x', 0)
+      //           .attr('y', 0)
+      //           .attr('width', 40)
+      //           .attr('height', 20);
+
+      background = nodes
+        .append("image")
+        .attr("xlink:href", d => `./assets/weapons/weapon_${d.name}.svg`)
+        .attr("width", function(d) {
+          return scaleRadius(d.fired);
+        })
+        .attr("height", function(d) {
+          return scaleRadius(d.fired);
+        })
+        // .attr("transform", function(d) {
+        //   return "translate(" + d.x + "," + d.y + ")";
+        // })
+        .attr("class", function(d) {
+          return d.className;
+        });
 
       nodes.call(
         d3
@@ -234,13 +276,14 @@ export default class Data extends React.Component {
         .style("font-size", function(d) {
           return Math.max(d.fired / 20, 15) + "px";
         })
+        .attr("fill", d => colorCircles(d.name))
         .attr("dy", ".35em")
         .text(function(d) {
           return d.name;
         });
 
-        // background = nodes
-        //   .attr("background", )
+      // background = nodes
+      //   .attr("background", )
 
       arcs
         .transition()
@@ -248,7 +291,7 @@ export default class Data extends React.Component {
         .delay(300)
         .call(arcTween, this);
 
-        let tooltip = this.svg
+      let tooltip = this.svg
         .append("div")
         .style("position", "absolute")
         .style("visibility", "hidden")
