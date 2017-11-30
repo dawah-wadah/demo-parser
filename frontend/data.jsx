@@ -47,23 +47,10 @@ export default class Data extends React.Component {
       });
   }
 
-  // yo(nextProps) {
-  //   return firebase
-  //     .database()
-  //     .ref(`${nextProps.match.params.id}`)
-  //     .once("value", snapshot => {
-  //       // debugger;
-  //       console.log("4")
-  //       if (snapshot.val() === null) { return false };
-  //       return true;
-  //     }).then(res => res);
-  // }
-  //
   shouldComponentUpdate(nextProps, nextState) {
     let result;
 
     if (nextProps.match.params.id !== this.props.match.params.id) {
-      debugger;
       return this.findUser(nextProps.match.params.id);
     }
 
@@ -84,14 +71,9 @@ export default class Data extends React.Component {
       .once("value", snapshot => {
         return snapshot.val() === null ? false : true;
     })
-    //   .then(response => Object.assign(userData, userData[username], result));
-    // return userData[username];
+      .then(response => Object.assign(userData, userData[username], result));
+    return userData[username];
   }
-  // const addSiteParentId = (nodeId) => {
-  //   const  data = { theParentId: "" }
-  //   relationsManagerResource.GetParentId(nodeId).then((response)=> Object.assign(data, data.theParentId, response.data)/* #1 */);
-  //   return data.theParentId;
-// }
 
   processData(state) {
     var newDataSet = [];
