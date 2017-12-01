@@ -1,7 +1,6 @@
 import React from "react";
 import firebase from "firebase";
 import * as d3 from "d3";
-import { sizes } from "lodash";
 
 export default class KDChart extends React.Component {
   constructor(props) {
@@ -50,7 +49,7 @@ export default class KDChart extends React.Component {
     if (!this.state.data) { return }
 
     const radius = Math.min(this.width, this.height) / 2;
-    let color = d3.scaleOrdinal(d3.schemeCategory20b);
+    let color = d3.scaleOrdinal(d3.schemeCategory20);
 
     let g = d3.select("svg")
     .append("g")
@@ -79,7 +78,8 @@ export default class KDChart extends React.Component {
       .attr("display", d => d.depth ? null : "none")
       .attr("d", arc)
       .style('stroke', '#fff')
-      .style("fill", d => color((d.children ? d : d.parent).data.name));
+      .style("fill", d => color((d.children ? d : d.parent).data.name))
+      .on("mouseover", this.showInfo.bind(this));;
 
   }
 
@@ -112,14 +112,39 @@ export default class KDChart extends React.Component {
     return tree;
   }
 
-  yo() {
-    return this.state.data.CTKills;
+  showInfo(d) {
+    // const totalSize = selectAll('path')
+    //   .data(root.descendants())
+    //   .datum()
+    //   .value
+    console.log(this);
+    const percentage = (100 * d.size / totalSize).toPrecision(3);
+
+    d3.select("#percentage")
+      .text("YOYYOYOOY");
+
+    var sequenceArray = d.ancestors().reverse();
+    sequenceArray.shift();
+
+    d3.selectAll("path")
+      .style("opacity", 0.3);
+
+    this.svg.selectAll("path")
+    .filter(function(node) {
+                return (sequenceArray.indexOf(node) >= 0);
+              })
+      .style("opacity", 1);
   }
 
   render() {
     if (!this.state.data) {return null }
     const b = this.transformData();
-    this.createChart(b);
-    return <div>{this.yo()}</div>;
+
+    return (
+      <div id="x">
+        {this.createChart(b)}
+        <div id="percentage"></div>
+      </div>
+    );
   }
 }
