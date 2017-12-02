@@ -14,39 +14,45 @@ export default class KDChart extends React.Component {
   componentDidMount() {
     const username = this.props.match.params.id;
     this.svg = d3
-      .select("div#main-body")
+      .select(this.refs.kd)
       .append("svg")
       .attr("height", this.height)
       .attr("width", this.width);
+      // debugger
 
-    // firebase
-    //   .database()
-    //   .ref(`/${username}/de_dust2`)
-    //   .once("value", snapshot => {
-    //     this.extractData(snapshot.val());
-    //   });
 
-      this.extractData()
+    firebase
+      .database()
+      .ref(`/${username}/de_dust2`)
+      .once("value", snapshot => {
+        this.extractData(snapshot.val());
+      });
   }
 
   extractData(sides) {
-    // let data = {
-    //   CTKills: Object.keys(sides["Counter-Terrorist"].kills).length,
-    //   TKills: Object.keys(sides["Terrorist"].kills).length ,
-    //   CTDeaths: Object.keys(sides["Counter-Terrorist"].deaths).length,
-    //   TDeaths: Object.keys(sides["Terrorist"].deaths).length
-    // };
     let data = {
-      CTKills: 50,
-      TKills: 50,
-      CTDeaths: 70,
-      TDeaths: 30
+      CTKills: Object.keys(sides["Counter-Terrorist"].kills).length,
+      TKills: Object.keys(sides["Terrorist"].kills).length ,
+      CTDeaths: Object.keys(sides["Counter-Terrorist"].deaths).length,
+      TDeaths: Object.keys(sides["Terrorist"].deaths).length
     };
+
+    let newData = {
+      ctKills: {}
+    }
+    // let data = {
+    //   CTKills: 50,
+    //   TKills: 50,
+    //   CTDeaths: 70,
+    //   TDeaths: 30
+    // };
     this.setState({ data });
   }
 
-  createChart(data) {
-    if (!this.state.data) { return }
+  createChart() {
+    if (!this.state.data) { return null; }
+
+    const b = this.transformData()
 
     const radius = Math.min(this.width, this.height) / 2;
     let color = d3.scaleOrdinal(d3.schemeCategory20);
@@ -61,7 +67,7 @@ export default class KDChart extends React.Component {
     let partition = d3.partition()
       .size([2 * Math.PI, radius]);
 
-    let root = d3.hierarchy(data)
+    let root = d3.hierarchy(b)
       .sum(d => d.size);
 
     partition(root);
@@ -72,15 +78,18 @@ export default class KDChart extends React.Component {
       .innerRadius(d => d.y0 / 2)
       .outerRadius(d => d.y1 / 2);
 
-    g.selectAll('path')
+    let path = g.selectAll('path')
       .data(root.descendants())
       .enter().append('path')
       .attr("display", d => d.depth ? null : "none")
       .attr("d", arc)
       .style('stroke', '#fff')
-      .style("fill", d => color((d.children ? d : d.parent).data.name))
-      .on("mouseover", this.showInfo.bind(this));;
+      .style("fill", d => {
+        // debugger
+        return (color((d.children ? d : d.parent).data.name))})
+      // .on("mouseover", this.showInfo.bind(this));;
 
+      // console.log(path.datum().value)
   }
 
   transformData() {
@@ -117,7 +126,6 @@ export default class KDChart extends React.Component {
     //   .data(root.descendants())
     //   .datum()
     //   .value
-    console.log(this);
     const percentage = (100 * d.size / totalSize).toPrecision(3);
 
     d3.select("#percentage")
@@ -137,12 +145,9 @@ export default class KDChart extends React.Component {
   }
 
   render() {
-    if (!this.state.data) {return null }
-    const b = this.transformData();
-
     return (
-      <div id="x">
-        {this.createChart(b)}
+      <div id="kd-chart" ref={"kd"}>
+        {this.createChart()}
         <div id="percentage"></div>
       </div>
     );
