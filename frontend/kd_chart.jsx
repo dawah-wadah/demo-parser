@@ -7,8 +7,8 @@ export default class KDChart extends React.Component {
     super(props);
 
     this.state = {};
-    this.width = window.innerWidth;;
-    this.height = window.innerHeight;;
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
   }
 
   componentDidMount() {
@@ -18,8 +18,7 @@ export default class KDChart extends React.Component {
       .append("svg")
       .attr("height", this.height)
       .attr("width", this.width);
-      // debugger
-
+    // debugger
 
     firebase
       .database()
@@ -30,16 +29,54 @@ export default class KDChart extends React.Component {
   }
 
   extractData(sides) {
+    // let data = {
+    //   CTKills: Object.keys(sides["Counter-Terrorist"].kills).length,
+    //   TKills: Object.keys(sides["Terrorist"].kills).length ,
+    //   CTDeaths: Object.keys(sides["Counter-Terrorist"].deaths).length,
+    //   TDeaths: Object.keys(sides["Terrorist"].deaths).length
+    // };
     let data = {
-      CTKills: Object.keys(sides["Counter-Terrorist"].kills).length,
-      TKills: Object.keys(sides["Terrorist"].kills).length ,
-      CTDeaths: Object.keys(sides["Counter-Terrorist"].deaths).length,
-      TDeaths: Object.keys(sides["Terrorist"].deaths).length
+      "Counter-Terrorist": {
+        deaths: {},
+        kills: {}
+      },
+      Terrorist: {
+        deaths: {},
+        kills: {}
+      }
     };
+
+    function insertData(sides, team, status, weapon, value) {
+      // if (data[team][status].count) {
+      //   data[team][status].count++
+      //
+      // } else {
+      //   data[team][status].count = 1;
+      // }
+
+      if (data[team][status][value.weapon]) {
+        data[team][status][value.weapon].push(value);
+      } else {
+        data[team][status][value.weapon] = [];
+        data[team][status][value.weapon].push(value);
+      }
+    }
+
+    let ctdeaths = sides["Counter-Terrorist"].deaths;
+    // let CTDeaths = []
+    for (let team in sides) {
+      for (let status in sides[team]) {
+        for (let key in sides[team][status]) {
+          insertData(sides, team, status, key, sides[team][status][key]);
+        }
+      }
+    }
+    // debugger
+    // debugger
 
     let newData = {
       ctKills: {}
-    }
+    };
     // let data = {
     //   CTKills: 50,
     //   TKills: 50,
@@ -50,46 +87,60 @@ export default class KDChart extends React.Component {
   }
 
   createChart() {
-    if (!this.state.data) { return null; }
+    if (!this.state.data) {
+      return null;
+    }
 
-    const b = this.transformData()
+    const b = this.transformData();
 
     const radius = Math.min(this.width, this.height) / 2;
     let color = d3.scaleOrdinal(d3.schemeCategory20);
 
-    let g = d3.select("svg")
-    .append("g")
-    .attr(
-      "transform",
-      "translate(" + this.width / 2 + "," + this.height / 2 + ")"
-    );
+    let g = d3
+      .select("svg")
+      .append("g")
+      .attr(
+        "transform",
+        "translate(" + this.width / 2 + "," + this.height / 2 + ")"
+      );
 
-    let partition = d3.partition()
-      .size([2 * Math.PI, radius]);
+    let partition = d3.partition().size([2 * Math.PI, radius]);
 
-    let root = d3.hierarchy(b)
-      .sum(d => d.size);
+    let root = d3.hierarchy(b).sum(d => d.size);
 
     partition(root);
 
-    let arc = d3.arc()
+    let colorScheme = {
+      "ct": "#202C46",
+      "t": "#F6A509"
+    };
+
+    let arc = d3
+      .arc()
       .startAngle(d => d.x0)
       .endAngle(d => d.x1)
       .innerRadius(d => d.y0 / 2)
       .outerRadius(d => d.y1 / 2);
 
-    let path = g.selectAll('path')
+    let path = g
+      .selectAll("path")
       .data(root.descendants())
-      .enter().append('path')
-      .attr("display", d => d.depth ? null : "none")
+      .enter()
+      .append("path")
+      .attr("display", d => (d.depth ? null : "none"))
       .attr("d", arc)
-      .style('stroke', '#fff')
+      .style("stroke", "#fff")
       .style("fill", d => {
-        // debugger
-        return (color((d.children ? d : d.parent).data.name))})
-      // .on("mouseover", this.showInfo.bind(this));;
+        if (colorScheme[d.data.name]) {
+          debugger
+          return colorScheme[d.data.name];
+        } else {
+          return color(d.data.name);
+        }
+      });
+    // .on("mouseover", this.showInfo.bind(this));;
 
-      // console.log(path.datum().value)
+    // console.log(path.datum().value)
   }
 
   transformData() {
@@ -98,26 +149,50 @@ export default class KDChart extends React.Component {
     }
 
     const { data } = this.state;
+
+    function getChildren(parent) {
+      // debugger
+      let children = [];
+      // parent.forEach(thing => {
+      for (let weapon in parent) {
+        children.push({
+          name: weapon,
+          size: parent[weapon].length
+        });
+      }
+      // })
+      return children;
+    }
+
     let tree = {
-      "name": "CSGO",
-      "children": [
+      name: "CSGO",
+      children: [
         {
-          "name": "kills",
-          "children": [
-            { "name": "ct", "size": data["CTKills"] },
-            { "name": "t", "size": data["TKills"] }
+          name: "kills",
+          children: [
+            {
+              name: "ct",
+              children: getChildren(data["Counter-Terrorist"].kills)
+            },
+            {
+              name: "t",
+              children: getChildren(data["Terrorist"].kills)
+            }
           ]
         },
         {
-          "name": "deaths",
-          "children": [
-            { "name": "ct", "size": data["CTDeaths"] },
-            { "name": "t", "size": data["TDeaths"] }
+          name: "deaths",
+          children: [
+            {
+              name: "ct",
+              children: getChildren(data["Counter-Terrorist"].deaths)
+            },
+            { name: "t", children: getChildren(data["Terrorist"].deaths) }
           ]
         }
       ]
     };
-
+    console.log(tree);
     return tree;
   }
 
@@ -128,19 +203,18 @@ export default class KDChart extends React.Component {
     //   .value
     const percentage = (100 * d.size / totalSize).toPrecision(3);
 
-    d3.select("#percentage")
-      .text("YOYYOYOOY");
+    d3.select("#percentage").text("YOYYOYOOY");
 
     var sequenceArray = d.ancestors().reverse();
     sequenceArray.shift();
 
-    d3.selectAll("path")
-      .style("opacity", 0.3);
+    d3.selectAll("path").style("opacity", 0.3);
 
-    this.svg.selectAll("path")
-    .filter(function(node) {
-                return (sequenceArray.indexOf(node) >= 0);
-              })
+    this.svg
+      .selectAll("path")
+      .filter(function(node) {
+        return sequenceArray.indexOf(node) >= 0;
+      })
       .style("opacity", 1);
   }
 
@@ -148,7 +222,7 @@ export default class KDChart extends React.Component {
     return (
       <div id="kd-chart" ref={"kd"}>
         {this.createChart()}
-        <div id="percentage"></div>
+        <div id="percentage" />
       </div>
     );
   }
