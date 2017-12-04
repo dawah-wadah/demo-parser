@@ -26,50 +26,68 @@ class Heatmap extends React.Component {
         "Smoke Grenade": {}
       },
       gameData: {
-        grenades: {},
-        hlebopek: {},
-        "Taylor Swift": {}
+        grenades: {}
       },
       buttons: [],
-      keys: {}
+      keys: {},
+      players: [],
+      sides: ["Counter-Terrorist", "Terrorist"],
+      statuses: ["kills", "deaths"]
     };
 
     this.fetchGrenades = this.fetchGrenades.bind(this);
     this.fetchDaShiznit = this.fetchDaShiznit.bind(this);
   }
 
-  componentWillMount(){
-  }
+  componentWillMount() {}
 
   componentDidMount() {
+    let players;
     const heatmapConfig = { ...this.state.heatmapConfig };
     heatmapConfig.container = this.refs.heatmap;
     this.setState({ heatmapConfig }, this.createHeatmapLayers.bind(this));
 
-    firebase.database().ref("/").once("value", snap => {
-      let foo = Object.keys(snap.val())
-
-      let buttons = foo.filter((el) => {
-        return el !== "grenades";
-      });
-      this.setState({ buttons });
-    })
+    firebase
+      .database()
+      .ref("/")
+      .once("value", snap => {
+        players = Object.keys(snap.val()).filter(
+          dataType => dataType !== "grenades"
+        );
+      })
+      .then(resp => this.setState({ buttons: this.createButtons(players) }));
   }
 
+  createButtons(players) {
+    let buttons = [];
+    let id = 1;
 
-  getData(){
-    let players  = ['hlebopek', 'Taylor Swift']
-    let teams = ['Counter-Terrorist', 'Terrorist']
-    let statuses = ['kills', 'deaths']
+    players.forEach(player => {
+      this.state.sides.forEach(side => {
+        this.state.statuses.forEach(status => {
+          const buttonName = `${player} ${status} as ${side}`;
+          const button = <button key={id++}>{buttonName}</button>;
+          buttons.push(button);
+        });
+      });
+    });
 
-    players.forEach((player) => {
+    return buttons;
+  }
+
+  getData() {
+    let players = ["hlebopek", "Taylor Swift"];
+    let teams = ["Counter-Terrorist", "Terrorist"];
+    let statuses = ["kills", "deaths"];
+
+    players.forEach(player => {
       teams.forEach(team => {
         statuses.forEach(status => {
-          let options = {player, team, status};
-          this.fetchDaShiznit(options)
+          let options = { player, team, status };
+          this.fetchDaShiznit(options);
         });
-      })
-    })
+      });
+    });
   }
 
   createHeatmapLayers() {
@@ -122,7 +140,7 @@ class Heatmap extends React.Component {
       .ref("/grenades/de_dust2/" + grenade + "/")
       .once("value")
       .then(snapshot => {
-          currentData.grenades[grenade] = checked ? snapshot.val() : {}
+        currentData.grenades[grenade] = checked ? snapshot.val() : {};
         // this.setState({
         //   ...this.state,
         //   gameData: {
@@ -135,13 +153,13 @@ class Heatmap extends React.Component {
         // });
         this.setState({
           gameData: currentData
-        })
+        });
       });
   }
 
   fetchDaShiznit(options) {
     const currentData = assign({}, this.state.gameData);
-    debugger
+    debugger;
     firebase
       .database()
       .ref(`/${options.player}/de_dust2/${options.team}/${options.status}`)
@@ -149,18 +167,21 @@ class Heatmap extends React.Component {
       .limitToFirst(5)
       .once("value", snap => {
         // currentData[options.player][options.team][options.status] = snap.val()
-        console.log(snap.val())
+        console.log(snap.val());
       });
   }
 
   renderButtons() {
-    const buttons = this.state.buttons;
+    const { buttons } = this.state;
+    console.log(buttons);
+    if (buttons.length === 0) {
+      return null;
+    }
 
-    if (buttons.length === 0) { return null; }
-
-    return buttons.map((val, i) => (
-      <button key={i} value={val}>{val}</button>
-    ));
+    // return buttons.map((val, i) => (
+    //   <button key={i} value={val}>{val}</button>
+    // ));
+    return buttons;
   }
 
   renderMap() {
@@ -197,12 +218,12 @@ class Heatmap extends React.Component {
     this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
   }
 
-
-
   render() {
     return (
       <div>
-        <div id="heatmap" ref="heatmap">{this.renderMap()}</div>
+        <div id="heatmap" ref="heatmap">
+          {this.renderMap()}
+        </div>
         {this.renderButtons()}
         <input
           type="checkbox"
