@@ -66,13 +66,27 @@ class Heatmap extends React.Component {
       this.state.sides.forEach(side => {
         this.state.statuses.forEach(status => {
           const buttonName = `${player} ${status} as ${side}`;
-          const button = <button key={id++}>{buttonName}</button>;
+          const button = (
+            <button key={id++} value={`${player} ${side} ${status}`} onClick={e => console.log(e.target.value)}>
+              {buttonName}
+            </button>
+          );
           buttons.push(button);
         });
       });
     });
 
     return buttons;
+  }
+
+  fetchPlayerData(e) {
+    const endPoint = e.target.value.split(" ");
+
+    firebase
+      .database()
+      .ref(`/${endPoint[0]}/de_dust2/${endPoint[1]}/${endPoint[2]}`)
+      .once("value", snap => (snapshot.val()))
+      .then(resp => this.setState({ gameData[status]: {}}));
   }
 
   getData() {
@@ -173,14 +187,11 @@ class Heatmap extends React.Component {
 
   renderButtons() {
     const { buttons } = this.state;
-    console.log(buttons);
+
     if (buttons.length === 0) {
       return null;
     }
 
-    // return buttons.map((val, i) => (
-    //   <button key={i} value={val}>{val}</button>
-    // ));
     return buttons;
   }
 
