@@ -180,7 +180,7 @@ export default class KDChart extends React.Component {
 
   showInfo(d) {
     const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
-    // debugger
+
     d3.select("#percentage")
       .text(`${percentValue}% - ${d.data.name}`);
 
@@ -203,7 +203,6 @@ export default class KDChart extends React.Component {
       .duration(500)
       .style("opacity", 1)
       .on("end", (d) => {
-        // debugger
         return d3.selectAll("path").on("mouseover", this.showInfo.bind(this)) })
   }
 
@@ -211,7 +210,6 @@ export default class KDChart extends React.Component {
     return (
       <div id="kd-chart" ref={"kd"}>
         {this.createChart()}
-
       </div>
     );
   }

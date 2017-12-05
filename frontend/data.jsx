@@ -34,7 +34,7 @@ export default class Data extends React.Component {
   }
 
   componentDidMount() {
-    let container = d3.select("div#main-body").append("svg");
+    let container = d3.select(this.refs.weaponChart).append("svg");
 
     this.svg = container;
 
@@ -316,6 +316,10 @@ export default class Data extends React.Component {
   render() {
     let data = this.processData(this.state);
     this.makeChart(data);
-    return <h1>Wadah is Retarded</h1>;
+    return (
+      <div>
+      <h1>{this.props.match.params.id}</h1>
+      <div ref={"weaponChart"}></div>
+    </div>);
   }
 }
