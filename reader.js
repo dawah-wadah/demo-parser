@@ -209,7 +209,7 @@ function parseDemofile(file, callback) {
         }
       }
 
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
     });
 
     demoFile.gameEvents.on("player_hurt", e => {
@@ -222,7 +222,7 @@ function parseDemofile(file, callback) {
         shots.hlebopekHits++;
       }
 
-      updateProgress(bar, demoFile);
+      // updateProgress(bar, demoFile);
     });
 
     demoFile.parse(buffer);
@@ -244,10 +244,3 @@ fs.readdir(dir, function(err, items) {
     // closes the firebase connection
     firebase.database().goOffline();
   });
-
-  // store data locally
-
-  // Promise.all(promises).then(() =>
-  //   fs.writeFile("./data.json", JSON.stringify(globalData), "utf8")
-  // );
-function ()
