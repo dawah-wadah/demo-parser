@@ -37,6 +37,7 @@ class Heatmap extends React.Component {
 
     this.fetchGrenades = this.fetchGrenades.bind(this);
     this.fetchDaShiznit = this.fetchDaShiznit.bind(this);
+    this.fetchPlayerData = this.fetchPlayerData.bind(this);
   }
 
   componentWillMount() {}
@@ -52,7 +53,7 @@ class Heatmap extends React.Component {
       .ref("/")
       .once("value", snap => {
         players = Object.keys(snap.val()).filter(
-          dataType => dataType !== "grenades"
+          dataType => dataType !== "grenades" && dataType !== "logs"
         );
       })
       .then(resp => this.setState({ buttons: this.createButtons(players) }));
@@ -67,7 +68,7 @@ class Heatmap extends React.Component {
         this.state.statuses.forEach(status => {
           const buttonName = `${player} ${status} as ${side}`;
           const button = (
-            <button key={id++} value={`${player} ${side} ${status}`} onClick={e => console.log(e.target.value)}>
+            <button key={id++} value={`${player} ${side} ${status}`} onClick={this.fetchPlayerData}>
               {buttonName}
             </button>
           );
@@ -81,12 +82,21 @@ class Heatmap extends React.Component {
 
   fetchPlayerData(e) {
     const endPoint = e.target.value.split(" ");
+    const player = endPoint.slice(0, -2).join(" ");
+    const status = endPoint[endPoint.length - 1];
+    const side = endPoint[endPoint.length - 2];
 
     firebase
       .database()
-      .ref(`/${endPoint[0]}/de_dust2/${endPoint[1]}/${endPoint[2]}`)
-      .once("value", snap => (snapshot.val()))
-      .then(resp => this.setState({ gameData[status]: {}}));
+      .ref(`/${player}/de_dust2/${side}/${status}`)
+      .once("value", snapshot => (snapshot.val()))
+      .then(resp => this.setState({
+        ...this.state,
+        gameData: {
+          ...this.state.gameData,
+          [status]: resp.val()
+        }
+      }));
   }
 
   getData() {
@@ -230,6 +240,7 @@ class Heatmap extends React.Component {
   }
 
   render() {
+    console.log(this.state.gameData)
     return (
       <div>
         <div id="heatmap" ref="heatmap">
