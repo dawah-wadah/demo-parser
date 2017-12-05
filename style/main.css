@@ -1,6 +1,6 @@
 @font-face {
-font-family: csgo;
-src: url("../assets/cs_regular.ttf");
+  font-family: csgo;
+  src: url("../assets/cs_regular.ttf");
 }
 
 #heatmap {
@@ -13,6 +13,12 @@ src: url("../assets/cs_regular.ttf");
 body {
   font-family: csgo;
 }
+
+/*.heatmap-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}*/
 
 /*#mainBubble {
   background: #fff;
