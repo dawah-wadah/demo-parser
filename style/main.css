@@ -1,5 +1,34 @@
+@font-face {
+font-family: csgo;
+src: url("../assets/cs_regular.ttf");
+}
+
 #heatmap {
   width: 1024px;
   height: 1024px;
   background-image: url("../assets/de_dust2_radar_spectate.jpg");
 }
+
+body {
+  font-family: csgo;
+}
+
+/*#mainBubble {
+  background: #fff;
+  border: solid 1px #ddd;
+  box-shadow: 0 0 4px rgba(0,0,0,0);
+  font: 10px sans-serif;
+  height: 800px;
+  position: relative;
+  width: 80%;
+}
+
+#mainBubble svg {
+  left: 0;
+  position: absolute;
+  top: 0;
+}
+
+#mainBubble circle {
+  fill: steelblue;
+ }*/

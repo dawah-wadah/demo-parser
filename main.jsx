@@ -1,21 +1,30 @@
-// import h337 from "heatmap.js";
-import * as firebase from "firebase";
-// import initializeFB from "./base.js";
-// import fetchGrenades from "./base.js";
-import Heatmap from "./heat.js";
+import Heatmap from "./frontend/heat.js";
+import Data from "./frontend/data.jsx";
+import KDChart from "./frontend/kd_chart.jsx";
+import initializeFB from "./base.js";
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Switch, Route, HashRouter } from "react-router-dom";
 
-document.addEventListener('DOMContentLoaded', () => {
-  const root = document.getElementById('root');
+initializeFB();
+document.addEventListener("DOMContentLoaded", () => {
+  const root = document.getElementById("root");
   ReactDOM.render(<App />, root);
 });
 
 class App extends React.Component {
   render() {
     return (
-      <Heatmap />
+      <HashRouter>
+        <div id="main-body">
+          <Switch>
+            <Route exact path="/" component={Heatmap} />
+            <Route exact path="/player/:id/weapons" component={Data} />
+            <Route exact path="/player/:id/kd" component={KDChart} />
+          </Switch>
+        </div>
+      </HashRouter>
     );
   }
 }
