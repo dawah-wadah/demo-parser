@@ -214,8 +214,8 @@ class Heatmap extends React.Component {
     for (let key in data) {
       const { x, y } = (data[key].location ? data[key].location[destination]: data[key]);
       debugger;
-      let xPos = Math.floor(Math.abs(x - -2203) / 3764 * 840 + 64.7);
-      let yPos = Math.floor(969.7 - Math.abs((y - -1031) / 4090 * 923.7));
+      let xPos = Math.floor((Math.abs(x - -2203) / 3764 * (840 * 2/3) + 64.7) );
+      let yPos = Math.floor((969.7 - Math.abs((y - -1031) / 4090 * (923.7 * 2/3))) );
 
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
