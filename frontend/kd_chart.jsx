@@ -205,7 +205,6 @@ export default class KDChart extends React.Component {
   }
 
   showInfo(d) {
-    debugger;
     if (d.parent) {
       const radius = Math.min(this.width, this.height) / 2;
       const color = d3.scaleOrdinal(d3.schemeCategory10);
@@ -224,8 +223,6 @@ export default class KDChart extends React.Component {
 
       d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
 
-      d3.select(d);
-
       const sequenceArray = d.ancestors().reverse();
       sequenceArray.shift();
 
@@ -234,8 +231,9 @@ export default class KDChart extends React.Component {
       this.svg
         .selectAll("path")
         .filter(node => sequenceArray.indexOf(node) >= 0)
-        .attr("d", arc)
-        .style("opacity", 1);
+        .style("opacity", 1)
+        .filter(node => sequenceArray.reverse().indexOf(node) === 0)
+        .attr("d", arc);
     }
   }
 
@@ -259,13 +257,11 @@ export default class KDChart extends React.Component {
     d3
       .selectAll("path")
       .transition()
-      .duration(500)
+      .duration(300)
       .style("opacity", 1)
       .attr("d", arc)
       .on("end", d => {
-        return d3
-          .selectAll("path")
-          .on("mouseover", this.showInfo.bind(this));
+        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
       });
   }
 
