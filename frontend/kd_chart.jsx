@@ -65,9 +65,11 @@ export default class KDChart extends React.Component {
   }
 
   createChart() {
-    if (!this.state.data) { return null; }
+    if (!this.state.data) {
+      return null;
+    }
 
-    const b = this.transformData();
+    const parsedData = this.transformData();
     const radius = Math.min(this.width, this.height) / 2;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -80,16 +82,22 @@ export default class KDChart extends React.Component {
       );
 
     let partition = d3.partition().size([2 * Math.PI, radius * radius / 2]);
-    let root = d3.hierarchy(b).sum(d => d.size);
+    let root = d3
+      .hierarchy(parsedData)
+      .sum(d => d.size)
+      .sort((a, b) => b.value - a.value);
 
     partition(root);
 
     let colorScheme = {
-      "ct": "#232964",
-      "t": "#F6A509",
-      "kills": "#0D5725",
-      "deaths": "#B81215"
+      "Counter-Terrorist": "#232964",
+      Terrorist: "#F6A509",
+      kills: "#0D5725",
+      deaths: "#B81215"
     };
+
+    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+    const y = d3.scaleSqrt().range([0, radius]);
 
     let arc = d3
       .arc()
@@ -101,16 +109,17 @@ export default class KDChart extends React.Component {
     this.path = g
       .selectAll("path")
       .data(root.descendants())
-      .enter()
+      .enter();
 
     let percents = g
       .append("text")
       .attr("id", "percentage")
       .attr("x", d => -50)
       .attr("y", d => 0)
-      .style("font-size", "1em")
+      .style("font-size", "1em");
 
-    this.path.append("path")
+    this.path
+      .append("path")
       .attr("display", d => (d.depth ? null : "none"))
       .attr("d", arc)
       .style("stroke", "#fff")
@@ -121,9 +130,19 @@ export default class KDChart extends React.Component {
           return color(d.data.name);
         }
       })
-      .on("mouseover", this.showInfo.bind(this));
+      .on("mouseover", this.showInfo.bind(this))
+      .on("click", this.click.bind(this));
 
-    d3.select("g").on("mouseleave", this.hideInfo.bind(this))
+    d3.select("g").on("mouseleave", this.hideInfo.bind(this));
+  }
+
+  click(d) {
+    // debugger
+    this.path
+      .transition()
+      .duration(750)
+      .tween("scale", () => {});
+    console.log(d);
   }
 
   transformData() {
@@ -153,11 +172,11 @@ export default class KDChart extends React.Component {
           name: "kills",
           children: [
             {
-              name: "ct",
+              name: "Counter-Terrorist",
               children: getChildren(data["Counter-Terrorist"].kills)
             },
             {
-              name: "t",
+              name: "Terrorist",
               children: getChildren(data["Terrorist"].kills)
             }
           ]
@@ -166,10 +185,13 @@ export default class KDChart extends React.Component {
           name: "deaths",
           children: [
             {
-              name: "ct",
+              name: "Counter-Terrorist",
               children: getChildren(data["Counter-Terrorist"].deaths)
             },
-            { name: "t", children: getChildren(data["Terrorist"].deaths) }
+            {
+              name: "Terrorist",
+              children: getChildren(data["Terrorist"].deaths)
+            }
           ]
         }
       ]
@@ -181,8 +203,7 @@ export default class KDChart extends React.Component {
   showInfo(d) {
     const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
 
-    d3.select("#percentage")
-      .text(`${percentValue}% - ${d.data.name}`);
+    d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
 
     const sequenceArray = d.ancestors().reverse();
     sequenceArray.shift();
@@ -198,12 +219,14 @@ export default class KDChart extends React.Component {
   hideInfo(d) {
     d3.selectAll("path").on("mouseover", null);
 
-    d3.selectAll("path")
+    d3
+      .selectAll("path")
       .transition()
       .duration(500)
       .style("opacity", 1)
-      .on("end", (d) => {
-        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this)) })
+      .on("end", d => {
+        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
+      });
   }
 
   render() {

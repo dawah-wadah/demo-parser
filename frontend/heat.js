@@ -227,7 +227,8 @@ class Heatmap extends React.Component {
         ? data[key].location[destination]
         : data[key];
 
-      let { xPos, yPos } = this.convertPositions(x, y);
+      let xPos = Math.floor(Math.abs(x - -2203) / 3764 * (840 * 2 / 3) + (64.7 * 2 / 3));
+      let yPos = Math.floor((969.7 * 2 / 3) - Math.abs((y - -1031) / 4090 * (923.7 * 2 / 3)));
 
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
@@ -242,12 +243,13 @@ class Heatmap extends React.Component {
   }
 
   render() {
-    return <div className="heatmap-container">
+    return (
+      <div className="heatmap-container">
         <div id="heatmap" ref="heatmap">
           {" "}
           {this.renderMap()}{" "}
         </div> {this.createButtons()} {this.createCheckBoxes()}{" "}
-      </div>;
+    </div>);
   }
 }
 
