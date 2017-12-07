@@ -279,7 +279,7 @@ export default class Data extends React.Component {
         .append("text")
         .attr("text-anchor", "middle")
         .style("font-size", function(d) {
-          return Math.max(d.fired / 20, 15) + "px";
+          return Math.max(d.fired / 40, 15) + "px";
         })
         .attr("fill", d => colorCircles(d.name))
         .attr("dy", ".35em")

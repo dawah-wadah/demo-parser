@@ -61,7 +61,9 @@ class Heatmap extends React.Component {
   createButtons() {
     const { players } = this.state;
 
-    if (players.length === 1) { return null; }
+    if (players.length === 1) {
+      return null;
+    }
 
     let buttons = [];
     let id = 1;
@@ -71,8 +73,14 @@ class Heatmap extends React.Component {
         this.state.statuses.forEach(status => {
           const buttonName = `${player} ${status} as ${side}`;
           const button = (
-            <label key={id++}>{buttonName}
-              <input type="checkbox"  value={`${player} ${side} ${status}`} onClick={this.fetchPlayerData} />
+            <label key={id++}>
+              {" "}
+              {buttonName}{" "}
+              <input
+                type="checkbox"
+                value={`${player} ${side} ${status}`}
+                onClick={this.fetchPlayerData}
+              />{" "}
             </label>
           );
           buttons.push(button);
@@ -87,8 +95,9 @@ class Heatmap extends React.Component {
     const grenades = Object.keys(this.state.heatmapLayers).slice(2);
 
     return grenades.map((gr, i) => (
-      <label key={i}>{gr}
-        <input type="checkbox" value={gr} onChange={this.fetchGrenades}/>
+      <label key={i}>
+        {" "}
+        {gr} <input type="checkbox" value={gr} onChange={this.fetchGrenades} />{" "}
       </label>
     ));
   }
@@ -103,10 +112,11 @@ class Heatmap extends React.Component {
     if (!checked) {
       this.setState({
         ...this.state,
-              gameData: {
-                ...this.state.gameData,
-                [status]: {}
-              }});
+        gameData: {
+          ...this.state.gameData,
+          [status]: {}
+        }
+      });
       return;
     }
 
@@ -114,13 +124,15 @@ class Heatmap extends React.Component {
       .database()
       .ref(`/${player}/de_dust2/${side}/${status}`)
       .once("value")
-      .then(snapshot => this.setState({
-        ...this.state,
-        gameData: {
-          ...this.state.gameData,
-          [status]: snapshot.val()
-        }
-      }));
+      .then(snapshot =>
+        this.setState({
+          ...this.state,
+          gameData: {
+            ...this.state.gameData,
+            [status]: snapshot.val()
+          }
+        })
+      );
   }
 
   createHeatmapLayers() {
@@ -186,7 +198,6 @@ class Heatmap extends React.Component {
       });
   }
 
-
   renderMap() {
     const { grenades } = this.state.gameData;
 
@@ -208,14 +219,15 @@ class Heatmap extends React.Component {
       return null;
     }
 
-    let destination = (type === "deaths" ? "victim" : "killer");
+    let destination = type === "deaths" ? "victim" : "killer";
     let mapData = [];
 
     for (let key in data) {
-      const { x, y } = (data[key].location ? data[key].location[destination]: data[key]);
+      const { x, y } = data[key].location
+        ? data[key].location[destination]
+        : data[key];
 
-      let xPos = Math.floor(Math.abs(x - -2203) / 3764 * (840 * 2/3) + 64.7);
-      let yPos = Math.floor(969.7 - Math.abs((y - -1031) / 4090 * (923.7 * 2/3)));
+      let { xPos, yPos } = this.convertPositions(x, y);
 
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
@@ -223,16 +235,19 @@ class Heatmap extends React.Component {
     this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
   }
 
+  convertPositions(x, y) {
+    let xPos = Math.floor(Math.abs(x - -2203) / 3764 * (840 * 2 / 3) + (64.7 * 2 / 3));
+    let yPos = Math.floor((969.7 * 2 / 3) - Math.abs((y - -1031) / 4090 * (923.7 * 2 / 3)));
+    return { xPos, yPos };
+  }
+
   render() {
-    return (
-      <div>
+    return <div className="heatmap-container">
         <div id="heatmap" ref="heatmap">
-          {this.renderMap()}
-        </div>
-        {this.createButtons()}
-        {this.createCheckBoxes()}
-      </div>
-    );
+          {" "}
+          {this.renderMap()}{" "}
+        </div> {this.createButtons()} {this.createCheckBoxes()}{" "}
+      </div>;
   }
 }
 
