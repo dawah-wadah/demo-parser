@@ -74,7 +74,7 @@ export default class KDChart extends React.Component {
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
     const x = d3.scaleLinear().range([0, 2 * Math.PI]);
-    const y = d3.scaleSqrt().range([0, radius /2]);
+    const y = d3.scaleSqrt().range([0, radius / 2]);
     let g = d3
       .select("svg")
       .append("g")
@@ -135,10 +135,10 @@ export default class KDChart extends React.Component {
         .transition()
         .duration(750)
         .tween("scale", () => {
-         let xd = d3.interpolate(x.domain(), [d.x0, d.x1]),
+          let xd = d3.interpolate(x.domain(), [d.x0, d.x1]),
             yd = d3.interpolate(y.domain(), [d.y0, 1]),
             yr = d3.interpolate(y.range(), [d.y0 ? 20 : 0, radius / 2]);
-          return (t) => {
+          return t => {
             x.domain(xd(t));
             y.domain(yd(t)).range(yr(t));
           };
@@ -205,31 +205,67 @@ export default class KDChart extends React.Component {
   }
 
   showInfo(d) {
-    const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
+    debugger;
+    if (d.parent) {
+      const radius = Math.min(this.width, this.height) / 2;
+      const color = d3.scaleOrdinal(d3.schemeCategory10);
 
-    d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
+      const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+      const y = d3.scaleSqrt().range([0, radius / 2]);
 
-    const sequenceArray = d.ancestors().reverse();
-    sequenceArray.shift();
+      let arc = d3
+        .arc()
+        .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+        .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+        .innerRadius(d => Math.max(0, y(d.y0)))
+        .outerRadius(d => Math.max(0, y(d.y1 * 2)));
 
-    d3.selectAll("path").style("opacity", 0.4);
+      let percentValue = (100 * d.value / d.parent.value).toPrecision(2);
 
-    this.svg
-      .selectAll("path")
-      .filter(node => sequenceArray.indexOf(node) >= 0)
-      .style("opacity", 1);
+      d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
+
+      d3.select(d);
+
+      const sequenceArray = d.ancestors().reverse();
+      sequenceArray.shift();
+
+      d3.selectAll("path").style("opacity", 0.4);
+
+      this.svg
+        .selectAll("path")
+        .filter(node => sequenceArray.indexOf(node) >= 0)
+        .attr("d", arc)
+        .style("opacity", 1);
+    }
   }
 
   hideInfo(d) {
     d3.selectAll("path").on("mouseover", null);
+    // debugger
+
+    const radius = Math.min(this.width, this.height) / 2;
+    const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+    const y = d3.scaleSqrt().range([0, radius / 2]);
+
+    let arc = d3
+      .arc()
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1)));
 
     d3
       .selectAll("path")
       .transition()
       .duration(500)
       .style("opacity", 1)
+      .attr("d", arc)
       .on("end", d => {
-        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
+        return d3
+          .selectAll("path")
+          .on("mouseover", this.showInfo.bind(this));
       });
   }
 
