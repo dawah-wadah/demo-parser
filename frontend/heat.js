@@ -225,7 +225,7 @@ class Heatmap extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="heatmap-container">
         <div id="heatmap" ref="heatmap">
           {this.renderMap()}
         </div>
