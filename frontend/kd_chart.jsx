@@ -73,6 +73,8 @@ export default class KDChart extends React.Component {
     const radius = Math.min(this.width, this.height) / 2;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
+    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+    const y = d3.scaleSqrt().range([0, radius /2]);
     let g = d3
       .select("svg")
       .append("g")
@@ -81,11 +83,11 @@ export default class KDChart extends React.Component {
         "translate(" + this.width / 2 + "," + this.height / 2 + ")"
       );
 
-    let partition = d3.partition().size([2 * Math.PI, radius * radius / 2]);
+    let partition = d3.partition();
     let root = d3
       .hierarchy(parsedData)
       .sum(d => d.size)
-      .sort((a, b) => b.value - a.value);
+      .sort((a, b) => a.value - b.value);
 
     partition(root);
 
@@ -96,53 +98,55 @@ export default class KDChart extends React.Component {
       deaths: "#B81215"
     };
 
-    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
-    const y = d3.scaleSqrt().range([0, radius]);
-
     let arc = d3
       .arc()
-      .startAngle(d => d.x0)
-      .endAngle(d => d.x1)
-      .innerRadius(d => Math.sqrt(d.y0))
-      .outerRadius(d => Math.sqrt(d.y1));
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1)));
 
     this.path = g
       .selectAll("path")
       .data(root.descendants())
       .enter();
 
-    let percents = g
+    this.path
+      .append("path")
+      .attr("d", arc)
+      .style("stroke", "#fff")
+      .style(
+        "fill",
+        d =>
+          colorScheme[d.data.name]
+            ? colorScheme[d.data.name]
+            : color(d.data.name)
+      )
+      .on("mouseover", this.showInfo.bind(this))
+      .on("click", click.bind(this));
+    let percents = this.path
       .append("text")
       .attr("id", "percentage")
       .attr("x", d => -50)
       .attr("y", d => 0)
-      .style("font-size", "1em");
+      .style("font-size", "3em");
 
-    this.path
-      .append("path")
-      .attr("display", d => (d.depth ? null : "none"))
-      .attr("d", arc)
-      .style("stroke", "#fff")
-      .style("fill", d => {
-        if (colorScheme[d.data.name]) {
-          return colorScheme[d.data.name];
-        } else {
-          return color(d.data.name);
-        }
-      })
-      .on("mouseover", this.showInfo.bind(this))
-      .on("click", this.click.bind(this));
-
+    function click(d) {
+      this.path
+        .transition()
+        .duration(750)
+        .tween("scale", () => {
+         let xd = d3.interpolate(x.domain(), [d.x0, d.x1]),
+            yd = d3.interpolate(y.domain(), [d.y0, 1]),
+            yr = d3.interpolate(y.range(), [d.y0 ? 20 : 0, radius / 2]);
+          return (t) => {
+            x.domain(xd(t));
+            y.domain(yd(t)).range(yr(t));
+          };
+        })
+        .selectAll("path")
+        .attrTween("d", d => () => arc(d));
+    }
     d3.select("g").on("mouseleave", this.hideInfo.bind(this));
-  }
-
-  click(d) {
-    // debugger
-    this.path
-      .transition()
-      .duration(750)
-      .tween("scale", () => {});
-    console.log(d);
   }
 
   transformData() {
