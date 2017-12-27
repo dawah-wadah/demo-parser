@@ -64,6 +64,20 @@ export default class KDChart extends React.Component {
     this.setState({ data });
   }
 
+  generateArc(x, y, multiplier, radius) {
+    radius = radius ? radius : Math.min(this.width, this.height) / 2;
+    multiplier = multiplier ? multiplier : 1;
+    x = x ? x : d3.scaleLinear().range([0, 2 * Math.PI]);
+    y = y ? y : d3.scaleSqrt().range([0, radius / 2]);
+
+    return d3
+      .arc()
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+  }
+
   createChart() {
     if (!this.state.data) {
       return null;
@@ -98,13 +112,6 @@ export default class KDChart extends React.Component {
       deaths: "#B81215"
     };
 
-    let arc = d3
-      .arc()
-      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
-      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
-      .innerRadius(d => Math.max(0, y(d.y0)))
-      .outerRadius(d => Math.max(0, y(d.y1)));
-
     this.path = g
       .selectAll("path")
       .data(root.descendants())
@@ -112,7 +119,7 @@ export default class KDChart extends React.Component {
 
     this.path
       .append("path")
-      .attr("d", arc)
+      .attr("d", this.generateArc())
       .style("stroke", "#fff")
       .style(
         "fill",
@@ -144,7 +151,7 @@ export default class KDChart extends React.Component {
           };
         })
         .selectAll("path")
-        .attrTween("d", d => () => arc(d));
+        .attrTween("d", d => () => this.generateArc(x,y)(d));
     }
     d3.select("g").on("mouseleave", this.hideInfo.bind(this));
   }
@@ -211,20 +218,15 @@ export default class KDChart extends React.Component {
 
       const x = d3.scaleLinear().range([0, 2 * Math.PI]);
       const y = d3.scaleSqrt().range([0, radius / 2]);
-
-      let arc = d3
-        .arc()
-        .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
-        .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
-        .innerRadius(d => Math.max(0, y(d.y0)))
-        .outerRadius(d => Math.max(0, y(d.y1 * 2)));
-
+      
+      
       let percentValue = (100 * d.value / d.parent.value).toPrecision(2);
-
+      
       d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
-
       const sequenceArray = d.ancestors().reverse();
       sequenceArray.shift();
+      const multiplier = d.depth === sequenceArray.length ? 2 : 1
+
 
       d3.selectAll("path").style("opacity", 0.4);
 
@@ -233,7 +235,7 @@ export default class KDChart extends React.Component {
         .filter(node => sequenceArray.indexOf(node) >= 0)
         .style("opacity", 1)
         .filter(node => sequenceArray.reverse().indexOf(node) === 0)
-        .attr("d", arc);
+        .attr("d", this.generateArc(x, y, multiplier));
     }
   }
 
@@ -247,12 +249,7 @@ export default class KDChart extends React.Component {
     const x = d3.scaleLinear().range([0, 2 * Math.PI]);
     const y = d3.scaleSqrt().range([0, radius / 2]);
 
-    let arc = d3
-      .arc()
-      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
-      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
-      .innerRadius(d => Math.max(0, y(d.y0)))
-      .outerRadius(d => Math.max(0, y(d.y1)));
+    let arc = this.generateArc(x,y)
 
     d3
       .selectAll("path")
