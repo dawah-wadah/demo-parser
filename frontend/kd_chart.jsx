@@ -9,6 +9,7 @@ export default class KDChart extends React.Component {
     this.state = {};
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    // this.generateArc = this.generateArc.bind(this);
   }
 
   componentDidMount() {
@@ -98,12 +99,7 @@ export default class KDChart extends React.Component {
       deaths: "#B81215"
     };
 
-    let arc = d3
-      .arc()
-      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
-      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
-      .innerRadius(d => Math.max(0, y(d.y0)))
-      .outerRadius(d => Math.max(0, y(d.y1)));
+    let arc = this.generateArc(x, y);
 
     this.path = g
       .selectAll("path")
@@ -112,7 +108,7 @@ export default class KDChart extends React.Component {
 
     this.path
       .append("path")
-      .attr("d", arc)
+      .attr("d", this.generateArc(x,y))
       .style("stroke", "#fff")
       .style(
         "fill",
@@ -130,6 +126,7 @@ export default class KDChart extends React.Component {
       .attr("y", d => 0)
       .style("font-size", "3em");
 
+
     function click(d) {
       this.path
         .transition()
@@ -144,7 +141,7 @@ export default class KDChart extends React.Component {
           };
         })
         .selectAll("path")
-        .attrTween("d", d => () => arc(d));
+        .attrTween("d", d => () => this.generateArc(x,y)(d));
     }
     d3.select("g").on("mouseleave", this.hideInfo.bind(this));
   }
@@ -204,66 +201,133 @@ export default class KDChart extends React.Component {
     return tree;
   }
 
-  showInfo(d) {
-    if (d.parent) {
-      const radius = Math.min(this.width, this.height) / 2;
-      const color = d3.scaleOrdinal(d3.schemeCategory10);
+  // showInfo(d) {
+  //   if (d.parent) {
+  //     const radius = Math.min(this.width, this.height) / 2;
+  //     const color = d3.scaleOrdinal(d3.schemeCategory10);
+  //
+  //     const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+  //     const y = d3.scaleSqrt().range([0, radius / 2]);
+  //
+  //     // let multiplier = d.length =
+  //
+  //     // let arc = d3
+  //     //   .arc()
+  //     //   .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+  //     //   .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+  //     //   .innerRadius(d => Math.max(0, y(d.y0)))
+  //     //   .outerRadius(d => Math.max(0, y(d.y1)));
+  //
+  //     let percentValue = (100 * d.value / d.parent.value).toPrecision(2);
+  //
+  //     d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
+  //
+  //     const sequenceArray = d.ancestors().reverse();
+  //     sequenceArray.shift();
+  //
+  //     d3.selectAll("path").style("opacity", 0.4);
+  //
+  //     this.svg
+  //       .selectAll("path")
+  //       .filter(node => sequenceArray.indexOf(node) >= 0)
+  //       .style("opacity", 1)
+  //       .filter(node => sequenceArray.reverse().indexOf(node) === 0)
+  //       .attr("d", arc);
+  //   }
+  // }
 
-      const x = d3.scaleLinear().range([0, 2 * Math.PI]);
-      const y = d3.scaleSqrt().range([0, radius / 2]);
-
-      let arc = d3
-        .arc()
-        .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
-        .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
-        .innerRadius(d => Math.max(0, y(d.y0)))
-        .outerRadius(d => Math.max(0, y(d.y1 * 2)));
-
-      let percentValue = (100 * d.value / d.parent.value).toPrecision(2);
-
-      d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
-
-      const sequenceArray = d.ancestors().reverse();
-      sequenceArray.shift();
-
-      d3.selectAll("path").style("opacity", 0.4);
-
-      this.svg
-        .selectAll("path")
-        .filter(node => sequenceArray.indexOf(node) >= 0)
-        .style("opacity", 1)
-        .filter(node => sequenceArray.reverse().indexOf(node) === 0)
-        .attr("d", arc);
-    }
-  }
-
-  hideInfo(d) {
-    d3.selectAll("path").on("mouseover", null);
+  generateArc(x, y, multiplier, radius) {
+    multiplier = multiplier ? multiplier : 1
+    radius = radius ? radius : Math.min(this.width, this.height) / 2
+    x = x ? x : d3.scaleLinear().range([0, 2 * Math.PI]);
+    y = y ? y : d3.scaleSqrt().range([0, radius / 2]);
     // debugger
 
-    const radius = Math.min(this.width, this.height) / 2;
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
-    const y = d3.scaleSqrt().range([0, radius / 2]);
-
-    let arc = d3
+    return d3
       .arc()
       .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
       .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
       .innerRadius(d => Math.max(0, y(d.y0)))
-      .outerRadius(d => Math.max(0, y(d.y1)));
+      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+}
 
-    d3
+
+  showInfo(d) {
+    // debugger
+    const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
+    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+    const y = d3.scaleSqrt().range([0, radius / 2]);
+    const radius = Math.min(this.width, this.height) / 2;
+
+    let multiplier = d.depth == 3 ? 2 : 1
+
+
+    d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
+
+    const sequenceArray = d.ancestors().reverse();
+
+    sequenceArray.shift();
+
+
+    d3.selectAll("path").style("opacity", 0.4);
+    let slurp = d3
+      .arc()
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1 * 2)));
+    // slurp.outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+
+    this.svg
       .selectAll("path")
-      .transition()
-      .duration(300)
+      .filter(node => sequenceArray.indexOf(node) >= 0)
       .style("opacity", 1)
-      .attr("d", arc)
-      .on("end", d => {
-        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
-      });
+  .filter(node => sequenceArray.indexOf(node) === sequenceArray.length - 1)
+  .style("fill", "black")
+  .attr("d", slurp)
+
   }
+
+  // hideInfo(d) {
+  //   d3.selectAll("path").on("mouseover", null);
+  //   // debugger
+  //
+  //   const radius = Math.min(this.width, this.height) / 2;
+  //   const color = d3.scaleOrdinal(d3.schemeCategory10);
+  //
+  //   const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+  //   const y = d3.scaleSqrt().range([0, radius / 2]);
+  //
+  //   let arc = d3
+  //     .arc()
+  //     .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+  //     .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+  //     .innerRadius(d => Math.max(0, y(d.y0)))
+  //     .outerRadius(d => Math.max(0, y(d.y1)));
+  //
+  //   d3
+  //     .selectAll("path")
+  //     .transition()
+  //     .duration(300)
+  //     .style("opacity", 1)
+  //     // .attr("d", arc)
+  //     .on("end", d => {
+  //       d3.selectAll("path").on("mouseover", this.showInfo.bind(this))}
+  //     );
+  // }
+
+  hideInfo(d) {
+  d3.selectAll("path").on("mouseover", null);
+
+  d3
+    .selectAll("path")
+    .transition()
+    .duration(500)
+    .style("opacity", 1)
+    .on("end", d => {
+      return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
+    });
+}
 
   render() {
     return (
