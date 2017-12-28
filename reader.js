@@ -1,11 +1,13 @@
 const fs = require("fs");
 const mover = require("fs-extra");
 const assert = require("assert");
+const APIKeys = require("./keys.json");
 const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
 const firebase = require("firebase");
 const initializeFB = require("./base.js");
+const fetch = require("node-fetch")
 
 const defaultMapData = () => ({
   Terrorist: { kills: {}, deaths: {} },
@@ -20,6 +22,35 @@ let globalData = {
   grenades: { dust_2: {} }
 };
 let counter = 1;
+
+const fetchSteamProfiles = playerID => {
+  let url =
+    "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
+    "key=" +
+    APIKeys.steamKey +
+    "&steamids=" +
+    playerID;
+  fetch(url)
+    .then(results => results.json())
+    .then(data => {
+      let shit = data.response.players;
+      shit.forEach(player => {
+        let id = player.steamid;
+        firebase
+          .database()
+          .ref("/")
+          .update({
+            [id + `/steamInfo/name`]: player.personaname,
+            [id + `/steamInfo/imageFull`]: player.avatarfull,
+            [id + `/steamInfo/imageMed`]: player.avatarmedium,
+            [id + `/steamInfo/imageSmall`]: player.avatar,
+            [id + `/steamInfo/id`]: player.steamid,
+            [id + `/steamInfo/profile`]: player.profileurl
+          });
+      });
+    })
+    .catch(err => console.log(err.message));
+};
 
 function storeData(attacker, victim, status, map, weapon) {
   let killData = {
@@ -37,50 +68,45 @@ function storeData(attacker, victim, status, map, weapon) {
     },
     weapon: weapon
   };
+  let playerID = victim.steam64Id;
+  let playerSide = victim.side;
 
   if (status === "kills") {
-    firebase
-      .database()
-      .ref(
-        "/" +
-          attacker.steam64Id +
-          "/" +
-          map +
-          "/" +
-          attacker.side +
-          "/" +
-          status +
-          "/"
-      )
-      .push(killData);
-  } else {
-    firebase
-      .database()
-      .ref(
-        "/" +
-          victim.steam64Id +
-          "/" +
-          map +
-          "/" +
-          victim.side +
-          "/" +
-          status +
-          "/"
-      )
-      .push(killData);
+    playerID = attacker.steam64Id;
+    playerSide = attacker.side;
   }
 
+  firebase
+    .database()
+    .ref("/" + playerID + "/")
+    .once("value", snap => {
+      if (!snap.hasChild("steamInfo")) {
+        fetchSteamProfiles(playerID);
+      }
+    });
+  firebase
+    .database()
+    .ref("/" + playerID + "/" + map + "/" + playerSide + "/" + status + "/")
+    .push(killData);
   counter++;
 }
 
 function storeShots(playerName, weaponsData) {
   let promises = [];
-  console.log(playerName)
-
   Object.keys(weaponsData).forEach(weapon => {
     let data = {
       totalShots: weaponsData[weapon].shots_fired,
-      headshots: weaponsData[weapon].headshots,
+      damage_dealt: weaponsData[weapon].damage_dealt,
+      hitGroups: {
+        1: weaponsData[weapon]["1"],
+        2: weaponsData[weapon]["2"],
+        3: weaponsData[weapon]["3"],
+        4: weaponsData[weapon]["4"],
+        5: weaponsData[weapon]["5"],
+        6: weaponsData[weapon]["6"],
+        7: weaponsData[weapon]["7"]
+      },
+      headShots: weaponsData[weapon].headshots,
       totalHits: weaponsData[weapon].shots_hit,
       accuracy: (
         weaponsData[weapon].shots_hit /
@@ -162,16 +188,12 @@ function parseDemofile(file, callback) {
       let promises = [];
 
       Object.keys(shots).forEach(key => {
-        debugger
+        debugger;
         promises.push(storeShots(key, shots[key]));
       });
-      // Promise.all([
-      //   storeShots("76561198027906568", shots.wadah),
-      //   storeShots("76561198171618625", shots.vlad)
-      // ])
-      // Promise.all(promises).then(() => {
-      //   return callback();
-      // });
+      Promise.all(promises).then(() => {
+        return callback();
+      });
     });
 
     let grenades = [
@@ -221,10 +243,11 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.gameEvents.on("weapon_fire", e => {
-      let playerID = demoFile.entities.getByUserId(e.userid);
-      if (!playerID) {
+      let player = demoFile.entities.getByUserId(e.userid);
+      if (!player) {
         return;
       }
+      let playerID = player.steam64Id;
       let weapon = e.weapon.split("_")[1];
       if (!shots[playerID]) {
         shots[playerID] = {};
@@ -236,10 +259,11 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.gameEvents.on("player_hurt", e => {
-      let playerID = demoFile.entities.getByUserId(e.attacker);
-      if (!playerID) {
+      let player = demoFile.entities.getByUserId(e.attacker);
+      if (!player) {
         return;
       }
+      let playerID = player.steam64Id;
       if (!shots[playerID]) {
         shots[playerID] = {};
       }

@@ -1,9 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import * as APIKeys from "../keys.json";
+import axios from "axios";
 
-import { assign, merge } from "lodash";
+import { assign, merge, values } from "lodash";
 import firebase from "firebase";
 import h337 from "heatmap.js";
+
+import Row from "./tableRow.jsx";
 
 class Heatmap extends React.Component {
   constructor(props) {
@@ -32,7 +36,8 @@ class Heatmap extends React.Component {
       keys: {},
       players: [],
       sides: ["Counter-Terrorist", "Terrorist"],
-      statuses: ["kills", "deaths"]
+      statuses: ["kills", "deaths"],
+      info: false
     };
 
     this.fetchGrenades = this.fetchGrenades.bind(this);
@@ -51,42 +56,24 @@ class Heatmap extends React.Component {
       .database()
       .ref("/")
       .once("value", snap => {
-        players = Object.keys(snap.val()).filter(
-          dataType => dataType !== "grenades" && dataType !== "logs"
-        );
+        // players = Object.keys(snap.val()).filter(
+        //   dataType => dataType !== "grenades" && dataType !== "logs"
+        // );
+        players = snap.val();
       })
       .then(resp => this.setState({ players }));
   }
 
   createButtons() {
-    const { players } = this.state;
+    const { players, info } = this.state;
 
-    if (players.length === 1) {
+    if (players.length) {
       return null;
     }
-
     let buttons = [];
-    let id = 1;
-
-    players.forEach(player => {
-      this.state.sides.forEach(side => {
-        this.state.statuses.forEach(status => {
-          const buttonName = `${player} ${status} as ${side}`;
-          const button = (
-            <label key={id++}>
-              {" "}
-              {buttonName}{" "}
-              <input
-                type="checkbox"
-                value={`${player} ${side} ${status}`}
-                onClick={this.fetchPlayerData}
-              />{" "}
-            </label>
-          );
-          buttons.push(button);
-        });
-      });
-    });
+    buttons = values(players).map(player => (
+      <Row player={player} callback={this.fetchPlayerData.bind(this)} />
+    ));
 
     return buttons;
   }
@@ -227,8 +214,12 @@ class Heatmap extends React.Component {
         ? data[key].location[destination]
         : data[key];
 
-      let xPos = Math.floor(Math.abs(x - -2203) / 3764 * (840 * 2 / 3) + (64.7 * 2 / 3));
-      let yPos = Math.floor((969.7 * 2 / 3) - Math.abs((y - -1031) / 4090 * (923.7 * 2 / 3)));
+      let xPos = Math.floor(
+        Math.abs(x - -2203) / 3764 * (840 * 4 / 10) + 64.7 * 4 / 10
+      );
+      let yPos = Math.floor(
+        969.7 * 4 / 10 - Math.abs((y - -1031) / 4090 * (923.7 * 4 / 10))
+      );
 
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
@@ -237,19 +228,57 @@ class Heatmap extends React.Component {
   }
 
   convertPositions(x, y) {
-    let xPos = Math.floor(Math.abs(x - -2203) / 3764 * (840 * 2 / 3) + (64.7 * 2 / 3));
-    let yPos = Math.floor((969.7 * 2 / 3) - Math.abs((y - -1031) / 4090 * (923.7 * 2 / 3)));
+    let xPos = Math.floor(
+      Math.abs(x - -2203) / 3764 * (840 * 4 / 10) + 64.7 * 4 / 10
+    );
+    let yPos = Math.floor(
+      969.7 * 4 / 10 - Math.abs((y - -1031) / 4090 * (923.7 * 4 / 10))
+    );
     return { xPos, yPos };
   }
 
   render() {
+    let iconStyle = {
+      width: "50px",
+      height: "50px"
+    };
     return (
       <div className="heatmap-container">
         <div id="heatmap" ref="heatmap">
           {" "}
           {this.renderMap()}{" "}
-        </div> {this.createButtons()} {this.createCheckBoxes()}{" "}
-    </div>);
+        </div>{" "}
+        <div className="table-row">
+          <div className="user-info">
+            <div className="profile-image" style={iconStyle}>
+              Player Icon
+            </div>
+            <div className="vert-line" />
+            <div className="profile-image" style={iconStyle}>
+              Player Name
+            </div>
+          </div>
+          <div className="checkboxes">
+            <div className="profile-image" style={iconStyle}>
+              CT Kill
+            </div>
+            <div className="vert-line" />
+            <div className="profile-image" style={iconStyle}>
+              CT Death
+            </div>
+            <div className="vert-line" />
+            <div className="profile-image" style={iconStyle}>
+              T Kills
+            </div>
+            <div className="vert-line" />
+            <div className="profile-image" style={iconStyle}>
+              T Death
+            </div>
+          </div>
+        </div>
+        {this.createButtons()} {this.createCheckBoxes()}{" "}
+      </div>
+    );
   }
 }
 
