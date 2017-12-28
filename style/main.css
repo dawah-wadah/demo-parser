@@ -67,6 +67,40 @@ body {
   height: 100%;
 }
 
+.body-body {
+  width: 35%;
+  height: 100%;
+}
+.body-arm {
+  width: 30%;
+  height: 90%;
+}
+
+.body-legs {
+  width: 40%;
+  height: 100%;
+}
+
+.body-upper-section {
+  display: flex;
+  height: 15%;
+  justify-content: center;
+}
+
+.body-mid-section {
+  display: flex;
+  height: 24%;
+  justify-content: space-around;
+}
+
+.body-lower-section {
+  display: flex;
+  height: 45%;
+  width: 46%;
+  margin: 0 auto;
+  justify-content: space-around;
+}
+
 /*#mainBubble {
   background: #fff;
   border: solid 1px #ddd;
