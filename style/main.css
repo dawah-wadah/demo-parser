@@ -32,8 +32,23 @@ body {
   font-size: 24px;
   color: white;
   align-content: center;
-  width: 80%;
+  width: 98%;
   justify-content: space-between;
+}
+
+.list {
+  width: 80%;
+  margin-top: 20px;
+  height: 45vh;
+  overflow-y: scroll;
+}
+
+#header {
+  background-color: rgb(15, 15, 15);
+}
+
+.checkbox {
+  margin: 0 22px;
 }
 
 .checkboxes {

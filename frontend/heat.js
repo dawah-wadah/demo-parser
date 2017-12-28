@@ -248,35 +248,37 @@ class Heatmap extends React.Component {
           {" "}
           {this.renderMap()}{" "}
         </div>{" "}
-        <div className="table-row">
-          <div className="user-info">
-            <div className="profile-image" style={iconStyle}>
-              Player Icon
+        <div className="list">
+          <div className="table-row" id="header">
+            <div className="user-info">
+              <div className="profile-image" style={iconStyle}>
+                Player Icon
+              </div>
+              <div className="vert-line" />
+              <div className="profile-image" style={iconStyle}>
+                Player Name
+              </div>
             </div>
-            <div className="vert-line" />
-            <div className="profile-image" style={iconStyle}>
-              Player Name
+            <div className="checkboxes">
+              <div className="profile-image" style={iconStyle}>
+                CT Kill
+              </div>
+              <div className="vert-line" />
+              <div className="profile-image" style={iconStyle}>
+                CT Death
+              </div>
+              <div className="vert-line" />
+              <div className="profile-image" style={iconStyle}>
+                T Kills
+              </div>
+              <div className="vert-line" />
+              <div className="profile-image" style={iconStyle}>
+                T Death
+              </div>
             </div>
           </div>
-          <div className="checkboxes">
-            <div className="profile-image" style={iconStyle}>
-              CT Kill
-            </div>
-            <div className="vert-line" />
-            <div className="profile-image" style={iconStyle}>
-              CT Death
-            </div>
-            <div className="vert-line" />
-            <div className="profile-image" style={iconStyle}>
-              T Kills
-            </div>
-            <div className="vert-line" />
-            <div className="profile-image" style={iconStyle}>
-              T Death
-            </div>
-          </div>
+          {this.createButtons()} {this.createCheckBoxes()}{" "}
         </div>
-        {this.createButtons()} {this.createCheckBoxes()}{" "}
       </div>
     );
   }
