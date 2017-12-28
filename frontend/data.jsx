@@ -58,21 +58,24 @@ export default class Data extends React.Component {
   }
 
   componentWillUpdate() {
-    debugger;
+    // debugger;
   }
-
 
   findUser(username) {
     let result = "";
     const userData = { [username]: result };
-    return firebase
-      .database()
-      .ref(`${username}`)
-      .once("value", snapshot => {
-        return snapshot.val() === null ? false : true;
-    })
-      .then(response => Object.assign(userData, userData[username], result));
-    return userData[username];
+    new Promise(function(resolve, reject) {
+      return firebase
+        .database()
+        .ref(`${username}`)
+        .once("value", snapshot => {
+          return snapshot.val() === null ? false : true;
+        })
+        .then(response => Object.assign(userData, userData[username], result))
+        .then(() => resolve());
+    }).then(() => {
+      return userData[username];
+    });
   }
 
   processData(state) {
@@ -128,11 +131,13 @@ export default class Data extends React.Component {
       });
       circles.attr("cx", d => d.x).attr("cy", d => d.y);
       background.attr("transform", function(d) {
-        return  "translate(" +
+        return (
+          "translate(" +
           (d.x - scaleRadius(d.fired) / 2) +
           "," +
           (d.y - scaleRadius(d.fired) / 2) +
-          ")";
+          ")"
+        );
       });
     }
     function moveArcs() {
@@ -165,6 +170,17 @@ export default class Data extends React.Component {
           return drawArc(d);
         };
       });
+    }
+
+    function handleClick(d) {
+      console.log(d.name);
+      d.newRadius = Math.max(70, scaleRadius(d.fired) * 2);
+      let selection = d3.select(this).selectAll("circle");
+      selection.attr("r", d.newRadius);
+      simulation
+        .alphaTarget(0.3)
+        .restart()
+        .force("collide", d3.radius((d.newRadius || scaleRadius(d)) + 5));
     }
 
     function dragstarted(d) {
@@ -207,7 +223,8 @@ export default class Data extends React.Component {
         .enter()
         .append("g")
         .attr("width", d => scaleRadius(d.fired))
-        .attr("height", d => scaleRadius(d.fired));
+        .attr("height", d => scaleRadius(d.fired))
+        .on("click", handleClick);
 
       circles = nodes
         .append("circle")
@@ -228,19 +245,6 @@ export default class Data extends React.Component {
         .on("mouseout", function() {
           return tooltip.style("visibility", "hidden");
         });
-
-      // var defs = circles.append('svg:defs');
-      //       defs.append('svg:pattern')
-      //           .attr('id', 'tile-ww')
-      //           .attr('patternUnits', 'userSpaceOnUse')
-      //           .attr('width', '40')
-      //           .attr('height', '20')
-      //           .append('svg:image')
-      //           .attr('xlink:href', './assets/weapons/weapon_ak47.svg')
-      //           .attr('x', 0)
-      //           .attr('y', 0)
-      //           .attr('width', 40)
-      //           .attr('height', 20);
 
       background = nodes
         .append("image")
@@ -286,9 +290,6 @@ export default class Data extends React.Component {
         .text(function(d) {
           return d.name;
         });
-
-      // background = nodes
-      //   .attr("background", )
 
       arcs
         .transition()

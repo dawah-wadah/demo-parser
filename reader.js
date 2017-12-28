@@ -33,7 +33,7 @@ function storeData(attacker, victim, status, map, weapon) {
       killer: {
         x: attacker.position.x,
         y: attacker.position.y
-      },
+      }
     },
     weapon: weapon
   };
@@ -178,6 +178,7 @@ player {
 function weaponStats(weapon, player) {}
 
 function parseDemofile(file, callback) {
+  debugger;
   fs.readFile(file, function(err, buffer) {
     assert.ifError(err);
     let map;
@@ -198,7 +199,6 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.on("end", () => {
-      // updateProgress(bar, demoFile);
       console.log("Finished with " + file);
       Promise.all([
         storeShots("Taylor Swift", shots.wadah),
@@ -239,7 +239,6 @@ function parseDemofile(file, callback) {
           default:
         }
         storeGrenadeData(e);
-        // updateProgress(bar, demoFile);
       });
     });
 
@@ -250,15 +249,27 @@ function parseDemofile(file, callback) {
       let killerWeapon = e.weapon.split("_")[0];
 
       if (victim && attacker) {
-        hasKilled(victim, attacker, killerWeapon, map, 76561198027906568, 76561198171618625);
-        wasKilled(victim, attacker, killerWeapon, map, 76561198027906568, 76561198171618625);
+        hasKilled(
+          victim,
+          attacker,
+          killerWeapon,
+          map,
+          76561198027906568,
+          76561198171618625
+        );
+        wasKilled(
+          victim,
+          attacker,
+          killerWeapon,
+          map,
+          76561198027906568,
+          76561198171618625
+        );
       }
-      // updateProgress(bar, demoFile);
     });
 
     demoFile.gameEvents.on("weapon_fire", e => {
       let playa = demoFile.entities.getByUserId(e.userid);
-      // let updatable = bar.current / bar.total * 100 > 97;
       if (!playa) {
         return;
       }
@@ -274,8 +285,6 @@ function parseDemofile(file, callback) {
         }
         shots.vlad[weapon].shots_fired++;
       }
-
-      // updateProgress(bar, demoFile);
     });
 
     demoFile.gameEvents.on("player_hurt", e => {

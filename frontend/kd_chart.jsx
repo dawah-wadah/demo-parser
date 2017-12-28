@@ -39,7 +39,7 @@ export default class KDChart extends React.Component {
       }
     };
 
-    function insertData(sides, team, status, weapon, value) {
+    function insertData(team, status, weapon, value) {
       if (data[team][status][value.weapon]) {
         data[team][status][value.weapon].push(value);
       } else {
@@ -52,7 +52,7 @@ export default class KDChart extends React.Component {
     for (let team in sides) {
       for (let status in sides[team]) {
         for (let key in sides[team][status]) {
-          insertData(sides, team, status, key, sides[team][status][key]);
+          insertData(team, status, key, sides[team][status][key]);
         }
       }
     }
@@ -65,7 +65,9 @@ export default class KDChart extends React.Component {
   }
 
   createChart() {
-    if (!this.state.data) { return null; }
+    if (!this.state.data) {
+      return null;
+    }
 
     const b = this.transformData();
     const radius = Math.min(this.width, this.height) / 2;
@@ -85,10 +87,10 @@ export default class KDChart extends React.Component {
     partition(root);
 
     let colorScheme = {
-      "ct": "#232964",
-      "t": "#F6A509",
-      "kills": "#0D5725",
-      "deaths": "#B81215"
+      ct: "#232964",
+      t: "#F6A509",
+      kills: "#0D5725",
+      deaths: "#B81215"
     };
 
     let arc = d3
@@ -101,16 +103,17 @@ export default class KDChart extends React.Component {
     this.path = g
       .selectAll("path")
       .data(root.descendants())
-      .enter()
+      .enter();
 
     let percents = g
       .append("text")
       .attr("id", "percentage")
       .attr("x", d => -50)
       .attr("y", d => 0)
-      .style("font-size", "1em")
+      .style("font-size", "1em");
 
-    this.path.append("path")
+    this.path
+      .append("path")
       .attr("display", d => (d.depth ? null : "none"))
       .attr("d", arc)
       .style("stroke", "#fff")
@@ -123,7 +126,7 @@ export default class KDChart extends React.Component {
       })
       .on("mouseover", this.showInfo.bind(this));
 
-    d3.select("g").on("mouseleave", this.hideInfo.bind(this))
+    d3.select("g").on("mouseleave", this.hideInfo.bind(this));
   }
 
   transformData() {
@@ -181,8 +184,7 @@ export default class KDChart extends React.Component {
   showInfo(d) {
     const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
     // debugger
-    d3.select("#percentage")
-      .text(`${percentValue}% - ${d.data.name}`);
+    d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
 
     const sequenceArray = d.ancestors().reverse();
     sequenceArray.shift();
@@ -198,20 +200,21 @@ export default class KDChart extends React.Component {
   hideInfo(d) {
     d3.selectAll("path").on("mouseover", null);
 
-    d3.selectAll("path")
+    d3
+      .selectAll("path")
       .transition()
       .duration(500)
       .style("opacity", 1)
-      .on("end", (d) => {
+      .on("end", d => {
         // debugger
-        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this)) })
+        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
+      });
   }
 
   render() {
     return (
       <div id="kd-chart" ref={"kd"}>
         {this.createChart()}
-
       </div>
     );
   }
