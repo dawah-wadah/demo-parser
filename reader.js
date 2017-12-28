@@ -75,6 +75,7 @@ function storeData(attacker, victim, status, map, weapon) {
 
 function storeShots(playerName, weaponsData) {
   let promises = [];
+  console.log(playerName)
 
   Object.keys(weaponsData).forEach(weapon => {
     let data = {
@@ -144,13 +145,6 @@ function newWeapon() {
   };
 }
 
-function newGame() {
-  return {
-    wadah: {},
-    vlad: {}
-  };
-}
-
 function weaponStats(weapon, player) {}
 
 function parseDemofile(file, callback) {
@@ -165,12 +159,19 @@ function parseDemofile(file, callback) {
 
     demoFile.on("end", () => {
       console.log("Finished with " + file);
-      Promise.all([
-        storeShots("76561198027906568", shots.wadah),
-        storeShots("76561198171618625", shots.vlad)
-      ]).then(() => {
-        return callback();
+      let promises = [];
+
+      Object.keys(shots).forEach(key => {
+        debugger
+        promises.push(storeShots(key, shots[key]));
       });
+      // Promise.all([
+      //   storeShots("76561198027906568", shots.wadah),
+      //   storeShots("76561198171618625", shots.vlad)
+      // ])
+      // Promise.all(promises).then(() => {
+      //   return callback();
+      // });
     });
 
     let grenades = [
@@ -181,7 +182,7 @@ function parseDemofile(file, callback) {
       "decoy"
     ];
 
-    let shots = newGame();
+    let shots = {};
 
     grenades.forEach(grenade => {
       demoFile.gameEvents.on(`${grenade}_detonate`, e => {
@@ -214,18 +215,8 @@ function parseDemofile(file, callback) {
       let killerWeapon = e.weapon.split("_")[0];
 
       if (victim && attacker) {
-        hasKilled(
-          victim,
-          attacker,
-          killerWeapon,
-          map
-        );
-        wasKilled(
-          victim,
-          attacker,
-          killerWeapon,
-          map
-        );
+        hasKilled(victim, attacker, killerWeapon, map);
+        wasKilled(victim, attacker, killerWeapon, map);
       }
     });
 
@@ -235,6 +226,9 @@ function parseDemofile(file, callback) {
         return;
       }
       let weapon = e.weapon.split("_")[1];
+      if (!shots[playerID]) {
+        shots[playerID] = {};
+      }
       if (!shots[playerID][weapon]) {
         shots[playerID][weapon] = newWeapon();
       }
@@ -246,13 +240,16 @@ function parseDemofile(file, callback) {
       if (!playerID) {
         return;
       }
+      if (!shots[playerID]) {
+        shots[playerID] = {};
+      }
       if (!shots[playerID][e.weapon]) {
         shots[playerID][e.weapon] = newWeapon();
       }
       shots[playerID][e.weapon].shots_hit++;
       shots[playerID][e.weapon][e.hitgroup]++;
-      shots[playerID][e.weapon][damage_dealt] += e.dmg_health;
-      shots[playerID][e.weapon][damage_dealt] += e.dmg_armor;
+      shots[playerID][e.weapon].damage_dealt += e.dmg_health;
+      shots[playerID][e.weapon].damage_dealt += e.dmg_armor;
       if (e.hitgroup === 1 && e.health === 0) {
         shots[playerID][e.weapon].headshots++;
       }
