@@ -32,6 +32,8 @@ export default class PlayerPage extends React.Component {
   }
 
   componentDidMount() {
+
+    //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid 
     firebase
       .database()
       .ref("/76561198027906568/")
