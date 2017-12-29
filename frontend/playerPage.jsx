@@ -1,7 +1,9 @@
 import React from "react";
 import firebase from "firebase";
-import WeaponsChart from './weapons_chart.jsx'
+import WeaponsChart from "./weapons_chart.jsx";
 import * as APIKeys from "../keys.json";
+import Resize from "./resize-test.jsx";
+import Body from './body.jsx'
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -32,8 +34,7 @@ export default class PlayerPage extends React.Component {
   }
 
   componentDidMount() {
-
-    //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid 
+    //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     firebase
       .database()
       .ref("/76561198027906568/")
@@ -51,6 +52,7 @@ export default class PlayerPage extends React.Component {
 
   updateFirebaseInfo(player) {
     let id = player.steamid;
+    //this will refetch any data from steam, may not work if you try this out locally because of CORS, so u may need to download a CORS Anywhere extension
     return firebase
       .database()
       .ref("/")
@@ -88,21 +90,33 @@ export default class PlayerPage extends React.Component {
     if (this.state.player && this.state.status) {
       let player = this.state.player;
       let steamInfo = player.steamInfo;
-      return <div className="player-page">
+      return (
+        <div className="player-page">
           <div className="player-header">
-            <div className="player-header-image" style={{ backgroundImage: "url(" + steamInfo.imageFull + ")" }} />
+            <div
+              className="player-header-image"
+              style={{ backgroundImage: "url(" + steamInfo.imageFull + ")" }}
+            />
             <div className="player-info">
               <div className="player-header-name">{steamInfo.name}</div>
               <div className="player-status">
                 <div>{this.state.status.state}</div>
-                <div className="circle" style={{ background: this.state.status.color }} />
+                <div
+                  className="circle"
+                  style={{ background: this.state.status.color }}
+                />
               </div>
             </div>
           </div>
           <div className="player-body">
-            <WeaponsChart weapons={this.state.player["Weapons Data"]} />
+            <Resize
+              component={[
+                <WeaponsChart weapons={this.state.player["Weapons Data"]} />, <Body/>
+              ]}
+            />
           </div>
-        </div>;
+        </div>
+      );
     } else {
       return null;
     }

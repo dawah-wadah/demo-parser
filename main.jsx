@@ -9,6 +9,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Switch, Route, HashRouter } from "react-router-dom";
 import WeaponsChart from "./frontend/weapons_chart";
+import ResizableTest from "./frontend/resize-test";
 
 initializeFB();
 document.addEventListener("DOMContentLoaded", () => {
@@ -28,6 +29,8 @@ class App extends React.Component {
             <Route exact path="/body" component={Body} />
             <Route exact path="/foo" component={Player} />
             <Route exact path="/bar" component={WeaponsChart} />
+            <Route exact path="/baz" component={ResizableTest} />
+
           </Switch>
         </div>
       </HashRouter>

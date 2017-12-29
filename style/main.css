@@ -166,13 +166,40 @@ td > img {
 }
 
 .weapons-table {
-  width: 80%;
+  width: 100%;
 }
 
 .weapons-table > tbody > tr > th {
   font-size: 25px;
 }
 
+.resize-parent {
+  width: 92%;
+}
+
+.resize-child {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.flex {
+  display: flex;
+}
+
+.full {
+  height: 100%;
+  width: 100%;
+}
+
+.first {
+  width: 100%;
+}
+
+.second {
+  width: 0%;
+    overflow-x: hidden
+
+}
 /*#mainBubble {
   background: #fff;
   border: solid 1px #ddd;
