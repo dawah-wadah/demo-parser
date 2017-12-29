@@ -14,6 +14,50 @@
   letter-spacing: 5px;
 }
 
+#main-body {
+  background: #484e58;
+}
+
+.players-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Filter */
+
+.filter {
+  /* text-align: center; */
+  margin: 2em auto;
+}
+
+.filter > input {
+  outline: none;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  padding: 0.5em 1em;
+  font-size: 1.5em;
+  font-family: sans-serif;
+  font-weight: 300;
+}
+
+/* Players list */
+
+.spinning-logo {
+  max-width: 70px;
+  max-height: 70px;
+
+  -webkit-animation: rotatate-y 1.5s infinite ease-in-out;
+  animation: rotatate-y 1.5s infinite ease-in-out;
+}
+
+.players-list {
+  background: #34373c;
+  height: 45vh;
+  width: 50%;
+  overflow-y: scroll;
+}
+
 #heatmap {
   width: calc(1024px * 0.4);
   height: calc(1024px * 0.4);
@@ -45,13 +89,6 @@ body {
   align-content: center;
   width: 98%;
   justify-content: space-between;
-}
-
-.list {
-  width: 80%;
-  margin-top: 20px;
-  height: 45vh;
-  overflow-y: scroll;
 }
 
 #table-header {
@@ -146,3 +183,24 @@ body {
 #mainBubble circle {
   fill: steelblue;
  }*/
+
+ /* Animation */
+
+ @-webkit-keyframes rotatate-y {
+  0% { -webkit-transform: perspective(120px) }
+  50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+  100% { -webkit-transform: perspective(120px) rotateY(0deg)   }
+}
+
+@keyframes rotate-y {
+  0% {
+    transform: perspective(120px);
+    -webkit-transform: perspective(120px);
+  } 50% {
+    transform: perspective(120px) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateY(180deg);
+  } 100% {
+    transform: perspective(120px) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateY(0deg);
+  }
+}

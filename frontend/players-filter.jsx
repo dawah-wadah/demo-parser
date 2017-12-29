@@ -27,8 +27,10 @@ export default class PlayerFilter extends React.Component {
 
     return pickBy(players, (value, key) => {
       if (!value.steamInfo) return;
-      const playerName = value.steamInfo.name;
-      return startsWith(playerName, this.state.playerName);
+      const playerName = value.steamInfo.name.toLowerCase();
+      const searchName = this.state.playerName.toLowerCase();
+
+      return startsWith(playerName, searchName);
     });
   }
 
@@ -50,7 +52,7 @@ export default class PlayerFilter extends React.Component {
             onChange={this.update("playerName")}
           />
         </div>
-        <PlayersIndex players={filteredPlayers} />
+        <PlayersIndex players={this.state.players} filteredPlayers={filteredPlayers} />
       </div>
     );
   }
