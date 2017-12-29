@@ -141,6 +141,10 @@ body {
   font-size: 90px;
 }
 
+td > img {
+  max-width: 60px;
+}
+
 .player-info {
   padding: 0 20px;
   display: flex;

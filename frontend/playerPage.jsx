@@ -1,5 +1,6 @@
 import React from "react";
 import firebase from "firebase";
+import WeaponsChart from './weapons_chart.jsx'
 import * as APIKeys from "../keys.json";
 
 export default class PlayerPage extends React.Component {
@@ -75,7 +76,6 @@ export default class PlayerPage extends React.Component {
         shit.forEach(player => {
           this.updateFirebaseInfo(player).then(() => {
             this.setState({ status: this.getState(player.profilestate) });
-            console.log(this.state.status);
           });
         });
       })
@@ -86,28 +86,21 @@ export default class PlayerPage extends React.Component {
     if (this.state.player && this.state.status) {
       let player = this.state.player;
       let steamInfo = player.steamInfo;
-      return (
-        <div className="player-page">
+      return <div className="player-page">
           <div className="player-header">
-            <div
-              className="player-header-image"
-              style={{
-                backgroundImage: "url(" + steamInfo.imageFull + ")"
-              }}
-            />
+            <div className="player-header-image" style={{ backgroundImage: "url(" + steamInfo.imageFull + ")" }} />
             <div className="player-info">
               <div className="player-header-name">{steamInfo.name}</div>
               <div className="player-status">
                 <div>{this.state.status.state}</div>
-                <div
-                  className="circle"
-                  style={{ background: this.state.status.color }}
-                />
+                <div className="circle" style={{ background: this.state.status.color }} />
               </div>
             </div>
           </div>
-        </div>
-      );
+          <div className="player-body">
+            <WeaponsChart weapons={this.state.player["Weapons Data"]} />
+          </div>
+        </div>;
     } else {
       return null;
     }
