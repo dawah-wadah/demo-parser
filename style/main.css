@@ -3,6 +3,17 @@
   src: url("../assets/cs_regular.ttf");
 }
 
+#header {
+  padding: 10px;
+  background: #171a21;
+  text-align: center;
+}
+
+#header > h1 {
+  color: #ffffff;
+  letter-spacing: 5px;
+}
+
 #heatmap {
   width: calc(1024px * 0.4);
   height: calc(1024px * 0.4);
@@ -43,7 +54,7 @@ body {
   overflow-y: scroll;
 }
 
-#header {
+#table-header {
   background-color: rgb(15, 15, 15);
 }
 

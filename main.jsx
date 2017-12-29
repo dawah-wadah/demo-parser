@@ -2,6 +2,7 @@ import Heatmap from "./frontend/heat.js";
 import Data from "./frontend/data.jsx";
 import KDChart from "./frontend/kd_chart.jsx";
 import Body from "./frontend/body.jsx";
+import Header from "./frontend/header";
 import initializeFB from "./base.js";
 
 import React from "react";
@@ -19,6 +20,7 @@ class App extends React.Component {
     return (
       <HashRouter>
         <div id="main-body">
+          <Header />
           <Switch>
             <Route exact path="/" component={Heatmap} />
             <Route exact path="/player/:id/weapons" component={Data} />

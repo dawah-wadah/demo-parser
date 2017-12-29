@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import * as APIKeys from "../keys.json";
+// import * as APIKeys from "../keys.json";
 import axios from "axios";
 
 import { assign, merge, values } from "lodash";
@@ -249,7 +249,7 @@ class Heatmap extends React.Component {
           {this.renderMap()}{" "}
         </div>{" "}
         <div className="list">
-          <div className="table-row" id="header">
+          <div className="table-row" id="table-header">
             <div className="user-info">
               <div className="profile-image" style={iconStyle}>
                 Player Icon
