@@ -158,15 +158,19 @@ td > img {
 .player-body {
   display: flex;
   justify-content: center;
-  padding: 5% 0 0 0
+  padding: 5% 0 0 0;
 }
 
-.weapons-table > tbody > tr:nth-of-type(2n+1) {
-    background: rgba(0,0,0, 0.125);
+.weapons-table > tbody > tr:nth-of-type(2n + 1) {
+  background: rgba(153, 14, 14, 0.125);
 }
 
 .weapons-table {
   width: 80%;
+}
+
+.weapons-table > tbody > tr > th {
+  font-size: 25px;
 }
 
 /*#mainBubble {
