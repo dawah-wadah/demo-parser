@@ -124,6 +124,7 @@ body {
 }
 
 .circle {
+  margin: 0 5px;
   height: 10px;
   width: 10px;
   border-radius: 50%;
@@ -131,16 +132,23 @@ body {
 
 .player-header {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  margin: 0 15%;
+  width: 80%;
 }
 
 .player-header-name {
-  font-size: 50px;
+  font-size: 90px;
 }
 
 .player-info {
+  padding: 0 20px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.player-status {
+  display: flex;
 }
 
 /*#mainBubble {

@@ -97,11 +97,13 @@ export default class PlayerPage extends React.Component {
             />
             <div className="player-info">
               <div className="player-header-name">{steamInfo.name}</div>
-              <div>{this.state.status.state}</div>
-              <div
-                className="circle"
-                style={{ background: this.state.status.color }}
-              />
+              <div className="player-status">
+                <div>{this.state.status.state}</div>
+                <div
+                  className="circle"
+                  style={{ background: this.state.status.color }}
+                />
+              </div>
             </div>
           </div>
         </div>
