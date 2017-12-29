@@ -7,7 +7,7 @@ const dir = "./demos";
 const demo = require("demofile");
 const firebase = require("firebase");
 const initializeFB = require("./base.js");
-const fetch = require("node-fetch")
+const fetch = require("node-fetch");
 
 const defaultMapData = () => ({
   Terrorist: { kills: {}, deaths: {} },
@@ -98,13 +98,12 @@ function storeShots(playerName, weaponsData) {
       totalShots: weaponsData[weapon].shots_fired,
       damage_dealt: weaponsData[weapon].damage_dealt,
       hitGroups: {
-        1: weaponsData[weapon]["1"],
-        2: weaponsData[weapon]["2"],
-        3: weaponsData[weapon]["3"],
-        4: weaponsData[weapon]["4"],
-        5: weaponsData[weapon]["5"],
-        6: weaponsData[weapon]["6"],
-        7: weaponsData[weapon]["7"]
+        head: weaponsData[weapon]["head"],
+        torso: weaponsData[weapon]["torso"],
+        "left-arm": weaponsData[weapon]["left-arm"],
+        "right-arm": weaponsData[weapon]["right-arm"],
+        "left-leg": weaponsData[weapon]["left-leg"],
+        "right-leg": weaponsData[weapon]["right-leg"],
       },
       headShots: weaponsData[weapon].headshots,
       totalHits: weaponsData[weapon].shots_hit,
@@ -161,14 +160,37 @@ function newWeapon() {
     shots_hit: 0,
     headshots: 0,
     damage_dealt: 0,
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0
+    head: 0,
+    torso: 0,
+    "left-arm": 0,
+    "right-arm": 0,
+    "left-leg": 0,
+    "right-leg": 0,
   };
+}
+
+// 1=hs 2=upper torso 3=lower torso 4=left arm 5=right arm 6=left leg 7=right leg
+
+function whereHit(num) {
+  switch (num) {
+    case 1:
+      return "head";
+    case 2:
+      return "torso";
+    case 3:
+      return "torso";
+    case 4:
+      return "left-arm";
+    case 5:
+      return "right-arm";
+    case 6:
+      return "left-leg";
+    case 7:
+      return "right-leg";
+
+    default:
+      break;
+  }
 }
 
 function weaponStats(weapon, player) {}
@@ -271,7 +293,7 @@ function parseDemofile(file, callback) {
         shots[playerID][e.weapon] = newWeapon();
       }
       shots[playerID][e.weapon].shots_hit++;
-      shots[playerID][e.weapon][e.hitgroup]++;
+      shots[playerID][e.weapon][whereHit(e.hitgroup)]++;
       shots[playerID][e.weapon].damage_dealt += e.dmg_health;
       shots[playerID][e.weapon].damage_dealt += e.dmg_armor;
       if (e.hitgroup === 1 && e.health === 0) {

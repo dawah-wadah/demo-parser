@@ -67,6 +67,11 @@ body {
   height: 100%;
 }
 
+.body-head {
+  width: 24%;
+  height: 100%;
+}
+
 .body-body {
   width: 35%;
   height: 100%;
@@ -79,6 +84,11 @@ body {
 .body-legs {
   width: 40%;
   height: 100%;
+}
+
+.full {
+  height: 100%;
+  width: 100%;
 }
 
 .body-upper-section {

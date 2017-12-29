@@ -1,5 +1,6 @@
 import React from "react";
 import Limb from "./limb.jsx";
+import firebase from "firebase";
 
 const fullBody = () => ({
   display: "flex",
@@ -11,78 +12,98 @@ const fullBody = () => ({
 export default class Body extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      hitGroups: {
+        head: 0,
+        torso: 0,
+        "left-arm": 0,
+        "right-arm": 0,
+        "left-leg": 0,
+        "right-leg": 0,
+        total: 0
+      }
+    };
   }
 
-  headStyle() {
-    return {
-      backgroundImage: "url(assets/body-parts/head.png)",
-      width: "24%",
-      height: "100%"
+  componentDidMount() {
+    let hitGroups = {
+      head: 0,
+      "left-arm": 0,
+      "left-leg": 0,
+      "right-arm": 0,
+      "right-leg": 0,
+      torso: 0,
+      total: 0
     };
+    firebase
+      .database()
+      .ref("/76561198027906568/Weapons Data/ak47")
+      .once("value", snap => {
+        Object.keys(snap.val()).forEach(push => {
+          let slice = snap.val()[push].hitGroups;
+          Object.keys(slice).forEach(section => {
+            hitGroups[section] += slice[section];
+          });
+          hitGroups.total += snap.val()[push].totalHits;
+        });
+      })
+      .then(() => this.setState({ hitGroups }));
   }
-  torsoStyle() {
-    return {
-      backgroundImage: "url(assets/body-parts/body2.png)",
-      width: "100%",
-      height: "100%"
-    };
+
+  backgroundImage(limb) {
+    return "url(assets/body-parts/" + limb.split(" ").join("-") + ".png)";
   }
-  leftArmStyle() {
-    return {
-      backgroundImage: "url(assets/body-parts/left-arm.png)",
-      width: "100%",
-      height: "100%"
-    };
-  }
-  rightArmStyle() {
-    return {
-      backgroundImage: "url(assets/body-parts/right-arm.png)",
-      width: "100%",
-      height: "100%"
-    };
-  }
-  rightLegStyle() {
-    return {
-      backgroundImage: "url(assets/body-parts/right-leg.png)",
-      width: "100%",
-      height: "100%"
-    };
-  }
-  leftLegStyle() {
-    return {
-      backgroundImage: "url(assets/body-parts/left-leg.png)",
-      width: "100%",
-      height: "100%"
-    };
+
+  calcOpacity(limb) {
+    let ratio = this.state.hitGroups[limb] / this.state.hitGroups.total;
+    console.log(ratio);
+    ratio = ratio ? ratio : 0;
+    return ratio * 5;
   }
 
   render() {
     return (
       <div className="body" style={fullBody()}>
         <div className="body-upper-section">
-          <Limb
-            styleGuide={this.headStyle()}
-            width="100%"
-            classname={"body-head"}
-          />
+          <div className="body-head">
+            <Limb
+              image={this.backgroundImage("head")}
+              opacity={this.calcOpacity("head")}
+            />
+          </div>
         </div>
         <div className="body-mid-section">
           <div className="body-arm">
-            <Limb styleGuide={this.rightArmStyle()} />
+            <Limb
+              image={this.backgroundImage("right arm")}
+              opacity={this.calcOpacity("right-arm")}
+            />
           </div>
           <div className="body-body">
-            <Limb styleGuide={this.torsoStyle()} />
+            <Limb
+              image={this.backgroundImage("torso")}
+              opacity={this.calcOpacity("torso")}
+            />
           </div>
           <div className="body-arm">
-            <Limb styleGuide={this.leftArmStyle()} />
+            <Limb
+              image={this.backgroundImage("left arm")}
+              opacity={this.calcOpacity("left-arm")}
+            />
           </div>
         </div>
         <div className="body-lower-section">
           <div className="body-legs">
-            <Limb styleGuide={this.rightLegStyle()} />
+            <Limb
+              image={this.backgroundImage("right leg")}
+              opacity={this.calcOpacity("right-leg")}
+            />
           </div>
           <div className="body-legs">
-            <Limb styleGuide={this.leftLegStyle()} />
+            <Limb
+              image={this.backgroundImage("left leg")}
+              opacity={this.calcOpacity("left-leg")}
+            />
           </div>
         </div>
       </div>
