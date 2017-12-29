@@ -3,6 +3,7 @@ import Data from "./frontend/data.jsx";
 import KDChart from "./frontend/kd_chart.jsx";
 import Body from "./frontend/body.jsx";
 import initializeFB from "./base.js";
+import Player from './frontend/playerPage.jsx'
 
 import React from "react";
 import ReactDOM from "react-dom";
@@ -24,6 +25,7 @@ class App extends React.Component {
             <Route exact path="/player/:id/weapons" component={Data} />
             <Route exact path="/player/:id/kd" component={KDChart} />
             <Route exact path="/body" component={Body} />
+            <Route exact path="/foo" component={Player} />
           </Switch>
         </div>
       </HashRouter>

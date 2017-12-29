@@ -37,7 +37,7 @@ export default class Body extends React.Component {
     };
     firebase
       .database()
-      .ref("/76561198027906568/Weapons Data/ak47")
+      .ref("/76561198027906568/Weapons Data/awp")
       .once("value", snap => {
         Object.keys(snap.val()).forEach(push => {
           let slice = snap.val()[push].hitGroups;

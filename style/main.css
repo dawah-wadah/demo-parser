@@ -116,6 +116,33 @@ body {
   border-radius: 11px;
 }
 
+.player-header-image {
+  width: 250px;
+  height: 250px;
+  border-radius: 4px;
+  background-size: contain;
+}
+
+.circle {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+}
+
+.player-header {
+  display: flex;
+  align-items: center;
+}
+
+.player-header-name {
+  font-size: 50px;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+}
+
 /*#mainBubble {
   background: #fff;
   border: solid 1px #ddd;
