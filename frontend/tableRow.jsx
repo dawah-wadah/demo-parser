@@ -16,35 +16,7 @@ const tableRow = ({ player, callback }) => {
           <div className="vert-line" />
           <div className="profile-name">{player.steamInfo.name}</div>
         </div>
-        <div className="checkboxes">
-          <input
-            type="checkbox"
-            className="checkbox"
-            value={`${player.steamInfo.id} Counter-Terrorist kills`}
-            onClick={callback}
-          />
-          <div className="vert-line" />
-          <input
-            type="checkbox"
-            className="checkbox"
-            value={`${player.steamInfo.id} Counter-Terrorist deaths`}
-            onClick={callback}
-          />
-          <div className="vert-line" />
-          <input
-            type="checkbox"
-            className="checkbox"
-            value={`${player.steamInfo.id} Terrorist kills`}
-            onClick={callback}
-          />
-          <div className="vert-line" />
-          <input
-            type="checkbox"
-            className="checkbox"
-            value={`${player.steamInfo.id} Terrorist deaths`}
-            onClick={callback}
-          />
-        </div>
+
       </div>
     );
   } else {
@@ -52,3 +24,34 @@ const tableRow = ({ player, callback }) => {
   }
 };
 export default tableRow;
+
+// 
+// <div className="checkboxes">
+//   <input
+//     type="checkbox"
+//     className="checkbox"
+//     value={`${player.steamInfo.id} Counter-Terrorist kills`}
+//     onClick={callback}
+//   />
+//   <div className="vert-line" />
+//   <input
+//     type="checkbox"
+//     className="checkbox"
+//     value={`${player.steamInfo.id} Counter-Terrorist deaths`}
+//     onClick={callback}
+//   />
+//   <div className="vert-line" />
+//   <input
+//     type="checkbox"
+//     className="checkbox"
+//     value={`${player.steamInfo.id} Terrorist kills`}
+//     onClick={callback}
+//   />
+//   <div className="vert-line" />
+//   <input
+//     type="checkbox"
+//     className="checkbox"
+//     value={`${player.steamInfo.id} Terrorist deaths`}
+//     onClick={callback}
+//   />
+// </div>
