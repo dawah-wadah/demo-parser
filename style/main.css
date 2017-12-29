@@ -93,22 +93,27 @@ body {
 
 .body-upper-section {
   display: flex;
-  height: 15%;
+  height: 25%;
   justify-content: center;
 }
 
 .body-mid-section {
   display: flex;
-  height: 24%;
+  height: 41%;
   justify-content: space-around;
 }
 
 .body-lower-section {
   display: flex;
-  height: 45%;
+  height: 53%;
   width: 46%;
   margin: 0 auto;
   justify-content: space-around;
+}
+
+.body {
+  background-color: #59616f;
+  border-radius: 11px;
 }
 
 /*#mainBubble {

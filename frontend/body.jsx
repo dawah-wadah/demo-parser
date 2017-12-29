@@ -4,10 +4,10 @@ import firebase from "firebase";
 
 const fullBody = () => ({
   display: "flex",
-  justifyContent: "center",
+//   justifyContent: "center",
   flexDirection: "column",
   height: "500px",
-  width: "200px"
+  width: "275px"
 });
 export default class Body extends React.Component {
   constructor(props) {
