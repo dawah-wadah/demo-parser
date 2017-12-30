@@ -19,8 +19,11 @@
 }
 
 #main-body {
-  height: 100%;
   background: #191e27;
+}
+
+.body-main {
+  min-height: 100vh;
 }
 
 .players-container {
