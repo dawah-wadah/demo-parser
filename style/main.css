@@ -3,19 +3,24 @@
   src: url("../assets/cs_regular.ttf");
 }
 
-#header {
+#root {
+  min-height: 100vh;
+}
+
+#header, #footer {
   padding: 10px;
   background: #171a21;
   text-align: center;
 }
 
-#header > h1 {
+#footer, #header > h1 {
   color: #ffffff;
   letter-spacing: 5px;
 }
 
 #main-body {
-  background: #484e58;
+  height: 100%;
+  background: #191e27;
 }
 
 .players-container {
@@ -44,18 +49,69 @@
 /* Players list */
 
 .spinning-logo {
-  max-width: 70px;
-  max-height: 70px;
-
+  margin-top: 4em;
+  width: 70px;
+  height: 70px;
+  background-image: url("https://pbs.twimg.com/profile_images/889501252991594496/KaRaZTG3.jpg");
+  background-size: contain;
   -webkit-animation: rotatate-y 1.5s infinite ease-in-out;
   animation: rotatate-y 1.5s infinite ease-in-out;
 }
 
+.players-table {
+  width: 600px;
+  height: 700px;
+  margin-bottom: 2em;
+  box-shadow: -2px 2px 5px 0px #12141A,
+              -2px -2px 5px 0px #12141A,
+              3px 3px 5px 0px #12141A,
+              4px -2px 3px 0px #12141A;
+}
+
+#table-header {
+  background-color: #171d28;
+  text-align: center;
+  padding: 0.5em;
+  font-size: 3em;
+  color: #fff;
+}
+
 .players-list {
-  background: #34373c;
-  height: 45vh;
-  width: 50%;
-  overflow-y: scroll;
+  background: #222c36;;
+  height: 89.5%;
+  overflow: auto;
+}
+
+.fat-msg {
+  text-align: center;
+  margin-top: 0.5em;
+  font-size: 4em;
+  color: #ED5454;
+}
+
+.table-row {
+  display: flex;
+  text-decoration: none;
+  padding: 0.5em 1em;
+  color: #79beec;
+}
+
+.table-row:hover {
+  background: #f0a76994;
+  color: #C7E181;
+}
+
+.profile-image {
+  width: 70px;
+  height: 70px;
+  margin-right: 3em;
+  border: 2px solid;
+}
+
+.profile-name {
+  align-self: center;
+  font-size: 2.5em;
+  line-height: 28px;
 }
 
 #heatmap {
@@ -64,35 +120,22 @@
   background-size: calc(1024px * 0.4);
   background-image: url("../assets/de_dust2_radar_spectate.jpg");
 }
-
+/* * { border: 1px solid red; } */
 body {
+  margin: 0 auto;
+  height: 100%;
   font-family: csgo;
+}
+
+img {
+  display: block;
+  height: 100%;
 }
 
 .heatmap-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.profile-name {
-  margin-left: 5px;
-}
-
-.table-row {
-  background-color: #34373c;
-  padding: 5px;
-  /* margin: 5px; */
-  display: flex;
-  font-size: 24px;
-  color: white;
-  align-content: center;
-  width: 98%;
-  justify-content: space-between;
-}
-
-#table-header {
-  background-color: rgb(15, 15, 15);
 }
 
 .checkbox {
