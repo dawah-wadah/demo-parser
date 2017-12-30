@@ -9,6 +9,7 @@ export default class KDChart extends React.Component {
     this.state = {};
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    // this.generateArc = this.generateArc.bind(this);
   }
 
   componentDidMount() {
@@ -27,16 +28,43 @@ export default class KDChart extends React.Component {
       });
   }
 
+  generateArc(options) {
+    let multiplier = options.multiplier ? options.multiplier : 1;
+    let radius = options.radius
+      ? options.radius
+      : Math.min(this.width, this.height) / 2;
+    let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
+    let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
+
+    return d3
+      .arc()
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+  }
+  generateArc2(options) {
+    let multiplier = options.multiplier ? options.multiplier : 1;
+    let radius = options.radius
+      ? options.radius
+      : Math.min(this.width, this.height) / 2;
+    let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
+    let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
+
+    debugger;
+
+    return d3
+      .arc()
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+  }
+
   extractData(sides) {
     let data = {
-      "Counter-Terrorist": {
-        deaths: {},
-        kills: {}
-      },
-      Terrorist: {
-        deaths: {},
-        kills: {}
-      }
+      "Counter-Terrorist": { deaths: {}, kills: {} },
+      Terrorist: { deaths: {}, kills: {} }
     };
 
     function insertData(sides, team, status, weapon, value) {
@@ -57,25 +85,9 @@ export default class KDChart extends React.Component {
       }
     }
 
-    let newData = {
-      ctKills: {}
-    };
+    let newData = { ctKills: {} };
 
     this.setState({ data });
-  }
-
-  generateArc(x, y, multiplier, radius) {
-    radius = radius ? radius : Math.min(this.width, this.height) / 2;
-    multiplier = multiplier ? multiplier : 1;
-    x = x ? x : d3.scaleLinear().range([0, 2 * Math.PI]);
-    y = y ? y : d3.scaleSqrt().range([0, radius / 2]);
-
-    return d3
-      .arc()
-      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
-      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
-      .innerRadius(d => Math.max(0, y(d.y0)))
-      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
   }
 
   createChart() {
@@ -111,7 +123,6 @@ export default class KDChart extends React.Component {
       kills: "#0D5725",
       deaths: "#B81215"
     };
-
     this.path = g
       .selectAll("path")
       .data(root.descendants())
@@ -119,7 +130,7 @@ export default class KDChart extends React.Component {
 
     this.path
       .append("path")
-      .attr("d", this.generateArc())
+      .attr("d", this.generateArc({ x, y }))
       .style("stroke", "#fff")
       .style(
         "fill",
@@ -138,6 +149,10 @@ export default class KDChart extends React.Component {
       .style("font-size", "3em");
 
     function click(d) {
+      // d3.selectAll("path").on("mouseover", null);
+      d3.selectAll("path").on("mouseleave", null);
+
+      let arc = this.generateArc({ x, y });
       this.path
         .transition()
         .duration(750)
@@ -151,9 +166,10 @@ export default class KDChart extends React.Component {
           };
         })
         .selectAll("path")
-        .attrTween("d", d => () => this.generateArc(x,y)(d));
+        // .on("mouseleave", this.hideInfo)
+        .attrTween("d", d => () => arc(d));
     }
-    d3.select("g").on("mouseleave", this.hideInfo.bind(this));
+    d3.selectAll("path").on("mouseleave", this.hideInfo.bind(this));
   }
 
   transformData() {
@@ -213,20 +229,13 @@ export default class KDChart extends React.Component {
 
   showInfo(d) {
     if (d.parent) {
-      const radius = Math.min(this.width, this.height) / 2;
-      const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-      const x = d3.scaleLinear().range([0, 2 * Math.PI]);
-      const y = d3.scaleSqrt().range([0, radius / 2]);
-      
-      
-      let percentValue = (100 * d.value / d.parent.value).toPrecision(2);
-      
+      const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
+      let multiplier = d.height == 0 ? 2 : 1;
       d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
-      const sequenceArray = d.ancestors().reverse();
-      sequenceArray.shift();
-      const multiplier = d.depth === sequenceArray.length ? 2 : 1
 
+      const sequenceArray = d.ancestors().reverse();
+
+      sequenceArray.shift();
 
       d3.selectAll("path").style("opacity", 0.4);
 
@@ -234,31 +243,22 @@ export default class KDChart extends React.Component {
         .selectAll("path")
         .filter(node => sequenceArray.indexOf(node) >= 0)
         .style("opacity", 1)
-        .filter(node => sequenceArray.reverse().indexOf(node) === 0)
-        .attr("d", this.generateArc(x, y, multiplier));
+        .filter(
+          node => sequenceArray.indexOf(node) === sequenceArray.length - 1
+        );
+      // .attr("d", d => this.generateArc2({ multiplier })(d));
     }
   }
 
   hideInfo(d) {
-    d3.selectAll("path").on("mouseover", null);
-    // debugger
-
-    const radius = Math.min(this.width, this.height) / 2;
-    const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
-    const y = d3.scaleSqrt().range([0, radius / 2]);
-
-    let arc = this.generateArc(x,y)
-
     d3
       .selectAll("path")
       .transition()
-      .duration(300)
+      .duration(500)
       .style("opacity", 1)
-      .attr("d", arc)
+      .attr("d", this.generateArc({}))
       .on("end", d => {
-        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
+        d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
       });
   }
 
