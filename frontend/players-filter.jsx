@@ -21,9 +21,9 @@ export default class PlayerFilter extends React.Component {
       .once("value", snap => this.setState({ players: snap.val() }));
   }
 
- // TO DO: rewrite the function, use closure maybe?
+  // TO DO: rewrite the function, use closure maybe?
   filterPlayers() {
-    const {players} = this.state;
+    const { players } = this.state;
 
     return pickBy(players, (value, key) => {
       if (!value.steamInfo) return;
@@ -39,6 +39,7 @@ export default class PlayerFilter extends React.Component {
   }
 
   render() {
+    debugger
     const filteredPlayers = this.filterPlayers();
 
     return (
@@ -52,7 +53,10 @@ export default class PlayerFilter extends React.Component {
             onChange={this.update("playerName")}
           />
         </div>
-        <PlayersIndex players={this.state.players} filteredPlayers={filteredPlayers} />
+        <PlayersIndex
+          players={this.state.players}
+          filteredPlayers={filteredPlayers}
+        />
       </div>
     );
   }

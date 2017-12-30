@@ -1,31 +1,29 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 
 const tableRow = ({ player, callback }) => {
-  if (player.steamInfo) {
-    var iconStyle = {
-      width: "50px",
-      height: "50px",
-      borderRadius: "4px",
-      backgroundSize: "contain",
-      backgroundImage: "url(" + player.steamInfo.imageFull + ")"
-    };
+  if (!player.steamInfo) return null;
+  // if (player.steamInfo) {
+  //   var iconStyle = {
+  //     width: "50px",
+  //     height: "50px",
+  //     borderRadius: "4px",
+  //     backgroundSize: "contain",
+  //     backgroundImage: "url(" + player.steamInfo.imageFull + ")"
+  //   };
     return (
-      <div key={player.steamInfo.id} className="table-row">
-        <div className="user-info">
-          <div className="profile-image" style={iconStyle} />
-          <div className="vert-line" />
-          <div className="profile-name">{player.steamInfo.name}</div>
+      <Link to={`/players/${player.steamInfo.name}`} className="table-row">
+        <div className="profile-image">
+          <img src={player.steamInfo.imageFull} />
         </div>
-
-      </div>
+        <div className="profile-name">{player.steamInfo.name}</div>
+      </Link>
     );
-  } else {
-    return null;
-  }
+
 };
 export default tableRow;
 
-// 
+//
 // <div className="checkboxes">
 //   <input
 //     type="checkbox"
