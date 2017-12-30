@@ -3,16 +3,9 @@ import { Link } from 'react-router-dom';
 
 const tableRow = ({ player, callback }) => {
   if (!player.steamInfo) return null;
-  // if (player.steamInfo) {
-  //   var iconStyle = {
-  //     width: "50px",
-  //     height: "50px",
-  //     borderRadius: "4px",
-  //     backgroundSize: "contain",
-  //     backgroundImage: "url(" + player.steamInfo.imageFull + ")"
-  //   };
+
     return (
-      <Link to={`/players/${player.steamInfo.name}`} className="table-row">
+      <Link to={`/players/${player.steamInfo.id}`} className="table-row">
         <div className="profile-image">
           <img src={player.steamInfo.imageFull} />
         </div>
