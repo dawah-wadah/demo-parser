@@ -210,7 +210,6 @@ function parseDemofile(file, callback) {
       let promises = [];
 
       Object.keys(shots).forEach(key => {
-        debugger;
         promises.push(storeShots(key, shots[key]));
       });
       Promise.all(promises).then(() => {
