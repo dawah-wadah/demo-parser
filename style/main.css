@@ -94,11 +94,13 @@
   text-decoration: none;
   padding: 0.5em 1em;
   color: #79beec;
+  cursor: none;
 }
 
 .table-row:hover {
   background: #f0a76994;
   color: #C7E181;
+  cursor: url(../assets/crosshair.png), auto;
 }
 
 .profile-image {
