@@ -40,7 +40,7 @@ export default class PlayerFilter extends React.Component {
 
   render() {
     const filteredPlayers = this.filterPlayers();
-    debugger
+
     return (
       <div className="players-container">
         <div className="filter">

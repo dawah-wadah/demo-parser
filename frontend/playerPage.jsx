@@ -34,20 +34,23 @@ export default class PlayerPage extends React.Component {
   }
 
   componentDidMount() {
+    debugger
     //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
+    const playerId = this.props.match.params.id;
+
     firebase
       .database()
-      .ref("/76561198027906568/")
+      .ref(`/${playerId}`)
       .once("value", snap => {
         this.setState({
           player: snap.val()
         });
         return snap.val();
       })
-      .then(info => {
-        let id = info.val().steamInfo.id;
-        this.getSteamInfo(id);
-      });
+      // .then(info => {
+      //   let id = info.val().steamInfo.id;
+      //   this.getSteamInfo(id);
+      // });
   }
 
   updateFirebaseInfo(player) {
@@ -87,7 +90,7 @@ export default class PlayerPage extends React.Component {
   }
 
   render() {
-    if (this.state.player && this.state.status) {
+    if (this.state.player) {
       let player = this.state.player;
       let steamInfo = player.steamInfo;
       return (
@@ -99,13 +102,7 @@ export default class PlayerPage extends React.Component {
             />
             <div className="player-info">
               <div className="player-header-name">{steamInfo.name}</div>
-              <div className="player-status">
-                <div>{this.state.status.state}</div>
-                <div
-                  className="circle"
-                  style={{ background: this.state.status.color }}
-                />
-              </div>
+
             </div>
           </div>
           <div className="player-body">
