@@ -56,7 +56,6 @@ export default class Body extends React.Component {
 
   calcOpacity(limb) {
     let ratio = this.state.hitGroups[limb] / this.state.hitGroups.total;
-    console.log(ratio);
     ratio = ratio ? ratio : 0;
     return ratio * 5;
   }

@@ -4,6 +4,7 @@ import { values } from "lodash";
 export default class WeaponsChart extends React.Component {
   constructor(props) {
     super(props);
+
   }
 
   processData() {
@@ -59,7 +60,7 @@ export default class WeaponsChart extends React.Component {
             <th>Accuracy</th>
           </tr>
           {weapons.map(weapon => {
-            return <TableRow row={weapon} />;
+            return <TableRow row={weapon} cb={this.props.updateState}/>;
           })}
         </tbody>
       </table>
@@ -67,8 +68,8 @@ export default class WeaponsChart extends React.Component {
   }
 }
 
-const TableRow = ({ row }) => {
-  return <tr>
+const TableRow = ({ row, cb }) => {
+  return <tr onClick={() => cb(row.name)}>
       <td>
         <img src={"assets/weapons/weapon_" + row.name + ".svg"} />
       </td>

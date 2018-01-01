@@ -8,7 +8,7 @@ import Body from './body.jsx'
 export default class PlayerPage extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {weaponName: ""};
   }
 
   getState(num) {
@@ -91,7 +91,7 @@ export default class PlayerPage extends React.Component {
 
   render() {
     if (!this.state.player) { return null; }
-
+    console.log(this.state.weaponName)
     let player = this.state.player;
     let steamInfo = player.steamInfo;
 
@@ -110,7 +110,7 @@ export default class PlayerPage extends React.Component {
         <div className="player-body">
           <Resize
             component={[
-              <WeaponsChart weapons={this.state.player["Weapons Data"]} />, <Body/>
+              <WeaponsChart weapons={this.state.player["Weapons Data"]} updateState={(name) => this.setState({weaponName: name}) }/>, <Body/>
             ]}
           />
         </div>
