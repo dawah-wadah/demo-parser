@@ -1,9 +1,7 @@
 import React from "react";
 import firebase from "firebase";
-import WeaponsChart from "./weapons_chart.jsx";
 import * as APIKeys from "../keys.json";
 import Resize from "./resize-test.jsx";
-import Body from './body.jsx'
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -34,7 +32,6 @@ export default class PlayerPage extends React.Component {
   }
 
   componentDidMount() {
-    debugger
     //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
@@ -109,9 +106,8 @@ export default class PlayerPage extends React.Component {
         </div>
         <div className="player-body">
           <Resize
-            component={[
-              <WeaponsChart weapons={this.state.player["Weapons Data"]} />, <Body/>
-            ]}
+            data={player["Weapons Data"]}
+            id={steamInfo.id}
           />
         </div>
       </div>

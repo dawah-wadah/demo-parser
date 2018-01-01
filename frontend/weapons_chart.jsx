@@ -59,7 +59,7 @@ export default class WeaponsChart extends React.Component {
             <th>Accuracy</th>
           </tr>
           {weapons.map(weapon => {
-            return <TableRow row={weapon} />;
+            return <TableRow row={weapon} cb={this.props.cb}/>;
           })}
         </tbody>
       </table>
@@ -67,8 +67,8 @@ export default class WeaponsChart extends React.Component {
   }
 }
 
-const TableRow = ({ row }) => {
-  return <tr>
+const TableRow = ({ row, cb }) => {
+  return <tr onClick={() => cb(row.name)}>
       <td>
         <img src={"assets/weapons/weapon_" + row.name + ".svg"} />
       </td>
@@ -76,7 +76,7 @@ const TableRow = ({ row }) => {
       <td>{row.shotsFired}</td>
       <td>{row.damageDone}</td>
       <td>{row.totalHits}</td>
-      
+
       <td>{Math.floor((row.totalHits / row.shotsFired).toFixed(2) * 100)}%</td>
     </tr>;
 };
