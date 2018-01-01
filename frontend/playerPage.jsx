@@ -90,32 +90,31 @@ export default class PlayerPage extends React.Component {
   }
 
   render() {
-    if (this.state.player) {
-      let player = this.state.player;
-      let steamInfo = player.steamInfo;
-      return (
-        <div className="player-page">
-          <div className="player-header">
-            <div
-              className="player-header-image"
-              style={{ backgroundImage: "url(" + steamInfo.imageFull + ")" }}
-            />
-            <div className="player-info">
-              <div className="player-header-name">{steamInfo.name}</div>
+    if (!this.state.player) { return null; }
 
-            </div>
-          </div>
-          <div className="player-body">
-            <Resize
-              component={[
-                <WeaponsChart weapons={this.state.player["Weapons Data"]} />, <Body/>
-              ]}
-            />
+    let player = this.state.player;
+    let steamInfo = player.steamInfo;
+
+    return (
+      <div className="player-page">
+        <div className="player-header">
+          <div
+            className="player-header-image"
+            style={{ backgroundImage: "url(" + steamInfo.imageFull + ")" }}
+          />
+          <div className="player-info">
+            <div className="player-header-name">{steamInfo.name}</div>
+
           </div>
         </div>
-      );
-    } else {
-      return null;
-    }
+        <div className="player-body">
+          <Resize
+            component={[
+              <WeaponsChart weapons={this.state.player["Weapons Data"]} />, <Body/>
+            ]}
+          />
+        </div>
+      </div>
+    );
   }
 }
