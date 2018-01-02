@@ -4,7 +4,6 @@ import { values } from "lodash";
 export default class WeaponsChart extends React.Component {
   constructor(props) {
     super(props);
-
   }
 
   processData() {
@@ -17,26 +16,29 @@ export default class WeaponsChart extends React.Component {
 
   processWeapon(name) {
     let hitGroups = {
-      head: 0,
+      "head": 0,
       "left-arm": 0,
       "left-leg": 0,
       "right-arm": 0,
       "right-leg": 0,
-      torso: 0,
-      total: 0
+      "torso": 0,
+      "total": 0
     };
     let damageDone = 0;
     let shotsFired = 0;
     let totalHits = 0;
 
-    values(this.props.weapons[name]).forEach(game => {
-      damageDone += game.damage_dealt;
-      shotsFired += game.totalShots;
-      totalHits += game.totalHits;
-      Object.keys(game.hitGroups).forEach(limb => {
-        hitGroups[limb] += game.hitGroups[limb];
+    values(this.props.weapons[name])
+      .forEach(game => {
+        damageDone += game.damage_dealt;
+        shotsFired += game.totalShots;
+        totalHits += game.totalHits;
+
+        Object.keys(game.hitGroups).forEach(limb => {
+          hitGroups[limb] += game.hitGroups[limb];
+        });
       });
-    });
+
     return {
       name,
       hitGroups,
@@ -46,8 +48,15 @@ export default class WeaponsChart extends React.Component {
     };
   }
 
-  render() {
+  renderWeapons() {
     let weapons = this.processData();
+
+    return weapons.map((weapon, id) => (
+      <TableRow key={id} row={weapon} renderDamage={this.props.changeWeapon}/>
+    ));
+  }
+
+  render() {
     return (
       <table className="weapons-table">
         <tbody>
@@ -59,25 +68,24 @@ export default class WeaponsChart extends React.Component {
             <th>Total Hits</th>
             <th>Accuracy</th>
           </tr>
-          {weapons.map(weapon => {
-            return <TableRow row={weapon} cb={this.props.cb}/>;
-          })}
+          {this.renderWeapons()}
         </tbody>
       </table>
     );
   }
 }
 
-const TableRow = ({ row, cb }) => {
-  return <tr onClick={() => cb(row.name)}>
+const TableRow = ({ row, renderDamage }) => {
+  return (
+    <tr onClick={() => renderDamage(row.name)}>
       <td>
-        <img src={"assets/weapons/weapon_" + row.name + ".svg"} />
+        <img src={`assets/weapons/weapon_${row.name}.svg`} />
       </td>
       <td>{row.name}</td>
       <td>{row.shotsFired}</td>
       <td>{row.damageDone}</td>
       <td>{row.totalHits}</td>
-
       <td>{Math.floor((row.totalHits / row.shotsFired).toFixed(2) * 100)}%</td>
-    </tr>;
+    </tr>
+  );
 };

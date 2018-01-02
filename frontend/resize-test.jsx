@@ -7,10 +7,13 @@ import Body from './body.jsx'
 export default class ResizableTest extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       width: 0,
       weaponsName: ""
     };
+
+    this.resize = this.resize.bind(this);
   }
 
   resize() {
@@ -19,21 +22,21 @@ export default class ResizableTest extends React.Component {
   }
 
   changeWeapon(weaponName){
-    console.log(weaponName)
-    this.setState({weaponName})
+    this.setState({ weaponName });
   }
 
   render() {
-
     let cb = this.changeWeapon
-    let weaponName = this.state.weaponName
-    let player = this.props.id
+
+    const {weaponName} = this.state;
+    const player = this.props.id;
+
     return (
       <div className="resize-parent">
-        <button onClick={this.resize.bind(this)}>Resize</button>
+        <button onClick={this.resize}>Resize</button>
         <div className="flex full">
           <div className="resize-child first">
-            <WeaponsChart weapons={this.props.data}  cb={(name) => this.changeWeapon(name)}/>
+            <WeaponsChart weapons={this.props.data} changeWeapon={(name) => this.changeWeapon(name)} />
           </div>
           <div className="resize-child second" style={this.state}>
             <Body weapon={{weaponName}} id={player}/>
