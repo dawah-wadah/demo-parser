@@ -1,20 +1,20 @@
 import React from "react";
 import { isEmpty, values } from "lodash";
 
-import Row from "./tableRow.jsx";
+import PlayerItem from "./player-item";
 
 const PlayersIndex = ({ players, filteredPlayers }) => {
   if (players.length === 0) {
     return <div className="spinning-logo" />;
   }
 
-  const tableRows = values(filteredPlayers).map(player => (
-    <Row key={player.steamInfo.id} player={player} />
+  const playerRows = values(filteredPlayers).map(player => (
+    <PlayerItem key={player.steamInfo.id} player={player} />
   ));
 
   const result =
-    tableRows.length > 0 ? (
-      tableRows
+    playerRows.length > 0 ? (
+      playerRows
     ) : (
       <div className="fat-msg">No players found</div>
     );
