@@ -60,7 +60,7 @@ export default class WeaponsChart extends React.Component {
             <th>Accuracy</th>
           </tr>
           {weapons.map(weapon => {
-            return <TableRow row={weapon} cb={this.props.updateState}/>;
+            return <TableRow row={weapon} cb={this.props.cb}/>;
           })}
         </tbody>
       </table>
@@ -77,7 +77,7 @@ const TableRow = ({ row, cb }) => {
       <td>{row.shotsFired}</td>
       <td>{row.damageDone}</td>
       <td>{row.totalHits}</td>
-      
+
       <td>{Math.floor((row.totalHits / row.shotsFired).toFixed(2) * 100)}%</td>
     </tr>;
 };

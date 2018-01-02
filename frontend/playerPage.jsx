@@ -1,9 +1,7 @@
 import React from "react";
 import firebase from "firebase";
-import WeaponsChart from "./weapons_chart.jsx";
 import * as APIKeys from "../keys.json";
 import Resize from "./resize-test.jsx";
-import Body from './body.jsx'
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -34,7 +32,6 @@ export default class PlayerPage extends React.Component {
   }
 
   componentDidMount() {
-    debugger
     //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
@@ -54,7 +51,7 @@ export default class PlayerPage extends React.Component {
   }
 
   updateFirebaseInfo(player) {
-    let id = player.steamid;
+    const id = player.steamid;
     //this will refetch any data from steam, may not work if you try this out locally because of CORS, so u may need to download a CORS Anywhere extension
     return firebase
       .database()
@@ -76,12 +73,14 @@ export default class PlayerPage extends React.Component {
       APIKeys.steamKey +
       "&steamids=" +
       id;
+    
     fetch(url)
       .then(results => results.json())
       .then(data => {
-        let shit = data.response.players;
-        shit.forEach(player => {
-          this.updateFirebaseInfo(player).then(() => {
+        let players = data.response.players;
+        players.forEach(player => {
+          this.updateFirebaseInfo(player)
+          .then(() => {
             this.setState({ status: this.getState(player.profilestate) });
           });
         });
@@ -91,10 +90,11 @@ export default class PlayerPage extends React.Component {
 
   render() {
     if (!this.state.player) { return null; }
-    console.log(this.state.weaponName)
-    let player = this.state.player;
-    let steamInfo = player.steamInfo;
 
+    console.log(this.state.weaponName)
+    const {player} = this.state;
+    const steamInfo = player.steamInfo;
+    
     return (
       <div className="player-page">
         <div className="player-header">
@@ -109,8 +109,9 @@ export default class PlayerPage extends React.Component {
         </div>
         <div className="player-body">
           <Resize
+updateState={(name) => this.setState({weaponName: name}) }
             component={[
-              <WeaponsChart weapons={this.state.player["Weapons Data"]} updateState={(name) => this.setState({weaponName: name}) }/>, <Body/>
+              <WeaponsChart weapons={this.state.player["Weapons Data"]}/>, <Body/>
             ]}
           />
         </div>
