@@ -1,11 +1,18 @@
-import Heatmap from "./frontend/heat.js";
-import Data from "./frontend/data.jsx";
-import KDChart from "./frontend/kd_chart.jsx";
+import Heatmap from "./frontend/heat";
+import Data from "./frontend/data";
+import KDChart from "./frontend/kd_chart";
+import Body from "./frontend/body";
+import Header from "./frontend/header";
+import Mainpage from "./frontend/mainpage";
+import Footer from "./frontend/footer";
 import initializeFB from "./base.js";
+import Player from './frontend/playerPage.jsx'
 
 import React from "react";
 import ReactDOM from "react-dom";
 import { Switch, Route, HashRouter } from "react-router-dom";
+import WeaponsChart from "./frontend/weapons_chart";
+import ResizableTest from "./frontend/resize-test";
 
 initializeFB();
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,11 +25,19 @@ class App extends React.Component {
     return (
       <HashRouter>
         <div id="main-body">
+          <Header />
           <Switch>
-            <Route exact path="/" component={Heatmap} />
+            <Route exact path="/" component={Mainpage} />
+            <Route exact path="/players/:id" component={Player} />
             <Route exact path="/player/:id/weapons" component={Data} />
             <Route exact path="/player/:id/kd" component={KDChart} />
+            <Route exact path="/body" component={Body} />
+            <Route exact path="/foo" component={Player} />
+            <Route exact path="/bar" component={WeaponsChart} />
+            <Route exact path="/baz" component={ResizableTest} />
+
           </Switch>
+          <Footer />
         </div>
       </HashRouter>
     );

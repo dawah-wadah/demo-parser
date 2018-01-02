@@ -1,64 +1,30 @@
-const defaultMapData = () => ({
-  Terrorist: { kills: {}, deaths: {} },
-  "Counter-Terrorist": { kills: {}, deaths: {} }
-});
+const storeShots = (playerName, weaponsData) => {
+  let promises = [];
 
-let globalData = {
-  kills: {
-    "Taylor Swift": { dust_2: defaultMapData() },
-    hlebopek: { dust_2: defaultMapData() }
-  },
-  grenades: { dust_2: {} }
-};
+  Object.keys(weaponsData).forEach(weapon => {
+    let data = {
+      totalShots: weaponsData[weapon].shots_fired,
+      headshots: weaponsData[weapon].headshots,
+      totalHits: weaponsData[weapon].shots_hit,
+      accuracy: (
+        weaponsData[weapon].shots_hit /
+        weaponsData[weapon].shots_fired *
+        100
+      ).toFixed(2)
+    };
 
-function storeData(attacker, victim, status, map, weapon) {
-  let killData = {
-    killer: attacker.name,
-    victim: victim.name,
-    location: {
-      victim: {
-        x: victim.position.x,
-        y: victim.position.y
-      },
-      killer: {
-        x: attacker.position.x,
-        y: attacker.position.y
-      }
-    },
-    weapon: weapon
-  };
+    promises.push(
+      new Promise(function(resolve, reject) {
+        firebase
+          .database()
+          .ref(`/${playerName}/Weapons Data/${weapon}`)
+          .push(data)
+          .then(() => resolve(), () => reject());
+      })
+    );
+  });
 
-  if (status === "kills") {
-    firebase
-      .database()
-      .ref(
-        "/" +
-          attacker.steam64Id +
-          "/" +
-          map +
-          "/" +
-          attacker.side +
-          "/" +
-          status +
-          "/"
-      )
-      .push(killData);
-  } else {
-    firebase
-      .database()
-      .ref(
-        "/" +
-          victim.steam64Id +
-          "/" +
-          map +
-          "/" +
-          victim.side +
-          "/" +
-          status +
-          "/"
-      )
-      .push(killData);
-  }
-
-  counter++;
+  return Promise.all(promises).then(() => {
+    return;
+  });
 }

@@ -51,8 +51,6 @@ export default class KDChart extends React.Component {
     let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
     let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
 
-    debugger
-
     return d3
       .arc()
       .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
@@ -118,13 +116,8 @@ export default class KDChart extends React.Component {
     partition(root);
 
     let colorScheme = {
-<<<<<<< HEAD
-      ct: "#232964",
-      t: "#F6A509",
-=======
       "Counter-Terrorist": "#232964",
       Terrorist: "#F6A509",
->>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
       kills: "#0D5725",
       deaths: "#B81215"
     };
@@ -151,25 +144,6 @@ export default class KDChart extends React.Component {
       .attr("id", "percentage")
       .attr("x", d => -50)
       .attr("y", d => 0)
-<<<<<<< HEAD
-      .style("font-size", "1em");
-
-    this.path
-      .append("path")
-      .attr("display", d => (d.depth ? null : "none"))
-      .attr("d", arc)
-      .style("stroke", "#fff")
-      .style("fill", d => {
-        if (colorScheme[d.data.name]) {
-          return colorScheme[d.data.name];
-        } else {
-          return color(d.data.name);
-        }
-      })
-      .on("mouseover", this.showInfo.bind(this));
-
-    d3.select("g").on("mouseleave", this.hideInfo.bind(this));
-=======
       .style("font-size", "3em");
 
     function click(d) {
@@ -194,7 +168,6 @@ export default class KDChart extends React.Component {
         .attrTween("d", d => () => arc(d));
     }
     d3.selectAll("path").on("mouseleave", this.hideInfo.bind(this));
->>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
   }
 
   transformData() {
@@ -253,16 +226,10 @@ export default class KDChart extends React.Component {
   }
 
   showInfo(d) {
-<<<<<<< HEAD
-    const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
-    // debugger
-    d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
-=======
     if (d.parent) {
       const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
       let multiplier = d.height == 0 ? 2 : 1;
       d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
->>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
 
       const sequenceArray = d.ancestors().reverse();
 
@@ -282,25 +249,14 @@ export default class KDChart extends React.Component {
   }
 
   hideInfo(d) {
-<<<<<<< HEAD
-    d3.selectAll("path").on("mouseover", null);
-
-=======
->>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
     d3
       .selectAll("path")
       .transition()
       .duration(500)
       .style("opacity", 1)
-<<<<<<< HEAD
-      .on("end", d => {
-        // debugger
-        return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
-=======
       .attr("d", this.generateArc({}))
       .on("end", d => {
         d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
->>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
       });
   }
 
