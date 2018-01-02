@@ -9,6 +9,7 @@ export default class KDChart extends React.Component {
     this.state = {};
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    // this.generateArc = this.generateArc.bind(this);
   }
 
   componentDidMount() {
@@ -27,16 +28,43 @@ export default class KDChart extends React.Component {
       });
   }
 
+  generateArc(options) {
+    let multiplier = options.multiplier ? options.multiplier : 1;
+    let radius = options.radius
+      ? options.radius
+      : Math.min(this.width, this.height) / 2;
+    let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
+    let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
+
+    return d3
+      .arc()
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+  }
+  generateArc2(options) {
+    let multiplier = options.multiplier ? options.multiplier : 1;
+    let radius = options.radius
+      ? options.radius
+      : Math.min(this.width, this.height) / 2;
+    let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
+    let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
+
+    debugger
+
+    return d3
+      .arc()
+      .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
+      .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
+      .innerRadius(d => Math.max(0, y(d.y0)))
+      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+  }
+
   extractData(sides) {
     let data = {
-      "Counter-Terrorist": {
-        deaths: {},
-        kills: {}
-      },
-      Terrorist: {
-        deaths: {},
-        kills: {}
-      }
+      "Counter-Terrorist": { deaths: {}, kills: {} },
+      Terrorist: { deaths: {}, kills: {} }
     };
 
     function insertData(team, status, weapon, value) {
@@ -57,9 +85,7 @@ export default class KDChart extends React.Component {
       }
     }
 
-    let newData = {
-      ctKills: {}
-    };
+    let newData = { ctKills: {} };
 
     this.setState({ data });
   }
@@ -69,10 +95,12 @@ export default class KDChart extends React.Component {
       return null;
     }
 
-    const b = this.transformData();
+    const parsedData = this.transformData();
     const radius = Math.min(this.width, this.height) / 2;
     const color = d3.scaleOrdinal(d3.schemeCategory10);
 
+    const x = d3.scaleLinear().range([0, 2 * Math.PI]);
+    const y = d3.scaleSqrt().range([0, radius / 2]);
     let g = d3
       .select("svg")
       .append("g")
@@ -81,35 +109,49 @@ export default class KDChart extends React.Component {
         "translate(" + this.width / 2 + "," + this.height / 2 + ")"
       );
 
-    let partition = d3.partition().size([2 * Math.PI, radius * radius / 2]);
-    let root = d3.hierarchy(b).sum(d => d.size);
+    let partition = d3.partition();
+    let root = d3
+      .hierarchy(parsedData)
+      .sum(d => d.size)
+      .sort((a, b) => a.value - b.value);
 
     partition(root);
 
     let colorScheme = {
+<<<<<<< HEAD
       ct: "#232964",
       t: "#F6A509",
+=======
+      "Counter-Terrorist": "#232964",
+      Terrorist: "#F6A509",
+>>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
       kills: "#0D5725",
       deaths: "#B81215"
     };
-
-    let arc = d3
-      .arc()
-      .startAngle(d => d.x0)
-      .endAngle(d => d.x1)
-      .innerRadius(d => Math.sqrt(d.y0))
-      .outerRadius(d => Math.sqrt(d.y1));
-
     this.path = g
       .selectAll("path")
       .data(root.descendants())
       .enter();
 
-    let percents = g
+    this.path
+      .append("path")
+      .attr("d", this.generateArc({ x, y }))
+      .style("stroke", "#fff")
+      .style(
+        "fill",
+        d =>
+          colorScheme[d.data.name]
+            ? colorScheme[d.data.name]
+            : color(d.data.name)
+      )
+      .on("mouseover", this.showInfo.bind(this))
+      .on("click", click.bind(this));
+    let percents = this.path
       .append("text")
       .attr("id", "percentage")
       .attr("x", d => -50)
       .attr("y", d => 0)
+<<<<<<< HEAD
       .style("font-size", "1em");
 
     this.path
@@ -127,6 +169,32 @@ export default class KDChart extends React.Component {
       .on("mouseover", this.showInfo.bind(this));
 
     d3.select("g").on("mouseleave", this.hideInfo.bind(this));
+=======
+      .style("font-size", "3em");
+
+    function click(d) {
+      // d3.selectAll("path").on("mouseover", null);
+      d3.selectAll("path").on("mouseleave", null);
+
+      let arc = this.generateArc({ x, y });
+      this.path
+        .transition()
+        .duration(750)
+        .tween("scale", () => {
+          let xd = d3.interpolate(x.domain(), [d.x0, d.x1]),
+            yd = d3.interpolate(y.domain(), [d.y0, 1]),
+            yr = d3.interpolate(y.range(), [d.y0 ? 20 : 0, radius / 2]);
+          return t => {
+            x.domain(xd(t));
+            y.domain(yd(t)).range(yr(t));
+          };
+        })
+        .selectAll("path")
+        // .on("mouseleave", this.hideInfo)
+        .attrTween("d", d => () => arc(d));
+    }
+    d3.selectAll("path").on("mouseleave", this.hideInfo.bind(this));
+>>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
   }
 
   transformData() {
@@ -156,11 +224,11 @@ export default class KDChart extends React.Component {
           name: "kills",
           children: [
             {
-              name: "ct",
+              name: "Counter-Terrorist",
               children: getChildren(data["Counter-Terrorist"].kills)
             },
             {
-              name: "t",
+              name: "Terrorist",
               children: getChildren(data["Terrorist"].kills)
             }
           ]
@@ -169,10 +237,13 @@ export default class KDChart extends React.Component {
           name: "deaths",
           children: [
             {
-              name: "ct",
+              name: "Counter-Terrorist",
               children: getChildren(data["Counter-Terrorist"].deaths)
             },
-            { name: "t", children: getChildren(data["Terrorist"].deaths) }
+            {
+              name: "Terrorist",
+              children: getChildren(data["Terrorist"].deaths)
+            }
           ]
         }
       ]
@@ -182,32 +253,54 @@ export default class KDChart extends React.Component {
   }
 
   showInfo(d) {
+<<<<<<< HEAD
     const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
     // debugger
     d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
+=======
+    if (d.parent) {
+      const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
+      let multiplier = d.height == 0 ? 2 : 1;
+      d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
+>>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
 
-    const sequenceArray = d.ancestors().reverse();
-    sequenceArray.shift();
+      const sequenceArray = d.ancestors().reverse();
 
-    d3.selectAll("path").style("opacity", 0.4);
+      sequenceArray.shift();
 
-    this.svg
-      .selectAll("path")
-      .filter(node => sequenceArray.indexOf(node) >= 0)
-      .style("opacity", 1);
+      d3.selectAll("path").style("opacity", 0.4);
+
+      this.svg
+        .selectAll("path")
+        .filter(node => sequenceArray.indexOf(node) >= 0)
+        .style("opacity", 1)
+        .filter(
+          node => sequenceArray.indexOf(node) === sequenceArray.length - 1
+        )
+        // .attr("d", d => this.generateArc2({ multiplier })(d));
+    }
   }
 
   hideInfo(d) {
+<<<<<<< HEAD
     d3.selectAll("path").on("mouseover", null);
 
+=======
+>>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
     d3
       .selectAll("path")
       .transition()
       .duration(500)
       .style("opacity", 1)
+<<<<<<< HEAD
       .on("end", d => {
         // debugger
         return d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
+=======
+      .attr("d", this.generateArc({}))
+      .on("end", d => {
+        d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
+>>>>>>> 6a5db5287b8aa605b82fcf704a554964b7c42e48
       });
   }
 

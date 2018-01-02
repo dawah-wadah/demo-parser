@@ -1,9 +1,9 @@
 const fs = require("fs");
+const mover = require("fs-extra");
 const assert = require("assert");
 const path = require("path");
 const dir = "./demos";
 const demo = require("demofile");
-const ProgressBar = require("ascii-progress");
 const firebase = require("firebase");
 const initializeFB = require("./base.js");
 
@@ -43,7 +43,7 @@ function storeData(attacker, victim, status, map, weapon) {
       .database()
       .ref(
         "/" +
-          attacker.name +
+          attacker.steam64Id +
           "/" +
           map +
           "/" +
@@ -57,7 +57,15 @@ function storeData(attacker, victim, status, map, weapon) {
     firebase
       .database()
       .ref(
-        "/" + victim.name + "/" + map + "/" + victim.side + "/" + status + "/"
+        "/" +
+          victim.steam64Id +
+          "/" +
+          map +
+          "/" +
+          victim.side +
+          "/" +
+          status +
+          "/"
       )
       .push(killData);
   }
@@ -67,13 +75,15 @@ function storeData(attacker, victim, status, map, weapon) {
 
 function storeShots(playerName, weaponsData) {
   let promises = [];
+  console.log(playerName)
 
   Object.keys(weaponsData).forEach(weapon => {
     let data = {
       totalShots: weaponsData[weapon].shots_fired,
       headshots: weaponsData[weapon].headshots,
       totalHits: weaponsData[weapon].shots_hit,
-      accuracy: (weaponsData[weapon].shots_hit /
+      accuracy: (
+        weaponsData[weapon].shots_hit /
         weaponsData[weapon].shots_fired *
         100
       ).toFixed(2)
@@ -95,38 +105,21 @@ function storeShots(playerName, weaponsData) {
   });
 }
 
-function hasKilled(victim, attacker, weapon, map, ...playerID) {
-  playerID.forEach(id => {
-    if (attacker.steam64Id == id) {
-      storeData(attacker, victim, "kills", map, weapon);
-    }
-  });
+function hasKilled(victim, attacker, weapon, map) {
+  storeData(attacker, victim, "kills", map, weapon);
 }
 
-function wasKilled(victim, attacker, weapon, map, ...playerID) {
-  playerID.forEach(id => {
-    if (victim.steam64Id == id) {
-      storeData(attacker, victim, "deaths", map, weapon);
-    }
-  });
+function wasKilled(victim, attacker, weapon, map) {
+  storeData(attacker, victim, "deaths", map, weapon);
 }
 
 function storeGrenadeData(evt) {
-  // if (globalData.grenades.dust_2[evt.name] === undefined) {
-  //   globalData.grenades.dust_2[evt.name] = {};
-  // }
   let location = { x: evt.x, y: evt.y };
-  // globalData.grenades.dust_2[evt.name][counter] = location;
   firebase
     .database()
     .ref("/grenades/de_dust2/" + evt.name + "/")
     .push(location);
   counter++;
-}
-
-function updateProgress(bar, demoFile) {
-  bar.current = demoFile.currentTick;
-  bar.tick();
 }
 
 function randomColor() {
@@ -140,40 +133,17 @@ function newWeapon() {
   return {
     shots_fired: 0,
     shots_hit: 0,
-    headshots: 0
+    headshots: 0,
+    damage_dealt: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0
   };
 }
-
-function newGame() {
-  return {
-    wadah: {},
-    vlad: {}
-  };
-}
-
-/*
-player {
-  map: {
-    weapons: {
-      weapon_name: {
-        shots_fired: INT,
-        shots_hit: INT,
-        headshots: INT
-      }
-    },
-    tSide: {
-      kills: {},
-      deaths:{},
-    },
-    ctSide: {
-      kills: {},
-      deaths:{},
-    }
-  }
-}
-
-
-*/
 
 function weaponStats(weapon, player) {}
 
@@ -182,30 +152,27 @@ function parseDemofile(file, callback) {
   fs.readFile(file, function(err, buffer) {
     assert.ifError(err);
     let map;
-    let percentage = 0;
-    let bar = new ProgressBar({
-      schema:
-        ` [:bar.` +
-        randomColor() +
-        `] :current/:total :percent :elapseds :etas`,
-      total: 10
-    });
-
     var demoFile = new demo.DemoFile();
     demoFile.on("start", () => {
       map = demoFile.header.mapName;
-      bar.total = demoFile.header.playbackTicks;
       console.log("Loaded " + file);
     });
 
     demoFile.on("end", () => {
       console.log("Finished with " + file);
-      Promise.all([
-        storeShots("Taylor Swift", shots.wadah),
-        storeShots("hlebopek", shots.vlad)
-      ]).then(() => {
-        return callback();
+      let promises = [];
+
+      Object.keys(shots).forEach(key => {
+        debugger
+        promises.push(storeShots(key, shots[key]));
       });
+      // Promise.all([
+      //   storeShots("76561198027906568", shots.wadah),
+      //   storeShots("76561198171618625", shots.vlad)
+      // ])
+      // Promise.all(promises).then(() => {
+      //   return callback();
+      // });
     });
 
     let grenades = [
@@ -216,7 +183,7 @@ function parseDemofile(file, callback) {
       "decoy"
     ];
 
-    let shots = newGame();
+    let shots = {};
 
     grenades.forEach(grenade => {
       demoFile.gameEvents.on(`${grenade}_detonate`, e => {
@@ -249,69 +216,52 @@ function parseDemofile(file, callback) {
       let killerWeapon = e.weapon.split("_")[0];
 
       if (victim && attacker) {
-        hasKilled(
-          victim,
-          attacker,
-          killerWeapon,
-          map,
-          76561198027906568,
-          76561198171618625
-        );
-        wasKilled(
-          victim,
-          attacker,
-          killerWeapon,
-          map,
-          76561198027906568,
-          76561198171618625
-        );
+        hasKilled(victim, attacker, killerWeapon, map);
+        wasKilled(victim, attacker, killerWeapon, map);
       }
     });
 
     demoFile.gameEvents.on("weapon_fire", e => {
-      let playa = demoFile.entities.getByUserId(e.userid);
-      if (!playa) {
+      let playerID = demoFile.entities.getByUserId(e.userid);
+      debugger
+      if (!playerID) {
         return;
       }
       let weapon = e.weapon.split("_")[1];
-      if (playa.steam64Id == 76561198027906568) {
-        if (!shots.wadah[weapon]) {
-          shots.wadah[weapon] = newWeapon();
-        }
-        shots.wadah[weapon].shots_fired++;
-      } else if (playa.steam64Id == 76561198171618625) {
-        if (!shots.vlad[weapon]) {
-          shots.vlad[weapon] = newWeapon();
-        }
-        shots.vlad[weapon].shots_fired++;
+      if (!shots[playerID]) {
+        shots[playerID] = {};
       }
+      if (!shots[playerID][weapon]) {
+        shots[playerID][weapon] = newWeapon();
+      }
+      shots[playerID][weapon].shots_fired++;
     });
 
     demoFile.gameEvents.on("player_hurt", e => {
-      let playa = demoFile.entities.getByUserId(e.attacker);
-      if (!playa) {
+      let playerID = demoFile.entities.getByUserId(e.attacker);
+      debugger
+      if (!playerID) {
         return;
       }
-      if (playa.steam64Id == 76561198027906568) {
-        if (!shots.wadah[e.weapon]) {
-          shots.wadah[e.weapon] = newWeapon();
-        }
-        shots.wadah[e.weapon].shots_hit++;
-        if (e.hitgroup === 1 && e.health === 0) {
-          shots.wadah[e.weapon].headshots++;
-        }
-      } else if (playa.steam64Id == 76561198171618625) {
-        if (!shots.vlad[e.weapon]) {
-          shots.vlad[e.weapon] = newWeapon();
-        }
-        shots.vlad[e.weapon].shots_hit++;
-        if (e.hitgroup === 1 && e.health === 0) {
-          shots.vlad[e.weapon].headshots++;
-        }
+      if (!shots[playerID]) {
+        shots[playerID] = {};
+      }
+      if (!shots[playerID][e.weapon]) {
+        shots[playerID][e.weapon] = newWeapon();
+      }
+      shots[playerID][e.weapon].shots_hit++;
+      shots[playerID][e.weapon][e.hitgroup]++;
+      shots[playerID][e.weapon].damage_dealt += e.dmg_health;
+      shots[playerID][e.weapon].damage_dealt += e.dmg_armor;
+      if (e.hitgroup === 1 && e.health === 0) {
+        shots[playerID][e.weapon].headshots++;
       }
     });
-
-    demoFile.parse(buffer);
+    try {
+      demoFile.parse(buffer);
+    } catch (error) {
+      console.log("Skipping file, unreadable section");
+    }
   });
 }
 
@@ -330,10 +280,4 @@ fs.readdir(dir, function(err, items) {
     // closes the firebase connection
     firebase.database().goOffline();
   });
-
-  // store data locally
-
-  // Promise.all(promises).then(() =>
-  //   fs.writeFile("./data.json", JSON.stringify(globalData), "utf8")
-  // );
 });
