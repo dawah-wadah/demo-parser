@@ -1,7 +1,9 @@
 import React from "react";
 import firebase from "firebase";
 import * as APIKeys from "../keys.json";
+
 import Resize from "./resize-test.jsx";
+import PlayerTabs from "./player-tab";
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -86,11 +88,9 @@ export default class PlayerPage extends React.Component {
       });
   }
 
-
-
   render() {
     if (!this.state.player) { return null; }
-
+    debugger
     const {player} = this.state;
     const {steamInfo} = player;
 
@@ -104,6 +104,7 @@ export default class PlayerPage extends React.Component {
           <div className="player-info">
             <div className="player-header-name">{steamInfo.name}</div>
           </div>
+          <PlayerTabs />
         </div>
         <div className="player-body">
           <Resize data={player["Weapons Data"]} id={steamInfo.id} />

@@ -21,12 +21,12 @@ export default class ResizableTest extends React.Component {
     this.setState({ width });
   }
 
-  changeWeapon(weaponName){
+  changeWeapon(weaponName) {
     this.setState({ weaponName });
   }
 
   render() {
-    let cb = this.changeWeapon
+    let cb = this.changeWeapon;
 
     const {weaponName} = this.state;
     const player = this.props.id;
