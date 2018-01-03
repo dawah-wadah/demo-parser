@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from 'react-router-dom';
 
-const tableRow = ({ player, callback }) => {
+const PlayerItem = ({ player, callback }) => {
   if (!player.steamInfo) return null;
 
     return (
@@ -14,7 +14,7 @@ const tableRow = ({ player, callback }) => {
     );
 
 };
-export default tableRow;
+export default PlayerItem;
 
 //
 // <div className="checkboxes">

@@ -28,7 +28,7 @@ class App extends React.Component {
           <Header />
           <Switch>
             <Route exact path="/" component={Mainpage} />
-            <Route exact path="/players/:id" component={Player} />
+            <Route path="/players/:id" component={Player} />
             <Route exact path="/player/:id/weapons" component={Data} />
             <Route exact path="/player/:id/kd" component={KDChart} />
             <Route exact path="/body" component={Body} />

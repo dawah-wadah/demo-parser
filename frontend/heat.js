@@ -7,7 +7,7 @@ import { assign, merge, values } from "lodash";
 import firebase from "firebase";
 import h337 from "heatmap.js";
 
-import Row from "./tableRow.jsx";
+// import Row from "./tableRow.jsx";
 
 class Heatmap extends React.Component {
   constructor(props) {

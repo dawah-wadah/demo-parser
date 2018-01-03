@@ -51,11 +51,6 @@ export default class KDChart extends React.Component {
     let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
     let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
 
-<<<<<<< HEAD
-    debugger;
-
-=======
->>>>>>> 5a5aae2a3d51a3ff928bba8924efb3f40e2a126c
     return d3
       .arc()
       .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))

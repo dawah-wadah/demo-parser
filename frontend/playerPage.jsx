@@ -1,7 +1,12 @@
 import React from "react";
+import { Switch, Route } from "react-router-dom";
 import firebase from "firebase";
 import * as APIKeys from "../keys.json";
+
+import Header from "./header";
 import Resize from "./resize-test.jsx";
+import PlayerTabs from "./player-tab";
+import { values } from "lodash";
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -13,27 +18,27 @@ export default class PlayerPage extends React.Component {
   getState(num) {
     switch (num) {
       case 0:
-    return { state: "Offline", color: "grey" };
+        return { state: "Offline", color: "grey" };
       case 1:
-    return { state: "Online", color: "green" };
+        return { state: "Online", color: "green" };
       case 2:
-    return { state: "Busy", color: "orange" };
+        return { state: "Busy", color: "orange" };
       case 3:
-    return { state: "Away", color: "red" };
+        return { state: "Away", color: "red" };
       case 4:
-    return { state: "Snoozed", color: "yellow" };
+        return { state: "Snoozed", color: "yellow" };
       case 5:
-    return { state: "Looking For Trade", color: "purple" };
+        return { state: "Looking For Trade", color: "purple" };
       case 6:
-    return { state: "Looking to Play", color: "white" };
+        return { state: "Looking to Play", color: "white" };
 
-    default:
-      break;
+      default:
+        break;
     }
   }
 
   componentDidMount() {
-  //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
+    //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
     firebase
@@ -42,20 +47,20 @@ export default class PlayerPage extends React.Component {
       .once("value", snap => {
         this.setState({ player: snap.val() });
         return snap.val();
-      })
-  // .then(info => {
-  // let id = info.val().steamInfo.id;
-  // this.getSteamInfo(id);
-  // });
+      });
+    // .then(info => {
+    // let id = info.val().steamInfo.id;
+    // this.getSteamInfo(id);
+    // });
   }
 
   getSteamInfo(id) {
     let url =
-    "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
-    "key=" +
-    APIKeys.steamKey +
-    "&steamids=" +
-    id;
+      "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
+      "key=" +
+      APIKeys.steamKey +
+      "&steamids=" +
+      id;
 
     fetch(url)
       .then(results => results.json())
@@ -72,7 +77,7 @@ export default class PlayerPage extends React.Component {
 
   updateFirebaseInfo(player) {
     let id = player.steamid;
-  //this will refetch any data from steam, may not work if you try this out locally because of CORS, so u may need to download a CORS Anywhere extension
+    //this will refetch any data from steam, may not work if you try this out locally because of CORS, so u may need to download a CORS Anywhere extension
     return firebase
       .database()
       .ref("/")
@@ -86,29 +91,116 @@ export default class PlayerPage extends React.Component {
       });
   }
 
-
-
   render() {
-    if (!this.state.player) { return null; }
-
-    const {player} = this.state;
-    const {steamInfo} = player;
-
+    if (!this.state.player) {
+      return null;
+    }
+    const { player } = this.state;
+    const { steamInfo } = player;
     return (
       <div className="player-page">
         <div className="player-header">
           <div
-          className="player-header-image"
-          style={{ backgroundImage: `url(${steamInfo.imageFull})` }}
+            className="player-header-image"
+            style={{ backgroundImage: `url(${steamInfo.imageFull})` }}
           />
           <div className="player-info">
             <div className="player-header-name">{steamInfo.name}</div>
           </div>
+          <PlayerTabs id={steamInfo.id} />
         </div>
         <div className="player-body">
-          <Resize data={player["Weapons Data"]} id={steamInfo.id} />
+          <Switch>
+            <PropsRoute
+              exact
+              path={`/players/:id/overview`}
+              component={Overview}
+              player={player}
+            />
+            <Route exact path={`/players/:id/weapons`} component={Zo} />
+            <Route exact path={`/players/:id/heatmap`} component={Overview} />
+          </Switch>
         </div>
       </div>
     );
   }
 }
+{
+  /* <Resize data={player["Weapons Data"]} id={steamInfo.id} /> */
+}
+
+const Overview = ({ player }) => {
+  let games = player.games;
+  let maps = {
+    de_dust2: {
+      name: "Dust II",
+      timesPlayed: 0,
+      image: "https://csgo-stats.com/custom/img/favourite-maps/de_dust2_new.jpg"
+    },
+    mirage: {
+      name: "Mirage",
+      timesPlayed: 0,
+      image:
+        "https://csgo-stats.com/custom/img/favourite-maps/de_mirage.jpg"
+    },
+    inferno: {
+      name: "Inferno",
+      timesPlayed: 0,
+      image:
+        "https://csgo-stats.com/custom/img/favourite-maps/de_inferno_new.jpg"
+    },
+    nuke: {
+      name: "Nuke",
+      timesPlayed: 0,
+      image: "https://csgo-stats.com/custom/img/favourite-maps/de_nuke_new.jpg"
+    },
+    office: {
+      name: "Dust II",
+      timesPlayed: 0,
+      image:
+        "http://assets.vg247.com/current//2015/03/de_dust2_cs_go-600x337.jpg"
+    }
+  };
+  values(games).forEach(game => {
+    maps[game.Map].timesPlayed++;
+  });
+  let tiles = values(maps).map(mapData => MapImage(mapData));
+  http: return <div className="map-tiles">{tiles}</div>;
+};
+
+const MapImage = mapData => {
+  return (
+    <div className="map-tile" key={mapData.name}>
+      <div className="map-image">
+        <img src={mapData.image} />
+        <div className="map-info">
+          <div className="map-info-tags">
+            <span id="map-name">{mapData.name.toUpperCase()}</span>
+          </div>
+          <div className="map-info-tags">
+            <span>Times Played: {mapData.timesPlayed}</span>
+            <img src={`assets/weapons/trophy.svg`} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Zo = () => <div>GOGAGAGAG</div>;
+
+const renderMergedProps = (component, ...rest) => {
+  const finalProps = Object.assign({}, ...rest);
+  return React.createElement(component, finalProps);
+};
+
+const PropsRoute = ({ component, ...rest }) => {
+  return (
+    <Route
+      {...rest}
+      render={routeProps => {
+        return renderMergedProps(component, routeProps, rest);
+      }}
+    />
+  );
+};
