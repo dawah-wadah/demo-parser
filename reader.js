@@ -52,18 +52,22 @@ const fetchSteamProfiles = playerID => {
     .catch(err => console.log(err.message));
 };
 
-function storeData(attacker, victim, status, map, weapon) {
+function storeData(attacker, victim, status, map, weapon, gameID) {
   let killData = {
     killer: attacker.name,
+    killerID: attacker.steam64Id,
     victim: victim.name,
+    victimID: victim.steam64Id,
     location: {
       victim: {
         x: victim.position.x,
-        y: victim.position.y
+        y: victim.position.y,
+        theta: victim.eyeAngles.yaw
       },
       killer: {
         x: attacker.position.x,
-        y: attacker.position.y
+        y: attacker.position.y,
+        theta: attacker.eyeAngles.yaw
       }
     },
     weapon: weapon
@@ -84,9 +88,15 @@ function storeData(attacker, victim, status, map, weapon) {
         fetchSteamProfiles(playerID);
       }
     });
+  let playerURL = "/" + playerID + "/games/" + gameID + "/";
+  let Team = playerSide;
   firebase
     .database()
-    .ref("/" + playerID + "/" + map + "/" + playerSide + "/" + status + "/")
+    .ref(playerURL)
+    .update({ Map: map, Team });
+  firebase
+    .database()
+    .ref(playerURL + "/" + status + "/")
     .push(killData);
   counter++;
 }
@@ -103,7 +113,7 @@ function storeShots(playerName, weaponsData) {
         "left-arm": weaponsData[weapon]["left-arm"],
         "right-arm": weaponsData[weapon]["right-arm"],
         "left-leg": weaponsData[weapon]["left-leg"],
-        "right-leg": weaponsData[weapon]["right-leg"],
+        "right-leg": weaponsData[weapon]["right-leg"]
       },
       headShots: weaponsData[weapon].headshots,
       totalHits: weaponsData[weapon].shots_hit,
@@ -130,12 +140,12 @@ function storeShots(playerName, weaponsData) {
   });
 }
 
-function hasKilled(victim, attacker, weapon, map) {
-  storeData(attacker, victim, "kills", map, weapon);
+function hasKilled(victim, attacker, weapon, map, gameID) {
+  storeData(attacker, victim, "kills", map, weapon, gameID);
 }
 
-function wasKilled(victim, attacker, weapon, map) {
-  storeData(attacker, victim, "deaths", map, weapon);
+function wasKilled(victim, attacker, weapon, map, gameID) {
+  storeData(attacker, victim, "deaths", map, weapon, gameID);
 }
 
 function storeGrenadeData(evt) {
@@ -145,13 +155,6 @@ function storeGrenadeData(evt) {
     .ref("/grenades/de_dust2/" + evt.name + "/")
     .push(location);
   counter++;
-}
-
-function randomColor() {
-  let colors = "red cyan blue grey white black green yellow magenta brightRed brightBlue brightCyan brightWhite brightBlack brightGreen brightYellow brightMagenta".split(
-    " "
-  );
-  return colors[Math.floor(Math.random() * colors.length)];
 }
 
 function newWeapon() {
@@ -165,7 +168,7 @@ function newWeapon() {
     "left-arm": 0,
     "right-arm": 0,
     "left-leg": 0,
-    "right-leg": 0,
+    "right-leg": 0
   };
 }
 
@@ -199,8 +202,10 @@ function parseDemofile(file, callback) {
   fs.readFile(file, function(err, buffer) {
     assert.ifError(err);
     let map;
+    let gameID = `${file}`.split("./demos/")[1].split(".dem")[0];
     var demoFile = new demo.DemoFile();
     demoFile.on("start", () => {
+      debugger;
       map = demoFile.header.mapName;
       console.log("Loaded " + file);
     });
@@ -210,12 +215,54 @@ function parseDemofile(file, callback) {
       let promises = [];
 
       Object.keys(shots).forEach(key => {
-        debugger;
         promises.push(storeShots(key, shots[key]));
       });
       Promise.all(promises).then(() => {
         return callback();
       });
+      let teams = demoFile.teams;
+      let ts = teams[demo.TEAM_TERRORISTS];
+      let cts = teams[demo.TEAM_CTS];
+      let foo = {};
+      if (demoFile.gameRules.phase == "postgame") {
+        let winners;
+        let losers;
+        if (ts.score > cts.score) {
+          winners = ts;
+          losers = cts;
+        } else {
+          winners = cts;
+          losers = ts;
+        }
+        winners.members.forEach(player => {
+          if (player) {
+            return (foo[
+              player.steam64Id + `/games/` + gameID + "/" + "Win"
+            ] = true);
+          }
+        });
+        losers.members.forEach(player => {
+          if (player) {
+            return (foo[
+              player.steam64Id + `/games/` + gameID + "/" + "Win"
+            ] = false);
+          }
+        });
+      } else {
+        let players = ts.members.concat(cts.members);
+        players.forEach(player => {
+          if (player) {
+            return (foo[
+              player.steam64Id + `/games/` + gameID + "/" + "Win"
+            ] = "Demo Ended before Game Ended");
+          }
+        });
+        console.log("Wadah left the game too early");
+      }
+      firebase
+        .database()
+        .ref("/")
+        .update(foo);
     });
 
     let grenades = [
@@ -259,8 +306,8 @@ function parseDemofile(file, callback) {
       let killerWeapon = e.weapon.split("_")[0];
 
       if (victim && attacker) {
-        hasKilled(victim, attacker, killerWeapon, map);
-        wasKilled(victim, attacker, killerWeapon, map);
+        hasKilled(victim, attacker, killerWeapon, map, gameID);
+        wasKilled(victim, attacker, killerWeapon, map, gameID);
       }
     });
 

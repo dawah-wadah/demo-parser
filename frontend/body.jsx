@@ -26,6 +26,16 @@ export default class Body extends React.Component {
   }
 
   componentDidMount() {
+    this.getShit(this.props)
+  }
+
+  componentWillReceiveProps(nextProps){
+    if (this.props !== nextProps) {
+      this.getShit(nextProps)
+    }
+  }
+
+  getShit(props){
     let hitGroups = {
       head: 0,
       "left-arm": 0,
@@ -35,9 +45,13 @@ export default class Body extends React.Component {
       torso: 0,
       total: 0
     };
+    let weapon = props.weapon.weaponName
+    if (!weapon) {return null;}
+    let id = props.id
     firebase
       .database()
-      .ref("/76561198027906568/Weapons Data/ak47")
+      // .ref("/76561198027906568/Weapons Data/awp")
+      .ref("/" + id + "/Weapons Data/" + weapon)
       .once("value", snap => {
         Object.keys(snap.val()).forEach(push => {
           let slice = snap.val()[push].hitGroups;
@@ -56,7 +70,6 @@ export default class Body extends React.Component {
 
   calcOpacity(limb) {
     let ratio = this.state.hitGroups[limb] / this.state.hitGroups.total;
-    console.log(ratio);
     ratio = ratio ? ratio : 0;
     return ratio * 5;
   }
