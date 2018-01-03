@@ -1,16 +1,12 @@
 import React from "react";
-import { Switch, Route, HashRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-import Header from "./header";
-
-const PlayerTabs = () => {
-  debugger
-  return (
-    <Switch>
-      <Route exact path="/players/:id" component={Header} />
-    </Switch>
-  );
-
-};
+const PlayerTabs = ({ id }) => (
+  <div className="player-tabs">
+    <Link to={`/players/${id}/overview`}>Overview</Link>
+    <Link to={`/players/${id}/weapons`}>Weapons</Link>
+    <Link to={`/players/${id}/heatmap`}>Heatmap</Link>
+  </div>
+);
 
 export default PlayerTabs;

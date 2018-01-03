@@ -1,7 +1,9 @@
 import React from "react";
+import { Switch, Route } from "react-router-dom";
 import firebase from "firebase";
 import * as APIKeys from "../keys.json";
 
+import Header from "./header";
 import Resize from "./resize-test.jsx";
 import PlayerTabs from "./player-tab";
 
@@ -93,7 +95,7 @@ export default class PlayerPage extends React.Component {
     debugger
     const {player} = this.state;
     const {steamInfo} = player;
-
+    debugger
     return (
       <div className="player-page">
         <div className="player-header">
@@ -104,12 +106,25 @@ export default class PlayerPage extends React.Component {
           <div className="player-info">
             <div className="player-header-name">{steamInfo.name}</div>
           </div>
-          <PlayerTabs />
+          <PlayerTabs id={steamInfo.id} />
         </div>
         <div className="player-body">
+        <Switch>
+          <Route exact path={`/players/:id/overview`} component={Yo} />
+          <Route exact path={`/players/:id/weapons`} component={Zo} />
+          <Route exact path={`/players/:id/heatmap`} component={Yo} />
+        </Switch>
           <Resize data={player["Weapons Data"]} id={steamInfo.id} />
         </div>
       </div>
     );
   }
 }
+
+const Yo = () => (
+  <div>YYYYYYYYYYYYYYOYOYOYOYOYOYOYOYOYO</div>
+)
+
+const Zo = () => (
+  <div>GOGAGAGAG</div>
+)
