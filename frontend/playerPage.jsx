@@ -3,7 +3,7 @@ import { Switch, Route } from "react-router-dom";
 import firebase from "firebase";
 import * as APIKeys from "../keys.json";
 
-import Header from "./header";
+import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerTabs from "./player-tab";
 
@@ -17,49 +17,51 @@ export default class PlayerPage extends React.Component {
   getState(num) {
     switch (num) {
       case 0:
-    return { state: "Offline", color: "grey" };
+        return { state: "Offline", color: "grey" };
       case 1:
-    return { state: "Online", color: "green" };
+        return { state: "Online", color: "green" };
       case 2:
-    return { state: "Busy", color: "orange" };
+        return { state: "Busy", color: "orange" };
       case 3:
-    return { state: "Away", color: "red" };
+        return { state: "Away", color: "red" };
       case 4:
-    return { state: "Snoozed", color: "yellow" };
+        return { state: "Snoozed", color: "yellow" };
       case 5:
-    return { state: "Looking For Trade", color: "purple" };
+        return { state: "Looking For Trade", color: "purple" };
       case 6:
-    return { state: "Looking to Play", color: "white" };
+        return { state: "Looking to Play", color: "white" };
 
-    default:
-      break;
+      default:
+        break;
     }
   }
 
   componentDidMount() {
-  //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
+    //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
-    firebase
-      .database()
-      .ref(`/${playerId}`)
-      .once("value", snap => {
-        this.setState({ player: snap.val() });
-        return snap.val();
-      })
-  // .then(info => {
-  // let id = info.val().steamInfo.id;
-  // this.getSteamInfo(id);
-  // });
+    const player = require ("../taylor.json.json");
+    this.setState({ player });
+    // firebase
+    //   .database()
+    //   .ref(`/${playerId}`)
+    //   .once("value", snap => {
+    //     this.setState({ player: snap.val() });
+    //     return snap.val();
+    //   });
+    // .then(info => {
+    // let id = info.val().steamInfo.id;
+    // this.getSteamInfo(id);
+    // });
   }
 
   getSteamInfo(id) {
     let url =
-    "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
-    "key=" +
-    APIKeys.steamKey +
-    "&steamids=" +
-    id;
+      "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
+      "key=" +
+      APIKeys.steamKey +
+      "&steamids=" +
+      id;
 
     fetch(url)
       .then(results => results.json())
@@ -76,7 +78,7 @@ export default class PlayerPage extends React.Component {
 
   updateFirebaseInfo(player) {
     let id = player.steamid;
-  //this will refetch any data from steam, may not work if you try this out locally because of CORS, so u may need to download a CORS Anywhere extension
+    //this will refetch any data from steam, may not work if you try this out locally because of CORS, so u may need to download a CORS Anywhere extension
     return firebase
       .database()
       .ref("/")
@@ -91,17 +93,19 @@ export default class PlayerPage extends React.Component {
   }
 
   render() {
-    if (!this.state.player) { return null; }
-    debugger
-    const {player} = this.state;
-    const {steamInfo} = player;
-    debugger
+    if (!this.state.player) {
+      return null;
+    }
+
+    const { player } = this.state;
+    const { steamInfo } = player;
+    debugger;
     return (
       <div className="player-page">
         <div className="player-header">
           <div
-          className="player-header-image"
-          style={{ backgroundImage: `url(${steamInfo.imageFull})` }}
+            className="player-header-image"
+            style={{ backgroundImage: `url(${steamInfo.imageFull})` }}
           />
           <div className="player-info">
             <div className="player-header-name">{steamInfo.name}</div>
@@ -109,22 +113,23 @@ export default class PlayerPage extends React.Component {
           <PlayerTabs id={steamInfo.id} />
         </div>
         <div className="player-body">
-        <Switch>
-          <Route exact path={`/players/:id/overview`} component={Yo} />
-          <Route exact path={`/players/:id/weapons`} component={Zo} />
-          <Route exact path={`/players/:id/heatmap`} component={Yo} />
-        </Switch>
-          <Resize data={player["Weapons Data"]} id={steamInfo.id} />
+          <Switch>
+            <Route exact path={`/players/:id/overview`} component={Yo} />
+            <Route
+              exact
+              path={`/players/:id/weapons`}
+              render={() => (
+                <Resize data={player["Weapons Data"]} id={steamInfo.id} />
+              )}
+            />
+          <Route exact path={`/players/:id/heatmap`} render={() => <Heatmap mapData={player["de_dust2"]} />} />
+          </Switch>
         </div>
       </div>
     );
   }
 }
 
-const Yo = () => (
-  <div>YYYYYYYYYYYYYYOYOYOYOYOYOYOYOYOYO</div>
-)
+const Yo = () => <div>YYYYYYYYYYYYYYOYOYOYOYOYOYOYOYOYO</div>;
 
-const Zo = () => (
-  <div>GOGAGAGAG</div>
-)
+const Zo = () => <div>GOGAGAGAG</div>;
