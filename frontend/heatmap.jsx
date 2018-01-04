@@ -11,7 +11,7 @@ class Heatmap extends React.Component {
     this.state = {
       heatmapConfig: {
         container: "",
-        radius: 10,
+        radius: 8,
         maxOpacity: 0.8,
         minOpacity: 0,
         blur: 0.75,
@@ -94,10 +94,10 @@ class Heatmap extends React.Component {
       const { x, y } = gameEvent[e].location[role];
 
       let xPos = Math.floor(
-        Math.abs(x - -2203) / 3764 * (840 * 4 / 10) + 64.7 * 4 / 10
+        Math.abs(x - -2203) / 3764 * (840 * 0.6) + 64.7 * 0.6
       );
       let yPos = Math.floor(
-        969.7 * 4 / 10 - Math.abs((y - -1031) / 4090 * (923.7 * 4 / 10))
+        969.7 * 0.6 - Math.abs((y - -1031) / 4090 * (923.7 * 0.6))
       );
 
       mapData.push({ x: xPos, y: yPos, value: 10 });

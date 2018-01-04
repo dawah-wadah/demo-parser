@@ -120,9 +120,9 @@
 }
 
 #heatmap {
-  width: calc(1024px * 0.4);
-  height: calc(1024px * 0.4);
-  background-size: calc(1024px * 0.4);
+  width: calc(1024px * 0.6);
+  height: calc(1024px * 0.6);
+  background-size: calc(1024px * 0.6);
   background-image: url("../assets/de_dust2_radar_spectate.jpg");
 }
 /* * { border: 1px solid red; } */
