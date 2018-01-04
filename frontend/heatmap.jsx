@@ -17,10 +17,7 @@ class Heatmap extends React.Component {
         blur: 0.75,
         gradient: { "0.2": "black" }
       },
-      heatmapLayers: {
-        kills: {},
-        deaths: {},
-      },
+      heatmapLayers: false,
       gameData: {
         grenades: {}
       },
@@ -31,6 +28,16 @@ class Heatmap extends React.Component {
       statuses: ["kills", "deaths"],
       info: false
     };
+
+    this.createHeatmapLayers = this.createHeatmapLayers.bind(this);
+  }
+
+  componentDidMount() {
+    /* Clones heatmapConfig object */
+    const heatmapConfig = { ...this.state.heatmapConfig };
+    heatmapConfig.container = this.refs.heatmap;
+
+    this.setState({ heatmapConfig }, this.createHeatmapLayers);
   }
 
   /* A heatmap color scheme generator */
@@ -44,7 +51,7 @@ class Heatmap extends React.Component {
   }
 
   /* Adds heatmap canvas elements to DOM and stores references in state */
-  createHeatMapLayer() {
+  createHeatmapLayers() {
     const properties = ["deaths", "kills"];
     let heatmapConfig = assign({}, this.state.heatmapConfig);
     let heatmapLayers = {};
@@ -57,16 +64,34 @@ class Heatmap extends React.Component {
     this.setState({ heatmapLayers });
   }
 
-  applyDataToMap(data, type) {
-    if (!this.state.heatmapConfig.container) {
+  /* Iterates over each game and draws heatmap depending on a type (deats or kills) */
+  applyDataToMap(type) {
+    if (!this.state.heatmapConfig.container || !this.state.heatmapLayers) {
       return null;
     }
 
-    let role = (type === "deaths" ? "victim" : "killer");
+    const roles = {
+      deaths: "victim",
+      kills: "killer"
+    };
+
+    let role = roles[type];
     let mapData = [];
 
-    for (let id in data) {
-      const { x, y } = data[id].location[role];
+    for (let game in this.props.gameData) {
+      let locationData = this.extractLocation(this.props.gameData[game][type], role)
+      mapData = [...mapData, ...locationData];
+    }
+
+    this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
+  }
+
+  /* Iterates over type events and returns array of coordinates */
+  extractLocation(gameEvent, role) {
+    let mapData = [];
+
+    for (let e in gameEvent) {
+      const { x, y } = gameEvent[e].location[role];
 
       let xPos = Math.floor(
         Math.abs(x - -2203) / 3764 * (840 * 4 / 10) + 64.7 * 4 / 10
@@ -77,16 +102,14 @@ class Heatmap extends React.Component {
 
       mapData.push({ x: xPos, y: yPos, value: 10 });
     }
-    debugger
-    this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
+
+    return mapData;
   }
 
   renderMap() {
-    const { mapData } = this.props;
-
-    for (let side in mapData) {
-      this.applyDataToMap(mapData[side], side);
-    }
+    ["deaths", "kills"].forEach(type => {
+      this.applyDataToMap(type);
+    });
   }
 
   render() {
@@ -99,9 +122,8 @@ class Heatmap extends React.Component {
     return (
       <div className="heatmap-container">
         <div id="heatmap" ref="heatmap">
-          {" "}
-          {this.renderMap()}{" "}
-        </div>{" "}
+          {this.renderMap()}
+        </div>
       </div>
     );
   }

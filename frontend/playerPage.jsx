@@ -40,15 +40,15 @@ export default class PlayerPage extends React.Component {
     //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
-    const player = require ("../taylor.json.json");
-    this.setState({ player });
-    // firebase
-    //   .database()
-    //   .ref(`/${playerId}`)
-    //   .once("value", snap => {
-    //     this.setState({ player: snap.val() });
-    //     return snap.val();
-    //   });
+    // const player = require ("../taylor.json.json");
+    // this.setState({ player });
+    firebase
+      .database()
+      .ref(`/${playerId}`)
+      .once("value", snap => {
+        this.setState({ player: snap.val() });
+        return snap.val();
+      });
     // .then(info => {
     // let id = info.val().steamInfo.id;
     // this.getSteamInfo(id);
@@ -122,7 +122,7 @@ export default class PlayerPage extends React.Component {
                 <Resize data={player["Weapons Data"]} id={steamInfo.id} />
               )}
             />
-          <Route exact path={`/players/:id/heatmap`} render={() => <Heatmap mapData={player["de_dust2"]} />} />
+          <Route exact path={`/players/:id/heatmap`} render={() => <Heatmap gameData={player.games} />} />
           </Switch>
         </div>
       </div>
