@@ -100,6 +100,18 @@
   cursor: none;
 }
 
+.player-overview {
+  display: flex;
+  justify-content: center;
+}
+.player-overview-table {
+  width: 80%;
+}
+
+.col {
+  width: 20%;
+}
+
 .table-row:hover {
   background: #f0a76994;
   color: #c7e181;
@@ -306,12 +318,10 @@ td > img {
 }
 
 .map-tiles {
-  width: 23%;
   height: 50%;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  border: 4px solid red;
 }
 
 .map-tile {
@@ -320,7 +330,6 @@ td > img {
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   width: 47%;
   margin: 10px 1%;
-  max-height: 200px;
 }
 
 .map-tile:nth-child(1) {
@@ -353,7 +362,7 @@ td > img {
   display: flex;
   height: 30px;
   color: black;
-  font-family: 'Ubuntu';
+  font-family: "Ubuntu";
   padding-top: 1px;
   padding-left: 10px;
   padding-right: 10px;
@@ -372,7 +381,56 @@ td > img {
 }
 
 #map-name {
-    font-size: 100%;
+  font-size: 100%;
+}
+
+.weapon-img {
+  display: flex;
+  justify-content: center;
+}
+
+.weapon-img > img {
+  display: block;
+  height: 100%;
+  width: 81%;
+}
+
+.weapons-table > img > svg > path {
+  fill: white;
+}
+
+.panel-tile {
+  max-height: 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.tile-footer {
+  display: flex;
+  justify-content: space-around;
+  max-height: 31px;
+  font-size: 30px;
+}
+
+.right-side {
+  display: flex;
+  justify-content: space-between;
+}
+
+.right-side > img {
+  object-fit: contain;
+  max-height: 100%;
+  margin: 0 5px;
+}
+
+.left-side {
+  font-size: 100%;
+}
+
+img {
+  height: initial;
 }
 
 /*#mainBubble {

@@ -6,7 +6,7 @@ import * as APIKeys from "../keys.json";
 import Header from "./header";
 import Resize from "./resize-test.jsx";
 import PlayerTabs from "./player-tab";
-import { values } from "lodash";
+import { values, capitalize } from "lodash";
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -129,56 +129,146 @@ export default class PlayerPage extends React.Component {
   /* <Resize data={player["Weapons Data"]} id={steamInfo.id} /> */
 }
 
+const newMap = string => ({
+  name: capitalize(string.split("_")[1]),
+  code: string,
+  timesPlayed: 0
+});
 const Overview = ({ player }) => {
   let games = player.games;
-  let maps = {
-    de_dust2: {
-      name: "Dust II",
-      timesPlayed: 0,
-      image: "https://csgo-stats.com/custom/img/favourite-maps/de_dust2_new.jpg"
-    },
-    mirage: {
-      name: "Mirage",
-      timesPlayed: 0,
-      image:
-        "https://csgo-stats.com/custom/img/favourite-maps/de_mirage.jpg"
-    },
-    inferno: {
-      name: "Inferno",
-      timesPlayed: 0,
-      image:
-        "https://csgo-stats.com/custom/img/favourite-maps/de_inferno_new.jpg"
-    },
-    nuke: {
-      name: "Nuke",
-      timesPlayed: 0,
-      image: "https://csgo-stats.com/custom/img/favourite-maps/de_nuke_new.jpg"
-    },
-    office: {
-      name: "Dust II",
-      timesPlayed: 0,
-      image:
-        "http://assets.vg247.com/current//2015/03/de_dust2_cs_go-600x337.jpg"
+  let weapons = player["Weapons Data"];
+  let recentGame = values(games)[0];
+  let maps = {};
+
+  [
+    "de_cbble",
+    "de_stmarc",
+    "de_inferno",
+    "de_lake",
+    "de_nuke",
+    "de_overpass"
+  ].forEach(name => {
+    if (!maps[name]) {
+      maps[name] = newMap(name);
     }
-  };
+  });
+
   values(games).forEach(game => {
+    if (!maps[game.Map]) {
+      maps[game.Map] = newMap(game.Map);
+    }
     maps[game.Map].timesPlayed++;
   });
-  let tiles = values(maps).map(mapData => MapImage(mapData));
-  http: return <div className="map-tiles">{tiles}</div>;
+
+  let mapTiles = values(maps)
+    .sort((a, b) => b.timesPlayed - a.timesPlayed)
+    .map(mapData => MapTile(mapData));
+
+  let gameTile = RecentGame(recentGame, weapons);
+  return (
+    <div className="player-overview">
+      <table className="player-overview-table">
+        <tbody>
+          <tr>
+            <th className="col">Recent Game</th>
+            <th className="col">Favorite Map</th>
+            <th className="col">Favorite Map</th>
+          </tr>
+          <tr>
+            <td>
+              <div>{gameTile}</div>
+            </td>
+            <td className="col">
+              <div className="map-tiles">{mapTiles}</div>
+            </td>
+            <td className="col">
+              <div className="map-tiles">{mapTiles}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
 };
 
-const MapImage = mapData => {
+const RecentGame = (gameData, weapons) => {
+  let usage = {};
+  values(gameData.kills).forEach(kill => {
+    if (!usage[kill.weapon]) {
+      usage[kill.weapon] = {
+        kills: 0,
+        name: kill.weapon
+      };
+    }
+    usage[kill.weapon].kills++;
+  });
+
+  let mostUsedWeapon = values(usage)
+    .map(el => el)
+    .sort((a, b) => b.kills - a.kills)[0];
+  return (
+    <div className="player-recent-panel">
+      <div className="panel-tile">
+        <div className="player-recent-panel-outcome">
+          Outcome: {gameData.Win}
+        </div>
+        <div>
+          <div>Best Weapon:</div>
+          <div className="weapon-img">
+            <img
+              src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`}
+            />
+          </div>
+          <div className="tile-footer">
+            <div className="left-side">
+              <span>{mostUsedWeapon.name}</span>
+            </div>
+            <div className="right-side">
+              <span>{mostUsedWeapon.kills}</span>
+              <img src={`assets/weapons/crosshair.svg`} />
+            </div>
+          </div>
+        </div>
+        <div className="player-recent-panel-outcome">
+          Outcome: {gameData.Win}
+        </div>
+        <div>
+          <div>Best Weapon:</div>
+          <div className="weapon-img">
+            <img
+              src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`}
+            />
+          </div>
+          <div>{mostUsedWeapon.name}</div>
+        </div>
+        <div className="player-recent-panel-outcome">
+          Outcome: {gameData.Win}
+        </div>
+        <div>
+          <div>Best Weapon:</div>
+          <div className="weapon-img">
+            <img
+              src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`}
+            />
+          </div>
+          <div>{mostUsedWeapon.name}</div>
+        </div>
+      </div>;
+    </div>
+  );
+};
+
+const MapTile = mapData => {
   return (
     <div className="map-tile" key={mapData.name}>
       <div className="map-image">
-        <img src={mapData.image} />
+        <img src={"assets/maps/" + mapData.code + ".jpg"} />
         <div className="map-info">
           <div className="map-info-tags">
             <span id="map-name">{mapData.name.toUpperCase()}</span>
           </div>
           <div className="map-info-tags">
-            <span>Times Played: {mapData.timesPlayed}</span>
+            <span>Played: {mapData.timesPlayed}</span>
             <img src={`assets/weapons/trophy.svg`} />
           </div>
         </div>

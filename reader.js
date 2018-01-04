@@ -52,7 +52,7 @@ const fetchSteamProfiles = playerID => {
     .catch(err => console.log(err.message));
 };
 
-function storeData(attacker, victim, status, map, weapon, gameID) {
+function storeData(victim, attacker, weapon, map, gameID) {
   let killData = {
     killer: attacker.name,
     killerID: attacker.steam64Id,
@@ -70,35 +70,55 @@ function storeData(attacker, victim, status, map, weapon, gameID) {
         theta: attacker.eyeAngles.yaw
       }
     },
-    weapon: weapon
+    weapon
   };
-  let playerID = victim.steam64Id;
-  let playerSide = victim.side;
+  // let playerID = victim.steam64Id;
+  // let playerSide = victim.side;
 
-  if (status === "kills") {
-    playerID = attacker.steam64Id;
-    playerSide = attacker.side;
-  }
+  // if (status === "kills") {
+  //   console.log("Kills")
+  //   playerID = attacker.steam64Id;
+  //   playerSide = attacker.side;
+  // }
 
   firebase
     .database()
-    .ref("/" + playerID + "/")
+    .ref("/" + attacker.steam64Id + "/")
     .once("value", snap => {
       if (!snap.hasChild("steamInfo")) {
-        fetchSteamProfiles(playerID);
+        fetchSteamProfiles(attacker.steam64Id);
       }
     });
-  let playerURL = "/" + playerID + "/games/" + gameID + "/";
-  let Team = playerSide;
   firebase
     .database()
-    .ref(playerURL)
-    .update({ Map: map, Team });
-  firebase
+    .ref("/" + victim.steam64Id + "/")
+    .once("value", snap => {
+      if (!snap.hasChild("steamInfo")) {
+        fetchSteamProfiles(victim.steam64Id);
+      }
+    });
+
+  return firebase
     .database()
-    .ref(playerURL + "/" + status + "/")
-    .push(killData);
-  counter++;
+    .ref("/" + attacker.steam64Id + "/games/" + gameID + "/kills")
+    .push(killData)
+    .then(() =>
+      firebase
+        .database()
+        .ref("/" + victim.steam64Id + "/games/" + gameID + "/deaths")
+        .push(killData)
+    )
+    .then(() =>
+      firebase
+        .database()
+        .ref("/")
+        .update({
+          [attacker.steam64Id + "/games/" + gameID + "/Map"]: map,
+          [victim.steam64Id + "/games/" + gameID + "/Map"]: map,
+          [attacker.steam64Id + "/games/" + gameID + "/Team"]: attacker.side,
+          [victim.steam64Id + "/games/" + gameID + "/Team"]: victim.side
+        })
+    );
 }
 
 function storeShots(playerName, weaponsData) {
@@ -252,9 +272,8 @@ function parseDemofile(file, callback) {
         let players = ts.members.concat(cts.members);
         players.forEach(player => {
           if (player) {
-            return (foo[
-              player.steam64Id + `/games/` + gameID + "/" + "Win"
-            ] = "Demo Ended before Game Ended");
+            return (foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] =
+              "Demo Ended before Game Ended");
           }
         });
         console.log("Wadah left the game too early");
@@ -300,18 +319,24 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.gameEvents.on("player_death", e => {
+      if (demoFile.gameRules.isWarmup) {
+        return;
+      }
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
 
       let killerWeapon = e.weapon.split("_")[0];
 
       if (victim && attacker) {
-        hasKilled(victim, attacker, killerWeapon, map, gameID);
-        wasKilled(victim, attacker, killerWeapon, map, gameID);
+        storeData(victim, attacker, killerWeapon, map, gameID);
+        // wasKilled(victim, attacker, killerWeapon, map, gameID);
       }
     });
 
     demoFile.gameEvents.on("weapon_fire", e => {
+      if (demoFile.gameRules.isWarmup) {
+        return;
+      }
       let player = demoFile.entities.getByUserId(e.userid);
       if (!player) {
         return;
@@ -328,6 +353,9 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.gameEvents.on("player_hurt", e => {
+      if (demoFile.gameRules.isWarmup) {
+        return;
+      }
       let player = demoFile.entities.getByUserId(e.attacker);
       if (!player) {
         return;
