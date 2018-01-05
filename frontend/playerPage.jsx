@@ -140,6 +140,7 @@ const Overview = ({ player }) => {
   let recentGame = values(games)[0];
   let maps = {};
 
+// I'm adding dummy data, in case player hasn't played 6 maps offically
   [
     "de_cbble",
     "de_stmarc",
