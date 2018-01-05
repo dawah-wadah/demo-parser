@@ -99,7 +99,7 @@ export default class PlayerPage extends React.Component {
 
     const { player } = this.state;
     const { steamInfo } = player;
-    debugger;
+
     return (
       <div className="player-page">
         <div className="player-header">
