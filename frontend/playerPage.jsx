@@ -155,6 +155,7 @@ const Overview = ({ player }) => {
 
   values(games).forEach(game => {
     if (!maps[game.Map]) {
+      debugger;
       maps[game.Map] = newMap(game.Map);
     }
     maps[game.Map].timesPlayed++;
@@ -206,6 +207,10 @@ const RecentGame = (gameData, weapons) => {
   let mostUsedWeapon = values(usage)
     .map(el => el)
     .sort((a, b) => b.kills - a.kills)[0];
+
+  let mostUsedWeaponData = values(weapons[mostUsedWeapon.name]);
+
+  let stats = mostUsedWeaponData[mostUsedWeaponData.length - 1];
   return (
     <div className="player-recent-panel">
       <div className="panel-tile">
@@ -226,34 +231,36 @@ const RecentGame = (gameData, weapons) => {
             <div className="right-side">
               <span>{mostUsedWeapon.kills}</span>
               <img src={`assets/weapons/crosshair.svg`} />
+              <span>{stats.accuracy + "%"} </span>
+              <img src={`assets/weapons/bullseye.svg`} />
             </div>
           </div>
         </div>
-        <div className="player-recent-panel-outcome">
-          Outcome: {gameData.Win}
-        </div>
-        <div>
-          <div>Best Weapon:</div>
-          <div className="weapon-img">
-            <img
-              src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`}
-            />
-          </div>
-          <div>{mostUsedWeapon.name}</div>
-        </div>
-        <div className="player-recent-panel-outcome">
-          Outcome: {gameData.Win}
-        </div>
-        <div>
-          <div>Best Weapon:</div>
-          <div className="weapon-img">
-            <img
-              src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`}
-            />
-          </div>
-          <div>{mostUsedWeapon.name}</div>
-        </div>
-      </div>;
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td>K/D Ratio</td>
+            <td>1.18</td>
+          </tr>
+          <tr>
+            <td>Kills</td>
+            <td>13</td>
+          </tr>
+          <tr>
+            <td>Kills</td>
+            <td>13</td>
+          </tr>
+          <tr>
+            <td>Kills</td>
+            <td>13</td>
+          </tr>
+          <tr>
+            <td>Kills</td>
+            <td>13</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 };

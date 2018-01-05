@@ -411,14 +411,18 @@ td > img {
   display: flex;
   justify-content: space-around;
   max-height: 31px;
-  font-size: 30px;
+  font-size: 20px;
 }
 
 .right-side {
   display: flex;
   justify-content: space-between;
+  width: 20%;
 }
 
+.right-side > span {
+  align-self: center;
+}
 .right-side > img {
   object-fit: contain;
   max-height: 100%;
@@ -430,7 +434,8 @@ td > img {
 }
 
 img {
-  height: initial;
+  height: auto;
+  width: 100%;
 }
 
 /*#mainBubble {

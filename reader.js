@@ -224,6 +224,12 @@ function parseDemofile(file, callback) {
     let map;
     let gameID = `${file}`.split("./demos/")[1].split(".dem")[0];
     var demoFile = new demo.DemoFile();
+
+    let player_roster = {
+      round: 0,
+      players: {}
+    };
+
     demoFile.on("start", () => {
       debugger;
       map = demoFile.header.mapName;
@@ -256,27 +262,40 @@ function parseDemofile(file, callback) {
         }
         winners.members.forEach(player => {
           if (player) {
-            return (foo[
-              player.steam64Id + `/games/` + gameID + "/" + "Win"
-            ] = true);
+            foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] = true;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "K"] =
+              player.kills;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "D"] =
+              player.deaths;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "A"] =
+              player.assists;
           }
         });
         losers.members.forEach(player => {
           if (player) {
-            return (foo[
-              player.steam64Id + `/games/` + gameID + "/" + "Win"
-            ] = false);
+            foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] = false;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "K"] =
+              player.kills;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "D"] =
+              player.deaths;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "A"] =
+              player.assists;
           }
         });
       } else {
         let players = ts.members.concat(cts.members);
         players.forEach(player => {
           if (player) {
-            return (foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] =
-              "Demo Ended before Game Ended");
+            foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] =
+              "Demo Ended before Game Ended";
+            foo[player.steam64Id + `/games/` + gameID + "/" + "K"] =
+              player.kills;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "D"] =
+              player.deaths;
+            foo[player.steam64Id + `/games/` + gameID + "/" + "A"] =
+              player.assists;
           }
         });
-        console.log("Wadah left the game too early");
       }
       firebase
         .database()
@@ -318,25 +337,47 @@ function parseDemofile(file, callback) {
       });
     });
 
+    demoFile.gameEvents.on("round_start", () => {
+      let teams = demoFile.teams;
+      let ts = teams[demo.TEAM_TERRORISTS];
+      let cts = teams[demo.TEAM_CTS];
+      let players = ts.members.concat(cts.members);
+
+      player_roster.round = demoFile.gameRules.roundNumber;
+
+      players.forEach(player => {
+        if (!player) {
+          return;
+        }
+        player_roster.players[player.steam64Id] = true;
+      });
+    });
+
     demoFile.gameEvents.on("player_death", e => {
-      if (demoFile.gameRules.isWarmup) {
-        return;
-      }
+      // if (demoFile.gameRules.roundNumber < 1) {
+      //   return;
+      // }
+
       let victim = demoFile.entities.getByUserId(e.userid);
       let attacker = demoFile.entities.getByUserId(e.attacker);
 
       let killerWeapon = e.weapon.split("_")[0];
 
       if (victim && attacker) {
+        // console.log("%s killed %s". e.attacker, victim.name)
+        if (!player_roster.players[victim.steam64Id]) {
+          return;
+        }
+        if (killerWeapon == "world") {
+          return;
+        }
         storeData(victim, attacker, killerWeapon, map, gameID);
+        player_roster.players[victim.steam64Id] = false;
         // wasKilled(victim, attacker, killerWeapon, map, gameID);
       }
     });
 
     demoFile.gameEvents.on("weapon_fire", e => {
-      if (demoFile.gameRules.isWarmup) {
-        return;
-      }
       let player = demoFile.entities.getByUserId(e.userid);
       if (!player) {
         return;
@@ -353,9 +394,6 @@ function parseDemofile(file, callback) {
     });
 
     demoFile.gameEvents.on("player_hurt", e => {
-      if (demoFile.gameRules.isWarmup) {
-        return;
-      }
       let player = demoFile.entities.getByUserId(e.attacker);
       if (!player) {
         return;
