@@ -18,10 +18,10 @@ class Heatmap extends React.Component {
         gradient: { "0.2": "black" }
       },
       heatmapLayers: false,
-      gameData: {
-        grenades: {}
+      checkboxStatus: {
+        kills: { Terrorist: false, "Counter-Terrorist": false },
+        deaths: { Terrorist: false, "Counter-Terrorist": false }
       },
-      foo: {kills: {"Terrorist": false, "Counter-Terrorist": false}, deaths: {"Terrorist": false, "Counter-Terrorist": false}},
       checked: {
         kills: "",
         deaths: ""
@@ -32,6 +32,7 @@ class Heatmap extends React.Component {
     };
 
     this.createHeatmapLayers = this.createHeatmapLayers.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -52,6 +53,28 @@ class Heatmap extends React.Component {
     return colors[data];
   }
 
+  createCheckBoxes() {
+    let checkboxes = [];
+
+    this.state.sides.forEach(side => {
+      this.state.statuses.forEach(status => {
+        checkboxes.push(
+          <label>
+            {`${side} ${status}`}
+            <input
+              checked={this.state.checkboxStatus[status][side]}
+              type="checkbox"
+              value={`${side} ${status}`}
+              onChange={this.handleChange}
+            />
+          </label>
+        );
+      });
+    });
+
+    return checkboxes;
+  }
+
   /* Adds heatmap canvas elements to DOM and stores references in state */
   createHeatmapLayers() {
     const properties = ["deaths", "kills"];
@@ -64,6 +87,23 @@ class Heatmap extends React.Component {
     });
 
     this.setState({ heatmapLayers });
+  }
+
+  handleChange(e) {
+    const checked = e.target.checked;
+    const value = e.target.value.split(" ");
+    const type = value[1];
+    const oppositeTeam =
+      value[0] === "Counter-Terrorist" ? "Terrorist" : "Counter-Terrorist";
+    let team = checked ? value[0] : "";
+
+    /* Creates a copy of the state and performs all necessary changes */
+    let stateCopy = { ...this.state };
+    stateCopy.checked[type] = team;
+    stateCopy.checkboxStatus[type][value[0]] = checked;
+    stateCopy.checkboxStatus[type][oppositeTeam] = false;
+
+    this.setState(stateCopy);
   }
 
   /* Iterates over each game and draws heatmap depending on a type (deats or kills) */
@@ -124,57 +164,9 @@ class Heatmap extends React.Component {
     for (let type in checked) {
       this.applyDataToMap(type, checked[type]);
     }
-    // ["deaths", "kills"].forEach(type => {
-    //   this.applyDataToMap(type);
-    // });
-  }
-
-  createCheckBoxes() {
-    let z = [];
-    let fooCopy = { ...this.state.foo };
-
-    this.state.sides.forEach(side => {
-      this.state.statuses.forEach(status => {
-        z.push(
-          <label>
-            {`${side} ${status}`}
-            <input
-              checked={fooCopy[status][side]}
-              type="checkbox"
-              value={`${side} ${status}`}
-              onChange={this.doIsh.bind(this)}
-            />
-          </label>
-        );
-      });
-    });
-
-    return z;
-  }
-
-  doIsh(e) {
-    const checked = e.target.checked;
-    const value = e.target.value.split(" ");
-    const type = value[1];
-    let team = (checked ? value[0] : "");
-
-    const bar = value[0] === "Counter-Terrorist" ? "Terrorist" : "Counter-Terrorist";
-
-    /* Creates a copy of the state and performs all necessary changes */
-    let copy = { ...this.state };
-    copy.checked[type] = team;
-    copy.foo[type][value[0]] = checked;
-    copy.foo[type][bar] = false;
-
-    this.setState(copy);
   }
 
   render() {
-    let iconStyle = {
-      width: "50px",
-      height: "50px"
-    };
-
     return (
       <div className="heatmap-container">
         <div id="heatmap" ref="heatmap">
