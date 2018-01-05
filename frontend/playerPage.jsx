@@ -3,7 +3,7 @@ import { Switch, Route } from "react-router-dom";
 import firebase from "firebase";
 import * as APIKeys from "../keys.json";
 
-import Header from "./header";
+import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerTabs from "./player-tab";
 import { values, capitalize } from "lodash";
@@ -41,6 +41,8 @@ export default class PlayerPage extends React.Component {
     //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
+    // const player = require ("../taylor.json.json");
+    // this.setState({ player });
     firebase
       .database()
       .ref(`/${playerId}`)
@@ -96,7 +98,7 @@ export default class PlayerPage extends React.Component {
       return null;
     }
     const { player } = this.state;
-    const { steamInfo } = player;
+    const { steamInfo, games } = player;
     return (
       <div className="player-page">
         <div className="player-header">
@@ -118,7 +120,7 @@ export default class PlayerPage extends React.Component {
               player={player}
             />
             <Route exact path={`/players/:id/weapons`} component={Zo} />
-            <Route exact path={`/players/:id/heatmap`} component={Overview} />
+            <Route exact path={`/players/:id/heatmap`} render={() => <Heatmap gameData={games} />} />
           </Switch>
         </div>
       </div>
