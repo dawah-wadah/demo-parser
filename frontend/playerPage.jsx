@@ -1,12 +1,12 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
+import { values, capitalize } from "lodash";
 import firebase from "firebase";
 import * as APIKeys from "../keys.json";
 
 import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerTabs from "./player-tab";
-import { values, capitalize } from "lodash";
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
