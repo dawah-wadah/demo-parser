@@ -11,7 +11,9 @@ const MapTile = mapData => {
           </div>
           <div className="map-info-tags">
             <span>Played: {mapData.timesPlayed}</span>
-            <img src={`assets/weapons/trophy.svg`} />
+            <div className="map-info-img">
+              <img src={`assets/weapons/trophy.svg`} />
+            </div>
           </div>
         </div>
       </div>
