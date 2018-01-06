@@ -61,30 +61,6 @@ const RecentGame = (gameData, weapons) => {
       <Cell data={foo} />
     </div>
   );
-  // <table>
-  //   <tbody>
-  //     <tr>
-  //       <td>K/D Ratio</td>
-  //       <td>1.18</td>
-  //     </tr>
-  //     <tr>
-  //       <td>Kills</td>
-  //       <td>13</td>
-  //     </tr>
-  //     <tr>
-  //       <td>Kills</td>
-  //       <td>13</td>
-  //     </tr>
-  //     <tr>
-  //       <td>Kills</td>
-  //       <td>13</td>
-  //     </tr>
-  //     <tr>
-  //       <td>Kills</td>
-  //       <td>13</td>
-  //     </tr>
-  //   </tbody>
-  // </table>
 };
 
 export default RecentGame;
