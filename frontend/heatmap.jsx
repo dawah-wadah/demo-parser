@@ -127,25 +127,39 @@ class Heatmap extends React.Component {
     this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
   }
 
-  convertPositions(x, y) {
-    let xPos = Math.floor(
-      Math.abs(x - -2203) / 3764 * (840 * 0.6) + 64.7 * 0.6
-    );
-    let yPos = Math.floor(
-      969.7 * 0.6 - Math.abs((y - -1031) / 4090 * (923.7 * 0.6))
-    );
-
-    return { xPos, yPos };
-  }
-
   /* Iterates over type events and returns array of coordinates */
   extractLocation(gameEvent, role) {
     let mapData = [];
 
+    //  You can get the map origin from the original CSGO folder, in the resources folder
+    let mapOrigin = {
+      x: -2476,
+      y: 3239
+    };
+    let topLeft = {
+      x: -2093.968,
+      y: 3117.968
+    };
+
+    // number of pixels from the top left corner of screen to, the top most playable area position
+    let offset = {
+      x: 87,
+      y: 27
+    };
+
+    // ratio of in-game units to pixel
+    let ratio = offset.x / (topLeft.x - mapOrigin.x);
+    let scale = 0.4;
+
     for (let e in gameEvent) {
-      let { x, y } = gameEvent[e].location[role];
-      let { xPos, yPos } = this.convertPositions(x, y);
-      mapData.push({ x: xPos, y: yPos, value: 10 });
+      const { x, y } = gameEvent[e].location[role];
+      let xPos = Math.floor((x - mapOrigin.x) * ratio * scale);
+      let yPos = Math.floor((mapOrigin.y - y) * ratio * scale);
+      mapData.push({
+        x: xPos,
+        y: yPos,
+        value: 10
+      });
     }
 
     return mapData;
