@@ -5,6 +5,7 @@ import Body from "./frontend/body";
 import Header from "./frontend/header";
 import Mainpage from "./frontend/mainpage";
 import Footer from "./frontend/footer";
+import Foo from './frontend/foo.jsx'
 import initializeFB from "./base.js";
 import Player from './frontend/playerPage.jsx'
 
@@ -32,7 +33,7 @@ class App extends React.Component {
             <Route exact path="/player/:id/weapons" component={Data} />
             <Route exact path="/player/:id/kd" component={KDChart} />
             <Route exact path="/body" component={Body} />
-            <Route exact path="/foo" component={Player} />
+            <Route exact path="/foo" component={Foo} />
             <Route exact path="/bar" component={WeaponsChart} />
             <Route exact path="/baz" component={ResizableTest} />
 

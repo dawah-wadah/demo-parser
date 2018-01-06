@@ -37,14 +37,14 @@
 }
 
 .weapon-data-foo {
-    font-size: 30px;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    padding: 0 24px;
-    justify-content: space-between;
-    color: rgba(11, 179, 214, 0.9);
-    box-sizing: border-box;
+  font-size: 30px;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  padding: 0 24px;
+  justify-content: space-between;
+  color: rgba(11, 179, 214, 0.9);
+  box-sizing: border-box;
 }
 
 .player-outcome {
@@ -56,4 +56,16 @@
   font-weight: 400;
   font-size: 16px;
   font-family: "Roboto";
+}
+
+/* Weapons Chart */
+
+#weapons-chart {
+  height: 500px;
+  width: 100%;
+  /* border: 3px solid red; */
+}
+
+.axis {
+  font: 1em sans-serif;
 }
