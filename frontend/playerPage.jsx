@@ -1,9 +1,11 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
 import firebase from "firebase";
+import Overview from './player_page/overview'
+import PropsRoute from './prop_routes'
 import * as APIKeys from "../keys.json";
 
-import Header from "./header";
+import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerTabs from "./player-tab";
 import { values, capitalize } from "lodash";
@@ -41,6 +43,8 @@ export default class PlayerPage extends React.Component {
     //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
+    // const player = require ("../taylor.json.json");
+    // this.setState({ player });
     firebase
       .database()
       .ref(`/${playerId}`)
@@ -97,13 +101,9 @@ export default class PlayerPage extends React.Component {
     }
     const { player } = this.state;
     const { steamInfo } = player;
-    return (
-      <div className="player-page">
+    return <div className="player-page">
         <div className="player-header">
-          <div
-            className="player-header-image"
-            style={{ backgroundImage: `url(${steamInfo.imageFull})` }}
-          />
+          <div className="player-header-image" style={{ backgroundImage: `url(${steamInfo.imageFull})` }} />
           <div className="player-info">
             <div className="player-header-name">{steamInfo.name}</div>
           </div>
@@ -111,194 +111,17 @@ export default class PlayerPage extends React.Component {
         </div>
         <div className="player-body">
           <Switch>
-            <PropsRoute
-              exact
-              path={`/players/:id/overview`}
-              component={Overview}
-              player={player}
-            />
+            <PropsRoute exact path={`/players/:id/overview`} component={Overview} player={player} />
             <Route exact path={`/players/:id/weapons`} component={Zo} />
-            <Route exact path={`/players/:id/heatmap`} component={Overview} />
+            <Route exact path={`/players/:id/heatmap`} render={() => <Heatmap gameData={player.games} />} />
           </Switch>
         </div>
-      </div>
-    );
+      </div>;
   }
 }
 {
   /* <Resize data={player["Weapons Data"]} id={steamInfo.id} /> */
 }
 
-const newMap = string => ({
-  name: capitalize(string.split("_")[1]),
-  code: string,
-  timesPlayed: 0
-});
-const Overview = ({ player }) => {
-  let games = player.games;
-  let weapons = player["Weapons Data"];
-  let recentGame = values(games)[0];
-  let maps = {};
-
-// I'm adding dummy data, in case player hasn't played 6 maps offically
-  [
-    "de_cbble",
-    "de_stmarc",
-    "de_inferno",
-    "de_lake",
-    "de_nuke",
-    "de_overpass"
-  ].forEach(name => {
-    if (!maps[name]) {
-      maps[name] = newMap(name);
-    }
-  });
-
-  values(games).forEach(game => {
-    if (!maps[game.Map]) {
-      debugger;
-      maps[game.Map] = newMap(game.Map);
-    }
-    maps[game.Map].timesPlayed++;
-  });
-
-  let mapTiles = values(maps)
-    .sort((a, b) => b.timesPlayed - a.timesPlayed)
-    .map(mapData => MapTile(mapData));
-
-  let gameTile = RecentGame(recentGame, weapons);
-  return (
-    <div className="player-overview">
-      <table className="player-overview-table">
-        <tbody>
-          <tr>
-            <th className="col">Recent Game</th>
-            <th className="col">Favorite Map</th>
-            <th className="col">Favorite Map</th>
-          </tr>
-          <tr>
-            <td>
-              <div>{gameTile}</div>
-            </td>
-            <td className="col">
-              <div className="map-tiles">{mapTiles}</div>
-            </td>
-            <td className="col">
-              <div className="map-tiles">{mapTiles}</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-const RecentGame = (gameData, weapons) => {
-  let usage = {};
-  values(gameData.kills).forEach(kill => {
-    if (!usage[kill.weapon]) {
-      usage[kill.weapon] = {
-        kills: 0,
-        name: kill.weapon
-      };
-    }
-    usage[kill.weapon].kills++;
-  });
-
-  let mostUsedWeapon = values(usage)
-    .map(el => el)
-    .sort((a, b) => b.kills - a.kills)[0];
-
-  let mostUsedWeaponData = values(weapons[mostUsedWeapon.name]);
-
-  let stats = mostUsedWeaponData[mostUsedWeaponData.length - 1];
-  return (
-    <div className="player-recent-panel">
-      <div className="panel-tile">
-        <div className="player-recent-panel-outcome">
-          Outcome: {gameData.Win}
-        </div>
-        <div>
-          <div>Best Weapon:</div>
-          <div className="weapon-img">
-            <img
-              src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`}
-            />
-          </div>
-          <div className="tile-footer">
-            <div className="left-side">
-              <span>{mostUsedWeapon.name}</span>
-            </div>
-            <div className="right-side">
-              <span>{mostUsedWeapon.kills}</span>
-              <img src={`assets/weapons/crosshair.svg`} />
-              <span>{stats.accuracy + "%"} </span>
-              <img src={`assets/weapons/bullseye.svg`} />
-            </div>
-          </div>
-        </div>
-      </div>
-      <table>
-        <tbody>
-          <tr>
-            <td>K/D Ratio</td>
-            <td>1.18</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-const MapTile = mapData => {
-  return (
-    <div className="map-tile" key={mapData.name}>
-      <div className="map-image">
-        <img src={"assets/maps/" + mapData.code + ".jpg"} />
-        <div className="map-info">
-          <div className="map-info-tags">
-            <span id="map-name">{mapData.name.toUpperCase()}</span>
-          </div>
-          <div className="map-info-tags">
-            <span>Played: {mapData.timesPlayed}</span>
-            <img src={`assets/weapons/trophy.svg`} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 const Zo = () => <div>GOGAGAGAG</div>;
-
-const renderMergedProps = (component, ...rest) => {
-  const finalProps = Object.assign({}, ...rest);
-  return React.createElement(component, finalProps);
-};
-
-const PropsRoute = ({ component, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={routeProps => {
-        return renderMergedProps(component, routeProps, rest);
-      }}
-    />
-  );
-};
