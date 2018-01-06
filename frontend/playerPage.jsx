@@ -8,6 +8,7 @@ import * as APIKeys from "../keys.json";
 
 import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
+import PlayerHeader from "./player-header";
 import PlayerTabs from "./player-tab";
 
 export default class PlayerPage extends React.Component {
@@ -103,16 +104,8 @@ export default class PlayerPage extends React.Component {
     const { steamInfo, games } = player;
     return (
       <div className="player-page">
-        <div className="player-header">
-          <div
-            className="player-header-image"
-            style={{ backgroundImage: `url(${steamInfo.imageFull})` }}
-          />
-          <div className="player-info">
-            <div className="player-header-name">{steamInfo.name}</div>
-          </div>
-          <PlayerTabs id={steamInfo.id} />
-        </div>
+        <PlayerHeader steamInfo={steamInfo} />
+        <PlayerTabs id={steamInfo.id} />
         <div className="player-body">
           <Switch>
             <PropsRoute

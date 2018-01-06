@@ -100,6 +100,31 @@
   cursor: none;
 }
 
+
+
+/* Player Tabs */
+
+.player-tabs {
+  display: flex;
+  margin: 10px 10%;
+  background-color: #171E28;
+  justify-content: center;
+  font-size: 4em;
+}
+
+.player-tabs a {
+  padding: 0.2em 0.4em;
+  text-decoration: none;
+  color: white;
+}
+.active {
+  background-color: #FCB83A;
+}
+
+.player-tabs > a:not(.active):hover {
+  background-color: #317597;
+}
+
 .player-overview {
   display: flex;
   justify-content: space-around;
