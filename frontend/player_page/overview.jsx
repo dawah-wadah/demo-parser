@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { values, capitalize } from "lodash";
 import RecentGame from "./recent_game";
 import MapTile from "./map_tile";
+import Weapons from './weapons_panel'
 import Panel from "./panel";
 
 const newMap = string => ({
@@ -42,11 +43,12 @@ const Overview = ({ player }) => {
     .map(mapData => MapTile(mapData));
 
   let gameTile = RecentGame(recentGame, weapons);
+  let weaponTiles = Weapons(weapons)
   return (
     <div className="player-overview">
       <Panel title={"Favorite Map"} elements={mapTiles} />
       <Panel title={"Recent Game"} elements={gameTile} />
-      <Panel title={"Recent Game"} elements={gameTile} />
+      <Panel title={"Favorite Weapon"} elements={weaponTiles} />
     </div>
   );
 };
