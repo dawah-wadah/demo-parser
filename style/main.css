@@ -115,6 +115,7 @@
 }
 
 .navbar-wrapper {
+  background-color: inherit;
   display: flex;
   margin: 0 15px;
 }
@@ -137,14 +138,16 @@
 .player-overview {
   display: flex;
   justify-content: space-around;
-  width: 65%;
+  width: 100%;
   flex-wrap: wrap;
+  font-size: 0.7em;
 }
 .player-overview-table {
   width: 80%;
 }
 
 .player-recent-panel {
+  margin-top: 4px;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -471,13 +474,18 @@ td > img {
 .map-tile {
   overflow: hidden;
   border-radius: -2px;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2),
+              0 6px 20px 0 rgba(0, 0, 0, 0.19);
   width: 49%;
   margin: 5px 0%;
 }
 
 .map-tile:nth-child(1) {
   width: 100%;
+}
+
+.map-tile:first-of-type {
+  font-size: 2em;
 }
 
 .map-image {
@@ -488,13 +496,21 @@ td > img {
 }
 
 .map-image > img {
-  object-fit: cover;
+  object-fit: contain;
   width: 100%;
+  -webkit-transition: all 0.5s ease-in-out;
+  transition: all 0.5s ease-in-out;
+}
+
+.map-image:hover > img {
+  -webkit-transform: scale3d(1.1, 1.1, 1);
+  transform: scale3d(1.1, 1.1, 1);
+
 }
 
 .map-info {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-top: -6%;
   position: absolute;
   bottom: 3px;
@@ -504,6 +520,7 @@ td > img {
 
 .map-info-tags {
   display: flex;
+  align-items: center;
   height: 30px;
   color: black;
   font-family: "Ubuntu";
@@ -514,14 +531,20 @@ td > img {
 }
 
 .map-info-tags > span {
+  width: 100%;
   font-weight: 700;
-  font-size: 77%;
-  align-self: center;
+  font-size: 90%;
+  margin-right: 1em;
 }
 .map-info-tags > img {
   height: 67%;
   margin: 0 5px;
   align-self: center;
+}
+
+.map-info-img {
+  width: 30px;
+  height: 30px;
 }
 
 #map-name {
@@ -551,11 +574,20 @@ td > img {
   width: 100%;
 }
 
+.panel-tile > div:nth-child(2) {
+  padding-top: 1em;
+  font-size: 1.5em;
+  letter-spacing: 1px;
+  color: #0da6c7;
+}
+
 .tile-footer {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   max-height: 31px;
   font-size: 20px;
+  padding: 0px 7px 5px 24px;
+  color: #ffffff;
 }
 
 .right-side {
@@ -576,6 +608,21 @@ td > img {
   font-size: 100%;
 }
 
+.shots-fired-img {
+  background: url("../assets/weapons/crosshair.svg");
+}
+
+.accuracy-img {
+  background: url("../assets/weapons/bullseye.svg");
+}
+
+
+.w-stats-img {
+  width: 25px;
+  margin: 0 10px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
 /* img {
   height: auto;
   width: 100%;

@@ -83,7 +83,7 @@ const RecentGame = (gameData, weapons) => {
       <div className="player-outcome" style={styling}>
         Outcome: {gameData.Win}
       </div>
-        <div>Best Weapon:</div>
+        <div>Best Weapon</div>
         <div className="weapon-img">
           <img src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`} />
         </div>
@@ -93,9 +93,9 @@ const RecentGame = (gameData, weapons) => {
           </div>
           <div className="right-side">
             <span>{mostUsedWeapon.kills}</span>
-            <img src={`assets/weapons/crosshair.svg`} />
+            <div className="shots-fired-img w-stats-img" />
             <span>{stats.accuracy + "%"} </span>
-            <img src={`assets/weapons/bullseye.svg`} />
+            <div className="accuracy-img w-stats-img" />
         </div>
       </div>
     </div>

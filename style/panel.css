@@ -3,6 +3,7 @@
   height: 667px;
   display: flex;
   flex-direction: column;
+  padding-bottom: 15px;
 }
 
 .content {
@@ -16,11 +17,20 @@
 .panel > .heading {
   padding: 0.625rem 0;
   color: #ffffff;
-  background-color: #02344d;
+  background-color: #373e73;
   box-shadow: -1px 6px 6px -6px rgba(0, 0, 0, 0.35);
   font-size: 3em;
   text-align: center;
   border-radius: 4px;
+  text-transform: lowercase;
+}
+
+.panel:nth-child(3) .map-tile {
+  background: radial-gradient(circle, #dadada, #8a8a8a, #505050);
+}
+
+.panel:nth-child(1) .map-image > img {
+  object-fit: cover;
 }
 
 .tab {
@@ -49,13 +59,11 @@
 
 .player-outcome {
   padding: 20px;
-  border-right: 2px solid;
-  display: flex;
+  border-right: 10px solid;
   box-sizing: border-box;
-  font-style: italic;
+  font-family: sans-serif;
   font-weight: 400;
   font-size: 16px;
-  font-family: "Roboto";
 }
 
 /* Weapons Chart */
