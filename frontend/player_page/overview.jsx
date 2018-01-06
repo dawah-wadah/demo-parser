@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import {values, capitalize} from 'lodash'
 import RecentGame from './recent_game'
 import MapTile from './map_tile'
+import Panel from './panel'
 
 const newMap = string => ({
   name: capitalize(string.split("_")[1]),

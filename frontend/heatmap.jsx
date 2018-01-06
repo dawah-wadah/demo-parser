@@ -11,25 +11,28 @@ class Heatmap extends React.Component {
     this.state = {
       heatmapConfig: {
         container: "",
-        radius: 10,
+        radius: 8,
         maxOpacity: 0.8,
         minOpacity: 0,
         blur: 0.75,
         gradient: { "0.2": "black" }
       },
       heatmapLayers: false,
-      gameData: {
-        grenades: {}
+      checkboxStatus: {
+        kills: { Terrorist: false, "Counter-Terrorist": false },
+        deaths: { Terrorist: false, "Counter-Terrorist": false }
       },
-      buttons: [],
-      keys: {},
-      players: [],
+      checked: {
+        kills: "",
+        deaths: ""
+      },
       sides: ["Counter-Terrorist", "Terrorist"],
       statuses: ["kills", "deaths"],
       info: false
     };
 
     this.createHeatmapLayers = this.createHeatmapLayers.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -50,6 +53,28 @@ class Heatmap extends React.Component {
     return colors[data];
   }
 
+  createCheckBoxes() {
+    let checkboxes = [];
+
+    this.state.sides.forEach(side => {
+      this.state.statuses.forEach(status => {
+        checkboxes.push(
+          <label>
+            {`${side} ${status}`}
+            <input
+              checked={this.state.checkboxStatus[status][side]}
+              type="checkbox"
+              value={`${side} ${status}`}
+              onChange={this.handleChange}
+            />
+          </label>
+        );
+      });
+    });
+
+    return checkboxes;
+  }
+
   /* Adds heatmap canvas elements to DOM and stores references in state */
   createHeatmapLayers() {
     const properties = ["deaths", "kills"];
@@ -64,8 +89,25 @@ class Heatmap extends React.Component {
     this.setState({ heatmapLayers });
   }
 
+  handleChange(e) {
+    const checked = e.target.checked;
+    const value = e.target.value.split(" ");
+    const type = value[1];
+    const oppositeTeam =
+      value[0] === "Counter-Terrorist" ? "Terrorist" : "Counter-Terrorist";
+    let team = checked ? value[0] : "";
+
+    /* Creates a copy of the state and performs all necessary changes */
+    let stateCopy = { ...this.state };
+    stateCopy.checked[type] = team;
+    stateCopy.checkboxStatus[type][value[0]] = checked;
+    stateCopy.checkboxStatus[type][oppositeTeam] = false;
+
+    this.setState(stateCopy);
+  }
+
   /* Iterates over each game and draws heatmap depending on a type (deats or kills) */
-  applyDataToMap(type) {
+  applyDataToMap(type, team) {
     if (!this.state.heatmapConfig.container || !this.state.heatmapLayers) {
       return null;
     }
@@ -79,14 +121,28 @@ class Heatmap extends React.Component {
     let mapData = [];
 
     for (let game in this.props.gameData) {
-      let locationData = this.extractLocation(
-        this.props.gameData[game][type],
-        role
-      );
-      mapData = [...mapData, ...locationData];
+      /* Extracts location only if the team is the same */
+      if (this.props.gameData[game].Team === team) {
+        let locationData = this.extractLocation(
+          this.props.gameData[game][type],
+          role
+        );
+        mapData = [...mapData, ...locationData];
+      }
     }
 
     this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
+  }
+
+  convertPositions(x, y) {
+    let xPos = Math.floor(
+      Math.abs(x - -2203) / 3764 * (840 * 0.6) + 64.7 * 0.6
+    );
+    let yPos = Math.floor(
+      969.7 * 0.6 - Math.abs((y - -1031) / 4090 * (923.7 * 0.6))
+    );
+
+    return { xPos, yPos };
   }
 
   /* Iterates over type events and returns array of coordinates */
@@ -130,22 +186,20 @@ class Heatmap extends React.Component {
   }
 
   renderMap() {
-    ["deaths", "kills"].forEach(type => {
-      this.applyDataToMap(type);
-    });
+    const { checked } = this.state;
+
+    for (let type in checked) {
+      this.applyDataToMap(type, checked[type]);
+    }
   }
 
   render() {
-    let iconStyle = {
-      width: "50px",
-      height: "50px"
-    };
-
     return (
       <div className="heatmap-container">
         <div id="heatmap" ref="heatmap">
           {this.renderMap()}
         </div>
+        {this.createCheckBoxes()}
       </div>
     );
   }

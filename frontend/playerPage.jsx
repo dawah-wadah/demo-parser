@@ -1,14 +1,14 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
+import { values, capitalize } from "lodash";
 import firebase from "firebase";
-import Overview from './player_page/overview'
-import PropsRoute from './prop_routes'
+import Overview from "./player_page/overview";
+import PropsRoute from "./prop_routes";
 import * as APIKeys from "../keys.json";
 
 import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerTabs from "./player-tab";
-import { values, capitalize } from "lodash";
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -100,10 +100,14 @@ export default class PlayerPage extends React.Component {
       return null;
     }
     const { player } = this.state;
-    const { steamInfo } = player;
-    return <div className="player-page">
+    const { steamInfo, games } = player;
+    return (
+      <div className="player-page">
         <div className="player-header">
-          <div className="player-header-image" style={{ backgroundImage: `url(${steamInfo.imageFull})` }} />
+          <div
+            className="player-header-image"
+            style={{ backgroundImage: `url(${steamInfo.imageFull})` }}
+          />
           <div className="player-info">
             <div className="player-header-name">{steamInfo.name}</div>
           </div>
@@ -111,17 +115,26 @@ export default class PlayerPage extends React.Component {
         </div>
         <div className="player-body">
           <Switch>
-            <PropsRoute exact path={`/players/:id/overview`} component={Overview} player={player} />
+            <PropsRoute
+              exact
+              path={`/players/:id/overview`}
+              component={Overview}
+              player={player}
+            />
             <Route exact path={`/players/:id/weapons`} component={Zo} />
-            <Route exact path={`/players/:id/heatmap`} render={() => <Heatmap gameData={player.games} />} />
+            <Route
+              exact
+              path={`/players/:id/heatmap`}
+              render={() => <Heatmap gameData={games} />}
+            />
           </Switch>
         </div>
-      </div>;
+      </div>
+    );
   }
 }
 {
   /* <Resize data={player["Weapons Data"]} id={steamInfo.id} /> */
 }
-
 
 const Zo = () => <div>GOGAGAGAG</div>;

@@ -132,10 +132,17 @@
 }
 
 #heatmap {
+<<<<<<< HEAD
   width: calc(1024px * 0.4);
   height: calc(1024px * 0.4);
   background-size: calc(1024px * 0.4);
   background-image: url("../assets/de_dust2_radar_spectate.png");
+=======
+  width: calc(1024px * 0.6);
+  height: calc(1024px * 0.6);
+  background-size: calc(1024px * 0.6);
+  background-image: url("../assets/de_dust2_radar_spectate.jpg");
+>>>>>>> fda2b6344fd5f0c7d3d63dccca54ab3c853f784d
 }
 
 /* * { border: 1px solid red; } */
