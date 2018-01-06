@@ -10,10 +10,9 @@ class Foo extends Component {
     this.state = {};
   }
 
-  componentDidMount() {
-    const username = "76561198027906568";
+  makeSVG() {
+    let node = this.node;
 
-    let node = this.refs.kd;
     this.svg = d3
       .select(node)
       .append("svg")
@@ -27,6 +26,15 @@ class Foo extends Component {
     this.g = this.svg
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  }
+
+  componentDidMount() {
+    const username = "76561198027906568";
+
+    this.makeSVG();
+    let margin = { top: 50, right: 20, bottom: 30, left: 50 },
+      width = +this.svg.attr("width") - margin.left - margin.right,
+      height = +this.svg.attr("height") - margin.top - margin.bottom;
 
     firebase
       .database()
@@ -46,32 +54,45 @@ class Foo extends Component {
           margin
         });
       });
-
-    // window.addEventListener("resize", this.updateDimensions.bind(this));
   }
 
-  updateDimensions() {
-    if (window.innerWidth < 500) {
-      this.setState({ width: 450, height: 102 });
-    } else {
-      let update_width = window.innerWidth - 100;
-      let update_height = Math.round(update_width / 4.4);
-      this.setState({ width: update_width, height: update_height });
-    }
+  componentWillMount() {
+    window.addEventListener("resize", this.updateDimensions.bind(this));
   }
 
   componentWillUnmount() {
-    // window.removeEventListener("resize", this.updateDimensions.bind(this));
+    window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
-//   componentWillUpdate(nextProps, nextState) {
-//     debugger;
-//   }
+  updateDimensions() {
+    let node = this.node;
+
+    if (node.clientWidth < 500) {
+      this.setState({ width: 450, height: 102 });
+    } else {
+      let update_width = node.clientWidth;
+      let update_height = node.clientHeight;
+      this.setState({ width: update_width, height: update_height });
+    }
+    d3
+      .select(this.node)
+      .selectAll("*")
+      .remove();
+
+    this.makeSVG();
+
+    this.createChart();
+  }
+
 
   createChart() {
     if (!this.state.weapon) {
       return null;
     }
+    this.drawShit();
+  }
+
+  drawShit() {
     const { height, width, weapon } = this.state;
     var x = d3.scaleLinear().rangeRound([0, width]);
 
@@ -102,17 +123,6 @@ class Foo extends Component {
         return ~~d;
       });
 
-    let t = d3
-      .transition()
-      .duration(1000)
-      .ease(d3.easeLinear)
-      .on("start", function(d) {
-        console.log("transiton start");
-      })
-      .on("end", function(d) {
-        console.log("transiton end");
-      });
-
     this.g
       .append("g")
       .attr("class", "axis")
@@ -134,12 +144,39 @@ class Foo extends Component {
       .attr("stroke-linejoin", "round")
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 2.5)
-      .attr("d", line)
+      .attr("d", line);
+
+    // var curtain = this.svg
+    //   .append("rect")
+    //   .attr("x", -1 * width * 2)
+    //   .attr("y", -1 * height * 2)
+    //   .attr("height", height * 2)
+    //   .attr("width", width * 2)
+    //   .attr("class", "curtain")
+    //   .attr("transform", "rotate(180)")
+    //   .style("fill", "#1d3244");
+    // var guideline = this.svg
+    //   .append("line")
+    //   .attr("stroke", "#333")
+    //   .attr("stroke-width", 0)
+    //   .attr("class", "guide")
+    //   .attr("x1", 1)
+    //   .attr("y1", 1)
+    //   .attr("x2", 1)
+    //   .attr("y2", height);
+
+    // var t = this.svg
+    //   .transition()
+    //   .delay(150)
+    //   .duration(1500)
+    //   .ease(d3.easeLinear);
+
+    // t.select("rect.curtain").attr("width", 0);
   }
 
   render() {
     return (
-      <div id="weapons-chart" ref={"kd"}>
+      <div id="weapons-chart" ref={node => (this.node = node)}>
         {this.createChart()}
       </div>
     );

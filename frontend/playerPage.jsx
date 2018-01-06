@@ -10,6 +10,7 @@ import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerHeader from "./player-header";
 import PlayerTabs from "./player-tab";
+import ResizableTest from "./resize-test.jsx";
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -100,6 +101,7 @@ export default class PlayerPage extends React.Component {
     if (!this.state.player) {
       return null;
     }
+    debugger
     const { player } = this.state;
     const { steamInfo, games } = player;
     return (
@@ -114,7 +116,12 @@ export default class PlayerPage extends React.Component {
               component={Overview}
               player={player}
             />
-            <Route exact path={`/players/:id/weapons`} component={Zo} />
+            <PropsRoute
+              exact
+              path={`/players/:id/weapons`}
+              component={ResizableTest}
+              weapons={player["Weapons Data"]}
+            />
             <Route
               exact
               path={`/players/:id/heatmap`}

@@ -61,11 +61,20 @@
 /* Weapons Chart */
 
 #weapons-chart {
-  height: 500px;
+  height: 300px;
   width: 100%;
   /* border: 3px solid red; */
 }
 
 .axis {
   font: 1em sans-serif;
+}
+
+
+tr  {
+  width: 100%
+}
+
+.ReactTable .rt-tbody .rt-td {
+    height: 50px;
 }
