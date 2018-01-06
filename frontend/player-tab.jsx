@@ -1,12 +1,18 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const PlayerTabs = ({ id }) => (
-  <div className="player-tabs">
-    <Link to={`/players/${id}/overview`}>Overview</Link>
-    <Link to={`/players/${id}/weapons`}>Weapons</Link>
-    <Link to={`/players/${id}/heatmap`}>Heatmap</Link>
-  </div>
+  <nav className="player-tabs">
+    <NavLink to={`/players/${id}/overview`} activeClassName="active">
+      Overview
+    </NavLink>
+    <NavLink to={`/players/${id}/weapons`} activeClassName="active">
+      Weapons
+    </NavLink>
+    <NavLink to={`/players/${id}/heatmap`} activeClassName="active">
+      Heatmap
+    </NavLink>
+  </nav>
 );
 
 export default PlayerTabs;
