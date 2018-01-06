@@ -147,6 +147,7 @@
 }
 
 .player-recent-panel {
+  margin-top: 5px;
   width: 100%;
   display: flex;
   flex-direction: column;

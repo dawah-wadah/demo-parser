@@ -3,6 +3,7 @@
   height: 667px;
   display: flex;
   flex-direction: column;
+  padding-bottom: 15px;
 }
 
 .content {
@@ -16,7 +17,7 @@
 .panel > .heading {
   padding: 0.625rem 0;
   color: #ffffff;
-  background-color: #02344d;
+  background-color: #373e73;
   box-shadow: -1px 6px 6px -6px rgba(0, 0, 0, 0.35);
   font-size: 3em;
   text-align: center;
