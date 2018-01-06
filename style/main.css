@@ -116,6 +116,7 @@
   padding: 0.2em 0.4em;
   text-decoration: none;
   color: white;
+  border: 6px solid #23234d;
 }
 .active {
   background-color: #FCB83A;
