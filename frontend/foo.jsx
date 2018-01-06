@@ -29,8 +29,8 @@ class Foo extends Component {
   }
 
   componentDidMount() {
-    const username = "76561198027906568";
-
+    const {player, weaponName} = this.props
+    debugger
     this.makeSVG();
     let margin = { top: 50, right: 20, bottom: 30, left: 50 },
       width = +this.svg.attr("width") - margin.left - margin.right,
@@ -38,7 +38,7 @@ class Foo extends Component {
 
     firebase
       .database()
-      .ref(`/${username}/Weapons Data/ak47`)
+      .ref(`/${player}/Weapons Data/${weaponName}`)
       .limitToLast(25)
       .once("value", snapshot => {
         let games = values(snapshot.val());
@@ -146,32 +146,32 @@ class Foo extends Component {
       .attr("stroke-width", 2.5)
       .attr("d", line);
 
-    // var curtain = this.svg
-    //   .append("rect")
-    //   .attr("x", -1 * width * 2)
-    //   .attr("y", -1 * height * 2)
-    //   .attr("height", height * 2)
-    //   .attr("width", width * 2)
-    //   .attr("class", "curtain")
-    //   .attr("transform", "rotate(180)")
-    //   .style("fill", "#1d3244");
-    // var guideline = this.svg
-    //   .append("line")
-    //   .attr("stroke", "#333")
-    //   .attr("stroke-width", 0)
-    //   .attr("class", "guide")
-    //   .attr("x1", 1)
-    //   .attr("y1", 1)
-    //   .attr("x2", 1)
-    //   .attr("y2", height);
+    var curtain = this.svg
+      .append("rect")
+      .attr("x", -1 * width * 2)
+      .attr("y", -1 * height * 2)
+      .attr("height", height * 2)
+      .attr("width", width * 2)
+      .attr("class", "curtain")
+      .attr("transform", "rotate(180)")
+      .style("fill", "#1d3244");
+    var guideline = this.svg
+      .append("line")
+      .attr("stroke", "#333")
+      .attr("stroke-width", 0)
+      .attr("class", "guide")
+      .attr("x1", 1)
+      .attr("y1", 1)
+      .attr("x2", 1)
+      .attr("y2", height);
 
-    // var t = this.svg
-    //   .transition()
-    //   .delay(150)
-    //   .duration(1500)
-    //   .ease(d3.easeLinear);
+    var t = this.svg
+      .transition()
+      .delay(150)
+      .duration(500)
+      .ease(d3.easeLinear);
 
-    // t.select("rect.curtain").attr("width", 0);
+    t.select("rect.curtain").attr("width", 0);
   }
 
   render() {

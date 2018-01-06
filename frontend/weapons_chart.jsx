@@ -8,24 +8,27 @@ export default class WeaponsChart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      weapons: this.props.weapons,
+      player: this.props.player,
       expandedRows: []
     };
   }
 
   componentDidMount() {
+    const { weapons, player } = this.state;
     const username = "76561198027906568";
 
-    firebase
-      .database()
-      .ref(`/${username}/Weapons Data`)
-      .limitToLast(25)
-      .once("value", snapshot => {
-        let games = values(snapshot.val());
-        let i = games.length;
-        this.setState({
-          weapons: snapshot.val()
-        });
-      });
+    // firebase
+    //   .database()
+    //   .ref(`/${player}/Weapons Data`)
+    //   .limitToLast(25)
+    //   .once("value", snapshot => {
+    //     let games = values(snapshot.val());
+    //     let i = games.length;
+    //     this.setState({
+    //       weapons: snapshot.val()
+    //     });
+    //   });
   }
 
   handleRowClick(rowId) {
@@ -79,11 +82,9 @@ export default class WeaponsChart extends React.Component {
     return { name, hitGroups, damageDone, shotsFired, totalHits };
   }
 
-
   render() {
     const data = this.processData();
-    const { expandedRows } = this.state;
-
+    const { expandedRows, player } = this.state;
     const shit = [
       {
         Header: "",
@@ -134,7 +135,6 @@ export default class WeaponsChart extends React.Component {
     if (!this.state.weapons) {
       return null;
     }
-    debugger
     return (
       <ReactTable
         className="-striped -highlight"
@@ -143,12 +143,13 @@ export default class WeaponsChart extends React.Component {
         columns={shit}
         onExpandedChange={(newExpanded, index, event) => {
           console.log(newExpanded);
-          this.setState({ expandedRows: {[index] : true} });
+          this.setState({ expandedRows: { [index]: !expandedRows[index] } });
         }}
         expanded={expandedRows}
         getTrProps={onRowClick}
         SubComponent={row => {
-          return <Foo />;
+          debugger;
+          return <Foo weaponName={row.original.name} player={player} />;
         }}
       />
     );

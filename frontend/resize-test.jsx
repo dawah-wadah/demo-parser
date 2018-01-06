@@ -28,17 +28,23 @@ export default class ResizableTest extends React.Component {
     let cb = this.changeWeapon;
 
     const { weaponName } = this.state;
-    const player = this.props.id;
+    const { player } = this.props;
 
-    return <div className="resize-parent">
+    return (
+      <div className="resize-parent">
         <div className="flex full">
           <div className="resize-child first">
-            <WeaponsChart weapons={this.props.data} changeWeapon={name => this.changeWeapon(name)} />
+            <WeaponsChart
+              weapons={this.props.data}
+              player={player}
+              changeWeapon={name => this.changeWeapon(name)}
+            />
           </div>
           <div className="resize-child second" style={this.state}>
             <Body weapon={{ weaponName }} id={player} />
           </div>
         </div>
-      </div>;
+      </div>
+    );
   }
 }

@@ -101,7 +101,6 @@ export default class PlayerPage extends React.Component {
     if (!this.state.player) {
       return null;
     }
-    debugger
     const { player } = this.state;
     const { steamInfo, games } = player;
     return (
@@ -116,11 +115,10 @@ export default class PlayerPage extends React.Component {
               component={Overview}
               player={player}
             />
-            <PropsRoute
+            <Route
               exact
               path={`/players/:id/weapons`}
-              component={ResizableTest}
-              weapons={player["Weapons Data"]}
+              render={() => <ResizableTest data={player["Weapons Data"]} player={steamInfo.id} />}
             />
             <Route
               exact
