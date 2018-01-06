@@ -13,52 +13,68 @@ const RecentGame = (gameData, weapons) => {
     usage[kill.weapon].kills++;
   });
 
-  let foo = (
+  let kills = (
     <div className="weapon-data-foo">
       <span>Kills</span>
-      <span>13</span>
+      <span>{gameData.K}</span>
+    </div>
+  );
+  let deaths = (
+    <div className="weapon-data-foo">
+      <span>Deaths</span>
+      <span>{gameData.D}</span>
+    </div>
+  );
+  let kd = (
+    <div className="weapon-data-foo">
+      <span>K/D</span>
+      <span>{(gameData.K / gameData.D).toFixed(2)}</span>
+    </div>
+  );
+  let assists = (
+    <div className="weapon-data-foo">
+      <span>Assists</span>
+      <span>{gameData.A}</span>
     </div>
   );
 
-  
   let mostUsedWeapon = values(usage)
-  .map(el => el)
-  .sort((a, b) => b.kills - a.kills)[0];
-  
+    .map(el => el)
+    .sort((a, b) => b.kills - a.kills)[0];
+
   let mostUsedWeaponData = values(weapons[mostUsedWeapon.name]);
-  
+
   let stats = mostUsedWeaponData[mostUsedWeaponData.length - 1];
 
-    let bar = (
-      <div className="panel-tile">
-        Outcome: {gameData.Win}
-        <div>
-          <div>Best Weapon:</div>
-          <div className="weapon-img">
-            <img src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`} />
+  let gun = (
+    <div className="panel-tile">
+      <div className="player-outcome">Outcome: {gameData.Win}</div>
+      <div>
+        <div>Best Weapon:</div>
+        <div className="weapon-img">
+          <img src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`} />
+        </div>
+        <div className="tile-footer">
+          <div className="left-side">
+            <span>{mostUsedWeapon.name.toUpperCase()}</span>
           </div>
-          <div className="tile-footer">
-            <div className="left-side">
-              <span>{mostUsedWeapon.name}</span>
-            </div>
-            <div className="right-side">
-              <span>{mostUsedWeapon.kills}</span>
-              <img src={`assets/weapons/crosshair.svg`} />
-              <span>{stats.accuracy + "%"} </span>
-              <img src={`assets/weapons/bullseye.svg`} />
-            </div>
+          <div className="right-side">
+            <span>{mostUsedWeapon.kills}</span>
+            <img src={`assets/weapons/crosshair.svg`} />
+            <span>{stats.accuracy + "%"} </span>
+            <img src={`assets/weapons/bullseye.svg`} />
           </div>
         </div>
       </div>
-    );
+    </div>
+  );
   return (
     <div className="player-recent-panel">
-      <Cell data={bar} />
-      <Cell data={foo} />
-      <Cell data={foo} />
-      <Cell data={foo} />
-      <Cell data={foo} />
-      <Cell data={foo} />
+      <Cell data={gun} />
+      <Cell data={kd} />
+      <Cell data={kills} />
+      <Cell data={deaths} />
+      <Cell data={assists} />
     </div>
   );
 };
