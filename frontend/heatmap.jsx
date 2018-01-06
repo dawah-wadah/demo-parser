@@ -55,7 +55,7 @@ class Heatmap extends React.Component {
 
   createCheckBoxes(team) {
     return this.state.statuses.map(status => (
-      <label className="custom-checkbox">
+      <label className="custom-checkbox" key={`${team + status}`}>
         <input
           checked={this.state.checkboxStatus[status][team]}
           type="checkbox"
@@ -156,11 +156,7 @@ class Heatmap extends React.Component {
       const { x, y } = gameEvent[e].location[role];
       let xPos = Math.floor((x - mapOrigin.x) * ratio * scale);
       let yPos = Math.floor((mapOrigin.y - y) * ratio * scale);
-      mapData.push({
-        x: xPos,
-        y: yPos,
-        value: 10
-      });
+      mapData.push({ x: xPos, y: yPos, value: 10});
     }
 
     return mapData;
@@ -185,7 +181,7 @@ class Heatmap extends React.Component {
             <div>T</div>
             <div>CT</div>
           </div>
-          <div class="separator" />
+          <div className="separator" />
           <div className="filter-body">
             <div className="filter-boxes">
               {this.createCheckBoxes("Terrorist")}
