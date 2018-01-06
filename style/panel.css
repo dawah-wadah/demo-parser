@@ -24,6 +24,14 @@
   text-transform: lowercase;
 }
 
+.panel:nth-child(3) .map-tile {
+  background: radial-gradient(circle, #dadada, #8a8a8a, #505050);
+}
+
+.panel:nth-child(1) .map-image > img {
+  object-fit: cover;
+}
+
 .tab {
   color: rgba(0, 0, 0, 0.87);
   background-color: #16242f;

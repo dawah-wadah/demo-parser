@@ -14,17 +14,17 @@ const processWeapon = (name, weapons) => {
     let damageDone = 0;
     let shotsFired = 0;
     let totalHits = 0;
-    
+
     values(weapons[name]).forEach(game => {
         damageDone += game.damage_dealt;
         shotsFired += game.totalShots;
         totalHits += game.totalHits;
-        
+
         Object.keys(game.hitGroups).forEach(limb => {
             hitGroups[limb] += game.hitGroups[limb];
         });
     });
-    
+
     return {
         name,
         hitGroups,
@@ -59,7 +59,7 @@ const WeaponTile = weapon => (
         </div>
         <div className="map-info-tags">
           <span>Fired: {weapon.shotsFired}</span>
-          <img src={`assets/weapons/crosshair.svg`} />
+          <img className="map-info-img" src={`assets/weapons/crosshair.svg`} />
         </div>
       </div>
     </div>

@@ -495,13 +495,13 @@ td > img {
 }
 
 .map-image > img {
-  object-fit: cover;
+  object-fit: contain;
   width: 100%;
   -webkit-transition: all 0.5s ease-in-out;
   transition: all 0.5s ease-in-out;
 }
 
-.map-image:hover img {
+.map-image:hover > img {
   -webkit-transform: scale3d(1.1, 1.1, 1);
   transform: scale3d(1.1, 1.1, 1);
 
@@ -509,7 +509,7 @@ td > img {
 
 .map-info {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   margin-top: -6%;
   position: absolute;
   bottom: 3px;
