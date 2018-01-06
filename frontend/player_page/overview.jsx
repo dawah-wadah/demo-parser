@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import {values, capitalize} from 'lodash'
-import RecentGame from './recent_game'
-import MapTile from './map_tile'
-import Panel from './panel'
+import { values, capitalize } from "lodash";
+import RecentGame from "./recent_game";
+import MapTile from "./map_tile";
+import Panel from "./panel";
 
 const newMap = string => ({
   name: capitalize(string.split("_")[1]),
@@ -16,7 +16,7 @@ const Overview = ({ player }) => {
   let recentGame = values(games)[0];
   let maps = {};
 
-  // I'm adding dummy data, in case player hasn't played 6 maps legitimately 
+  // I'm adding dummy data, in case player hasn't played 6 maps legitimately
   [
     "de_cbble",
     "de_stmarc",
@@ -32,7 +32,6 @@ const Overview = ({ player }) => {
 
   values(games).forEach(game => {
     if (!maps[game.Map]) {
-      debugger;
       maps[game.Map] = newMap(game.Map);
     }
     maps[game.Map].timesPlayed++;
@@ -43,33 +42,13 @@ const Overview = ({ player }) => {
     .map(mapData => MapTile(mapData));
 
   let gameTile = RecentGame(recentGame, weapons);
-//   return (
-//     <div className="player-overview">
-//       <table className="player-overview-table">
-//         <tbody>
-//           <tr>
-//             <th className="col">Recent Game</th>
-//             <th className="col">Favorite Map</th>
-//             <th className="col">Favorite Map</th>
-//           </tr>
-//           <tr>
-//             <td>
-//               <div>{gameTile}</div>
-//             </td>
-//             <td className="col">
-//               <div className="map-tiles">{mapTiles}</div>
-//             </td>
-//             <td className="col">
-//               <div className="map-tiles">{mapTiles}</div>
-//             </td>
-//           </tr>
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-return(
-    <Panel title={"Favorite Map"} elements={mapTiles}/>
-)
+  return (
+    <div className="player-overview">
+      <Panel title={"Favorite Map"} elements={mapTiles} />
+      <Panel title={"Recent Game"} elements={gameTile} />
+      <Panel title={"Recent Game"} elements={gameTile} />
+    </div>
+  );
 };
 
 export default Overview;

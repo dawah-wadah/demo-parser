@@ -132,17 +132,10 @@
 }
 
 #heatmap {
-<<<<<<< HEAD
-  width: calc(1024px * 0.4);
-  height: calc(1024px * 0.4);
-  background-size: calc(1024px * 0.4);
-  background-image: url("../assets/de_dust2_radar_spectate.png");
-=======
   width: calc(1024px * 0.6);
   height: calc(1024px * 0.6);
   background-size: calc(1024px * 0.6);
   background-image: url("../assets/de_dust2_radar_spectate.jpg");
->>>>>>> fda2b6344fd5f0c7d3d63dccca54ab3c853f784d
 }
 
 /* * { border: 1px solid red; } */
@@ -332,11 +325,11 @@ td > img {
 }
 
 .map-tile {
-  overflow: hidden;
-  border-radius: 7px;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  width: 47%;
-  margin: 10px 1%;
+overflow: hidden;
+border-radius: -2px;
+box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+width: 49%;
+margin: 5px 0%;
 }
 
 .map-tile:nth-child(1) {
@@ -424,7 +417,6 @@ td > img {
 .right-side {
   display: flex;
   justify-content: space-between;
-  width: 20%;
 }
 
 .right-side > span {

@@ -1,5 +1,5 @@
 import React from "react";
-import {values} from 'lodash'
+import { values } from "lodash";
 
 const RecentGame = (gameData, weapons) => {
   let usage = {};
@@ -13,25 +13,29 @@ const RecentGame = (gameData, weapons) => {
     usage[kill.weapon].kills++;
   });
 
+  let foo = (
+    <div className="weapon-data-foo">
+      <span>Kills</span>
+      <span>13</span>
+    </div>
+  );
+
+  
   let mostUsedWeapon = values(usage)
-    .map(el => el)
-    .sort((a, b) => b.kills - a.kills)[0];
-
+  .map(el => el)
+  .sort((a, b) => b.kills - a.kills)[0];
+  
   let mostUsedWeaponData = values(weapons[mostUsedWeapon.name]);
-
+  
   let stats = mostUsedWeaponData[mostUsedWeaponData.length - 1];
-  return (
-    <div className="player-recent-panel">
+
+    let bar = (
       <div className="panel-tile">
-        <div className="player-recent-panel-outcome">
-          Outcome: {gameData.Win}
-        </div>
+        Outcome: {gameData.Win}
         <div>
           <div>Best Weapon:</div>
           <div className="weapon-img">
-            <img
-              src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`}
-            />
+            <img src={`assets/weapons/weapon_` + mostUsedWeapon.name + `.svg`} />
           </div>
           <div className="tile-footer">
             <div className="left-side">
@@ -46,32 +50,43 @@ const RecentGame = (gameData, weapons) => {
           </div>
         </div>
       </div>
-      <table>
-        <tbody>
-          <tr>
-            <td>K/D Ratio</td>
-            <td>1.18</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-          <tr>
-            <td>Kills</td>
-            <td>13</td>
-          </tr>
-        </tbody>
-      </table>
+    );
+  return (
+    <div className="player-recent-panel">
+      <Cell data={bar} />
+      <Cell data={foo} />
+      <Cell data={foo} />
+      <Cell data={foo} />
+      <Cell data={foo} />
+      <Cell data={foo} />
     </div>
   );
+  // <table>
+  //   <tbody>
+  //     <tr>
+  //       <td>K/D Ratio</td>
+  //       <td>1.18</td>
+  //     </tr>
+  //     <tr>
+  //       <td>Kills</td>
+  //       <td>13</td>
+  //     </tr>
+  //     <tr>
+  //       <td>Kills</td>
+  //       <td>13</td>
+  //     </tr>
+  //     <tr>
+  //       <td>Kills</td>
+  //       <td>13</td>
+  //     </tr>
+  //     <tr>
+  //       <td>Kills</td>
+  //       <td>13</td>
+  //     </tr>
+  //   </tbody>
+  // </table>
 };
 
 export default RecentGame;
+
+const Cell = ({ data }) => <div className="tab">{data}</div>;

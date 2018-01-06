@@ -1,12 +1,12 @@
 import React from "react";
 
-const Panel = ({ title, element }) => {
+const Panel = ({ title, elements }) => {
   return (
-    <div class="panel">
-      <div class="heading">
-        <span class="title">{title}</span>
+    <div className="panel">
+      <div className="heading">
+        <span className="title">{title}</span>
       </div>
-      <div class="content">{element}</div>
+      <div className="content">{elements}</div>
     </div>
   );
 };
