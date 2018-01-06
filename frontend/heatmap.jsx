@@ -19,8 +19,8 @@ class Heatmap extends React.Component {
       },
       heatmapLayers: false,
       checkboxStatus: {
-        kills: { Terrorist: false, "Counter-Terrorist": false },
-        deaths: { Terrorist: false, "Counter-Terrorist": false }
+        kills: { "Terrorist": false, "Counter-Terrorist": false },
+        deaths: { "Terrorist": false, "Counter-Terrorist": false }
       },
       checked: {
         kills: "",
@@ -53,26 +53,19 @@ class Heatmap extends React.Component {
     return colors[data];
   }
 
-  createCheckBoxes() {
-    let checkboxes = [];
-
-    this.state.sides.forEach(side => {
-      this.state.statuses.forEach(status => {
-        checkboxes.push(
-          <label>
-            {`${side} ${status}`}
-            <input
-              checked={this.state.checkboxStatus[status][side]}
-              type="checkbox"
-              value={`${side} ${status}`}
-              onChange={this.handleChange}
-            />
-          </label>
-        );
-      });
-    });
-
-    return checkboxes;
+  createCheckBoxes(team) {
+    return this.state.statuses.map(status => (
+      <label className="custom-checkbox">
+        <input
+          checked={this.state.checkboxStatus[status][team]}
+          type="checkbox"
+          value={`${team} ${status}`}
+          onChange={this.handleChange}
+        />
+      <div className={`box ${team.slice(0, 1).toLowerCase()}`}/>
+      </label>
+      )
+    );
   }
 
   /* Adds heatmap canvas elements to DOM and stores references in state */
@@ -172,7 +165,25 @@ class Heatmap extends React.Component {
         <div id="heatmap" ref="heatmap">
           {this.renderMap()}
         </div>
-        {this.createCheckBoxes()}
+        <div className="heatmap-filters">
+          <div className="filter-header">
+            <div>T</div>
+            <div>CT</div>
+          </div>
+          <div class="separator" />
+          <div className="filter-body">
+            <div className="filter-boxes">
+              {this.createCheckBoxes("Terrorist")}
+            </div>
+            <div className="filter-stats">
+              <div>Kills</div>
+              <div>Deaths</div>
+            </div>
+            <div className="filter-boxes">
+              {this.createCheckBoxes("Counter-Terrorist")}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
