@@ -21,7 +21,7 @@
 }
 
 #main-body {
-  background: #191e27;
+  background: #1D3244;
 }
 
 .body-main {
@@ -55,9 +55,9 @@
 
 .spinning-logo {
   margin-top: 4em;
-  width: 70px;
-  height: 70px;
-  background-image: url("https://pbs.twimg.com/profile_images/889501252991594496/KaRaZTG3.jpg");
+  width: 100px;
+  height: 100px;
+  background-image: url("https://lh3.googleusercontent.com/MorATTgpaNGsLVOmPYnwLxpuQGw66yMwjU5_xB788TkUtaKtCB_NQcJPIQQ7tC7gK3A=w300");
   background-size: contain;
   -webkit-animation: rotatate-y 1.5s infinite ease-in-out;
   animation: rotatate-y 1.5s infinite ease-in-out;
@@ -67,8 +67,10 @@
   width: 600px;
   height: 700px;
   margin-bottom: 2em;
-  box-shadow: -2px 2px 5px 0px #12141a, -2px -2px 5px 0px #12141a,
-    3px 3px 5px 0px #12141a, 4px -2px 3px 0px #12141a;
+  box-shadow: -2px 2px 5px 0px #12141a,
+              -2px -2px 5px 0px #12141a,
+              3px 3px 5px 0px #12141a,
+              4px -2px 3px 0px #12141a;
 }
 
 #table-header {
@@ -131,13 +133,120 @@
   line-height: 28px;
 }
 
+/* Heatmap Component */
+
 #heatmap {
   width: calc(1024px * 0.6);
   height: calc(1024px * 0.6);
   background-size: calc(1024px * 0.6);
-  background-image: url("../assets/de_dust2_radar_spectate.jpg");
+  background-image: url("../assets/de_dust2_radar_spectate.png");
 }
 
+.heatmap-container {
+  display: flex;
+  justify-content: space-evenly;
+  width: 100%;
+  margin: 0px 5%;
+}
+
+/* Heatmap filter */
+
+.heatmap-filters {
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 1em 0 0.8em;
+  color: #ffffff;
+  background-color: #327497;
+  border-radius: 4px;
+}
+
+.heatmap-filters > div {
+  display: flex;
+  font-size: 2em;
+}
+
+.filter-header {
+  justify-content: space-between;
+}
+
+.filter-header > div {
+  margin: 0.5em 0 0.3em 0;
+}
+
+.separator {
+  border-bottom: 1px solid;
+}
+
+.filter-body > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.filter-boxes > label, .filter-stats > div {
+  margin-top: 1em;
+}
+
+.filter-stats {
+  text-align: center;
+  margin: 0 3em;
+}
+
+/* Checkbox */
+
+.custom-checkbox {
+  display: block;
+  width: 30px;
+  height: 30px;
+}
+
+.custom-checkbox > input[type="checkbox"] {
+  display: none;
+}
+
+.custom-checkbox .box {
+  width: 100%;
+  height: 100%;
+  transition: all 1.1s cubic-bezier(0.19, 1, 0.22, 1);
+  border: 2px solid transparent;
+  background-color: white;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.box:after {
+  width: 50%;
+  height: 20%;
+  content: '';
+  position: absolute;
+  border-left: 7.5px solid;
+  border-bottom: 7.5px solid;
+  transform: rotate(-45deg) translate3d(0, 0, 0);
+  transform-origin: center center;
+  transition: all 1.1s cubic-bezier(0.19, 1, 0.22, 1);
+  left: 0;
+  right: 0;
+  top: 200%;
+  bottom: 5%;
+  margin: auto;
+}
+
+.c:after {
+  border-color: #21A4C4;
+}
+
+.t:after {
+  border-color: #E7B53C;
+}
+
+.custom-checkbox input:checked + .box {
+  background-color: #162530;
+}
+.custom-checkbox input:checked + .box:after {
+  top: 0;
+}
 /* * { border: 1px solid red; } */
 
 body {
@@ -149,12 +258,6 @@ body {
 img {
   display: block;
   height: 100%;
-}
-
-.heatmap-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .checkbox {
@@ -275,7 +378,7 @@ td > img {
 .player-body {
   display: flex;
   justify-content: center;
-  padding: 5% 0 0 0;
+  padding: 5% 0;
 }
 
 .weapons-table > tbody > tr:nth-of-type(2n + 1) {
@@ -432,10 +535,10 @@ margin: 5px 0%;
   font-size: 100%;
 }
 
-img {
+/* img {
   height: auto;
   width: 100%;
-}
+} */
 
 /*#mainBubble {
   background: #fff;

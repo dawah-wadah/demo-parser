@@ -19,8 +19,8 @@ class Heatmap extends React.Component {
       },
       heatmapLayers: false,
       checkboxStatus: {
-        kills: { Terrorist: false, "Counter-Terrorist": false },
-        deaths: { Terrorist: false, "Counter-Terrorist": false }
+        kills: { "Terrorist": false, "Counter-Terrorist": false },
+        deaths: { "Terrorist": false, "Counter-Terrorist": false }
       },
       checked: {
         kills: "",
@@ -53,26 +53,19 @@ class Heatmap extends React.Component {
     return colors[data];
   }
 
-  createCheckBoxes() {
-    let checkboxes = [];
-
-    this.state.sides.forEach(side => {
-      this.state.statuses.forEach(status => {
-        checkboxes.push(
-          <label>
-            {`${side} ${status}`}
-            <input
-              checked={this.state.checkboxStatus[status][side]}
-              type="checkbox"
-              value={`${side} ${status}`}
-              onChange={this.handleChange}
-            />
-          </label>
-        );
-      });
-    });
-
-    return checkboxes;
+  createCheckBoxes(team) {
+    return this.state.statuses.map(status => (
+      <label className="custom-checkbox">
+        <input
+          checked={this.state.checkboxStatus[status][team]}
+          type="checkbox"
+          value={`${team} ${status}`}
+          onChange={this.handleChange}
+        />
+      <div className={`box ${team.slice(0, 1).toLowerCase()}`}/>
+      </label>
+      )
+    );
   }
 
   /* Adds heatmap canvas elements to DOM and stores references in state */
@@ -134,23 +127,12 @@ class Heatmap extends React.Component {
     this.state.heatmapLayers[type].setData({ max: 10, data: mapData });
   }
 
-  convertPositions(x, y) {
-    let xPos = Math.floor(
-      Math.abs(x - -2203) / 3764 * (840 * 0.6) + 64.7 * 0.6
-    );
-    let yPos = Math.floor(
-      969.7 * 0.6 - Math.abs((y - -1031) / 4090 * (923.7 * 0.6))
-    );
-
-    return { xPos, yPos };
-  }
-
   /* Iterates over type events and returns array of coordinates */
   extractLocation(gameEvent, role) {
     let mapData = [];
 
 
-    //  You can get the map origin from the original CSGO folder, in the 
+    //  You can get the map origin from the original CSGO folder, in the
     let mapOrigin = {
       x: -2476,
       y: 3239
@@ -168,8 +150,7 @@ class Heatmap extends React.Component {
 
     // ratio of in-game units to pixel
     let ratio = offset.x / (topLeft.x - mapOrigin.x);
-
-    let scale = 0.4;
+    let scale = 0.6;
 
     for (let e in gameEvent) {
       const { x, y } = gameEvent[e].location[role];
@@ -199,7 +180,25 @@ class Heatmap extends React.Component {
         <div id="heatmap" ref="heatmap">
           {this.renderMap()}
         </div>
-        {this.createCheckBoxes()}
+        <div className="heatmap-filters">
+          <div className="filter-header">
+            <div>T</div>
+            <div>CT</div>
+          </div>
+          <div class="separator" />
+          <div className="filter-body">
+            <div className="filter-boxes">
+              {this.createCheckBoxes("Terrorist")}
+            </div>
+            <div className="filter-stats">
+              <div>Kills</div>
+              <div>Deaths</div>
+            </div>
+            <div className="filter-boxes">
+              {this.createCheckBoxes("Counter-Terrorist")}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
