@@ -46,9 +46,43 @@ const RecentGame = (gameData, weapons) => {
 
   let stats = mostUsedWeaponData[mostUsedWeaponData.length - 1];
 
+  let win = {
+    backgroundColor: "rgba(131, 198, 72, 0.1)",
+    borderColor: "rgba(131, 198, 72, 0.9)",
+    color: "rgba(131, 198, 72, 0.9)"
+  };
+
+  let loss = {
+    backgroundColor: "rgba(228, 82, 75, 0.1)",
+    borderColor: "rgba(228, 82, 75, 0.9)",
+    color: "rgba(228, 82, 75, 0.9)"
+  };
+
+  let draw = {
+    backgroundColor: "rgba(191, 147, 41, 0.1)",
+    borderColor: "rgba(191, 147, 41, 0.9)",
+    color: "rgba(191, 147, 41, 0.9)"
+  };
+
+  let styling;
+
+  switch (gameData.Win) {
+    case true:
+      styling = win;
+      break;
+    case false:
+      styling = loss;
+      break;
+    default:
+      styling = draw;
+      break;
+  }
+
   let gun = (
     <div className="panel-tile">
-      <div className="player-outcome">Outcome: {gameData.Win}</div>
+      <div className="player-outcome" style={styling}>
+        Outcome: {gameData.Win}
+      </div>
       <div>
         <div>Best Weapon:</div>
         <div className="weapon-img">
