@@ -231,7 +231,6 @@ function parseDemofile(file, callback) {
     };
 
     demoFile.on("start", () => {
-      debugger;
       map = demoFile.header.mapName;
       console.log("Loaded " + file);
     });

@@ -14,8 +14,8 @@ export default class ResizableTest extends React.Component {
   }
 
   changeWeapon(weaponName) {
-    let width = "40%";
-    let x = "60%"
+    let width = "20%";
+    let x = "80%"
     let oldWeapon = this.state.weaponName;
     if (oldWeapon == weaponName) {
       width = 0;
