@@ -10,6 +10,7 @@ import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerHeader from "./player-header";
 import PlayerTabs from "./player-tab";
+import KDChart from './kd_chart'
 import ResizableTest from "./resize-test.jsx";
 
 export default class PlayerPage extends React.Component {
@@ -109,6 +110,7 @@ export default class PlayerPage extends React.Component {
         <PlayerTabs id={steamInfo.id} />
         <div className="player-body">
           <Switch>
+            <Route exact path={`/players/:id`} component={KDChart}/>
             <PropsRoute
               exact
               path={`/players/:id/overview`}

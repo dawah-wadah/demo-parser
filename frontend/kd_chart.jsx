@@ -1,6 +1,7 @@
 import React from "react";
 import firebase from "firebase";
 import * as d3 from "d3";
+import { values } from "lodash";
 
 export default class KDChart extends React.Component {
   constructor(props) {
@@ -14,15 +15,18 @@ export default class KDChart extends React.Component {
 
   componentDidMount() {
     const username = this.props.match.params.id;
+    let node = this.refs.kd
+    this.width = node.clientWidth
+    this.height = node.clientHeight
     this.svg = d3
       .select(this.refs.kd)
       .append("svg")
-      .attr("height", this.height)
+      .attr("height", this.height )
       .attr("width", this.width);
 
     firebase
       .database()
-      .ref(`/${username}/de_dust2`)
+      .ref(`/${username}/games`)
       .once("value", snapshot => {
         this.extractData(snapshot.val());
       });
@@ -32,7 +36,7 @@ export default class KDChart extends React.Component {
     let multiplier = options.multiplier ? options.multiplier : 1;
     let radius = options.radius
       ? options.radius
-      : Math.min(this.width, this.height) / 2;
+      : Math.min(this.width, this.height);
     let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
     let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
 
@@ -47,7 +51,7 @@ export default class KDChart extends React.Component {
     let multiplier = options.multiplier ? options.multiplier : 1;
     let radius = options.radius
       ? options.radius
-      : Math.min(this.width, this.height) / 2;
+      : Math.min(this.width, this.height);
     let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
     let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
 
@@ -74,14 +78,33 @@ export default class KDChart extends React.Component {
       }
     }
 
-    let ctdeaths = sides["Counter-Terrorist"].deaths;
-    for (let team in sides) {
-      for (let status in sides[team]) {
-        for (let key in sides[team][status]) {
-          insertData(team, status, key, sides[team][status][key]);
-        }
+    values(sides).forEach(game => {
+      let side = "Terrorist";
+      let deaths = values(game.deaths);
+      let kills = values(game.kills);
+      if (game.Team == "Counter-Terrorist") {
+        side = "Counter-Terrorist";
       }
-    }
+      if (deaths) {
+        deaths.forEach(death =>
+          insertData(side, "deaths", death.weapon, death)
+        );
+      }
+      if (kills) {
+        kills.forEach(kill => insertData(side, "kills", kill.weapon, kill));
+      }
+    });
+
+    // let ctdeaths = sides["Counter-Terrorist"].deaths;
+    // for (let team in sides) {
+    //   for (let status in sides[team]) {
+    //     for (let key in sides[team][status]) {
+    //       insertData(team, status, key, sides[team][status][key]);
+    //     }
+    //   }
+    // }
+
+    debugger;
 
     let newData = { ctKills: {} };
 
@@ -157,7 +180,7 @@ export default class KDChart extends React.Component {
         .tween("scale", () => {
           let xd = d3.interpolate(x.domain(), [d.x0, d.x1]),
             yd = d3.interpolate(y.domain(), [d.y0, 1]),
-            yr = d3.interpolate(y.range(), [d.y0 ? 20 : 0, radius / 2]);
+            yr = d3.interpolate(y.range(), [d.y0 ? 20 : 0, radius ]);
           return t => {
             x.domain(xd(t));
             y.domain(yd(t)).range(yr(t));
