@@ -1,5 +1,4 @@
 const fs = require("fs");
-const mover = require("fs-extra");
 const assert = require("assert");
 const APIKeys = require("./keys.json");
 const path = require("path");
@@ -8,6 +7,7 @@ const demo = require("demofile");
 const firebase = require("firebase");
 const initializeFB = require("./base.js");
 const fetch = require("node-fetch");
+const utils = require("./utils.js");
 
 const defaultMapData = () => ({
   Terrorist: { kills: {}, deaths: {} },
@@ -72,14 +72,6 @@ function storeData(victim, attacker, weapon, map, gameID) {
     },
     weapon
   };
-  // let playerID = victim.steam64Id;
-  // let playerSide = victim.side;
-
-  // if (status === "kills") {
-  //   console.log("Kills")
-  //   playerID = attacker.steam64Id;
-  //   playerSide = attacker.side;
-  // }
 
   firebase
     .database()
@@ -98,66 +90,45 @@ function storeData(victim, attacker, weapon, map, gameID) {
       }
     });
 
-  return firebase
+  let newKDKey = firebase
     .database()
     .ref("/" + attacker.steam64Id + "/games/" + gameID + "/kills")
-    .push(killData)
-    .then(() =>
-      firebase
-        .database()
-        .ref("/" + victim.steam64Id + "/games/" + gameID + "/deaths")
-        .push(killData)
-    )
-    .then(() =>
-      firebase
-        .database()
-        .ref("/")
-        .update({
-          [attacker.steam64Id + "/games/" + gameID + "/Map"]: map,
-          [victim.steam64Id + "/games/" + gameID + "/Map"]: map,
-          [attacker.steam64Id + "/games/" + gameID + "/Team"]: attacker.side,
-          [victim.steam64Id + "/games/" + gameID + "/Team"]: victim.side
-        })
-    );
+    .push().key;
+
+  let deaths = {};
+  deaths[
+    attacker.steam64Id + "/games/" + gameID + "/kills/" + newKDKey
+  ] = killData;
+  deaths[
+    victim.steam64Id + "/games/" + gameID + "/deaths/" + newKDKey
+  ] = killData;
+  deaths[attacker.steam64Id + "/games/" + gameID + "/Map"] = map;
+  deaths[victim.steam64Id + "/games/" + gameID + "/Map"] = map;
+  deaths[attacker.steam64Id + "/games/" + gameID + "/Team"] = attacker.side;
+  deaths[victim.steam64Id + "/games/" + gameID + "/Team"] = victim.side;
+  return firebase
+    .database()
+    .ref("/")
+    .update(deaths);
 }
 
-function storeShots(playerName, weaponsData) {
-  let promises = [];
+function storeShots(playerName, weaponsData, gameKey) {
+  let foo = {};
   Object.keys(weaponsData).forEach(weapon => {
-    let data = {
-      totalShots: weaponsData[weapon].shots_fired,
-      damage_dealt: weaponsData[weapon].damage_dealt,
-      hitGroups: {
-        head: weaponsData[weapon]["head"],
-        torso: weaponsData[weapon]["torso"],
-        "left-arm": weaponsData[weapon]["left-arm"],
-        "right-arm": weaponsData[weapon]["right-arm"],
-        "left-leg": weaponsData[weapon]["left-leg"],
-        "right-leg": weaponsData[weapon]["right-leg"]
-      },
-      headShots: weaponsData[weapon].headshots,
-      totalHits: weaponsData[weapon].shots_hit,
-      accuracy: (
-        weaponsData[weapon].shots_hit /
-        weaponsData[weapon].shots_fired *
-        100
-      ).toFixed(2)
-    };
+    let data = weaponsData[weapon];
+    data.accuracy = (
+      weaponsData[weapon].totalHits /
+      weaponsData[weapon].totalShots *
+      100
+    ).toFixed(2);
 
-    promises.push(
-      new Promise(function(resolve, reject) {
-        firebase
-          .database()
-          .ref(`/${playerName}/Weapons Data/${weapon}`)
-          .push(data)
-          .then(() => resolve(), () => reject());
-      })
-    );
-  });
+    foo[playerName + "/Weapons Data/" + weapon + "/" + gameKey + "/"] = data;
 
-  return Promise.all(promises).then(() => {
-    return;
   });
+  return firebase
+    .database()
+    .ref(`/`)
+    .update(foo);
 }
 
 function hasKilled(victim, attacker, weapon, map, gameID) {
@@ -175,45 +146,6 @@ function storeGrenadeData(evt) {
     .ref("/grenades/de_dust2/" + evt.name + "/")
     .push(location);
   counter++;
-}
-
-function newWeapon() {
-  return {
-    shots_fired: 0,
-    shots_hit: 0,
-    headshots: 0,
-    damage_dealt: 0,
-    head: 0,
-    torso: 0,
-    "left-arm": 0,
-    "right-arm": 0,
-    "left-leg": 0,
-    "right-leg": 0
-  };
-}
-
-// 1=hs 2=upper torso 3=lower torso 4=left arm 5=right arm 6=left leg 7=right leg
-
-function whereHit(num) {
-  switch (num) {
-    case 1:
-      return "head";
-    case 2:
-      return "torso";
-    case 3:
-      return "torso";
-    case 4:
-      return "left-arm";
-    case 5:
-      return "right-arm";
-    case 6:
-      return "left-leg";
-    case 7:
-      return "right-leg";
-
-    default:
-      break;
-  }
 }
 
 function weaponStats(weapon, player) {}
@@ -239,99 +171,56 @@ function parseDemofile(file, callback) {
       console.log("Finished with " + file);
       let promises = [];
 
+      let gameKey = firebase.database().ref("/logs/").push().key
+
       Object.keys(shots).forEach(key => {
-        promises.push(storeShots(key, shots[key]));
+        promises.push(storeShots(key, shots[key], gameKey));
       });
       Promise.all(promises).then(() => {
         return callback();
       });
-      let teams = demoFile.teams;
-      let ts = teams[demo.TEAM_TERRORISTS];
-      let cts = teams[demo.TEAM_CTS];
+      let ts = demoFile.teams[demo.TEAM_TERRORISTS];
+      let cts = demoFile.teams[demo.TEAM_CTS];
       let foo = {};
-      if (demoFile.gameRules.phase == "postgame") {
-        let winners;
-        let losers;
-        if (ts.score > cts.score) {
-          winners = ts;
-          losers = cts;
-        } else {
-          winners = cts;
-          losers = ts;
-        }
-        winners.members.forEach(player => {
-          if (player) {
-            foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] = true;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "K"] =
-              player.kills;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "D"] =
-              player.deaths;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "A"] =
-              player.assists;
-          }
-        });
-        losers.members.forEach(player => {
-          if (player) {
-            foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] = false;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "K"] =
-              player.kills;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "D"] =
-              player.deaths;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "A"] =
-              player.assists;
-          }
-        });
-      } else {
-        let players = ts.members.concat(cts.members);
-        players.forEach(player => {
-          if (player) {
-            foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] =
-              "Demo Ended before Game Ended";
-            foo[player.steam64Id + `/games/` + gameID + "/" + "K"] =
-              player.kills;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "D"] =
-              player.deaths;
-            foo[player.steam64Id + `/games/` + gameID + "/" + "A"] =
-              player.assists;
-          }
-        });
+      let winners = cts;
+      let losers = ts;
+      if (ts.score > cts.score) {
+        winners = ts;
+        losers = cts;
       }
+      winners.members.forEach(player => {
+        if (player) {
+          foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] = true;
+        }
+      });
+      losers.members.forEach(player => {
+        if (player) {
+          foo[player.steam64Id + `/games/` + gameID + "/" + "Win"] = false;
+        }
+      });
+      let players = ts.members.concat(cts.members);
+      players.forEach(player => {
+        if (player) {
+          foo[player.steam64Id + `/games/` + gameID + "/" + "K"] = player.kills;
+          foo[player.steam64Id + `/games/` + gameID + "/" + "D"] =
+            player.deaths;
+          foo[player.steam64Id + `/games/` + gameID + "/" + "A"] =
+            player.assists;
+        }
+      });
       firebase
         .database()
         .ref("/")
         .update(foo);
     });
 
-    let grenades = [
-      "hegrenade",
-      "flashbang",
-      "smokegrenade",
-      "molotov",
-      "decoy"
-    ];
+    let grenades = utils.grenades();
 
     let shots = {};
 
     grenades.forEach(grenade => {
       demoFile.gameEvents.on(`${grenade}_detonate`, e => {
-        switch (grenade) {
-          case "hegrenade":
-            e.name = "High Explosive Grenade";
-            break;
-          case "flashbang":
-            e.name = "Flashbang";
-            break;
-          case "smokegrenade":
-            e.name = "Smoke Grenade";
-            break;
-          case "molotov":
-            e.name = "Molotov";
-            break;
-          case "decoy":
-            e.name = "Decoy";
-            break;
-          default:
-        }
+        e.name = utils.getGrenadeName(grenade)
         storeGrenadeData(e);
       });
     });
@@ -363,7 +252,6 @@ function parseDemofile(file, callback) {
       let killerWeapon = e.weapon.split("_")[0];
 
       if (victim && attacker) {
-        // console.log("%s killed %s". e.attacker, victim.name)
         if (!player_roster.players[victim.steam64Id]) {
           return;
         }
@@ -372,7 +260,6 @@ function parseDemofile(file, callback) {
         }
         storeData(victim, attacker, killerWeapon, map, gameID);
         player_roster.players[victim.steam64Id] = false;
-        // wasKilled(victim, attacker, killerWeapon, map, gameID);
       }
     });
 
@@ -387,9 +274,9 @@ function parseDemofile(file, callback) {
         shots[playerID] = {};
       }
       if (!shots[playerID][weapon]) {
-        shots[playerID][weapon] = newWeapon();
+        shots[playerID][weapon] = utils.newWeapon();
       }
-      shots[playerID][weapon].shots_fired++;
+      shots[playerID][weapon].totalShots++;
     });
 
     demoFile.gameEvents.on("player_hurt", e => {
@@ -402,14 +289,14 @@ function parseDemofile(file, callback) {
         shots[playerID] = {};
       }
       if (!shots[playerID][e.weapon]) {
-        shots[playerID][e.weapon] = newWeapon();
+        shots[playerID][e.weapon] = utils.newWeapon();
       }
-      shots[playerID][e.weapon].shots_hit++;
-      shots[playerID][e.weapon][whereHit(e.hitgroup)]++;
-      shots[playerID][e.weapon].damage_dealt += e.dmg_health;
-      shots[playerID][e.weapon].damage_dealt += e.dmg_armor;
+      shots[playerID][e.weapon].totalHits++;
+      shots[playerID][e.weapon].hitGroups[utils.whereHit(e.hitgroup)]++;
+      shots[playerID][e.weapon].damageDealt += e.dmg_health;
+      shots[playerID][e.weapon].damageDealt += e.dmg_armor;
       if (e.hitgroup === 1 && e.health === 0) {
-        shots[playerID][e.weapon].headshots++;
+        shots[playerID][e.weapon].headShots++;
       }
     });
     try {

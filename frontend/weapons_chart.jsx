@@ -99,9 +99,11 @@ export default class WeaponsChart extends React.Component {
         onClick: e => {
           let copy = this.state;
           if (copy.expandedRows[rowInfo.index]) {
-            copy.expandedRows[rowInfo.index] = !copy.expandedRows[
-              rowInfo.index
-            ];
+            {
+              copy.expandedRows[rowInfo.index] = !copy.expandedRows[
+                rowInfo.index
+              ];
+            }
           } else {
             (copy.weapon = rowInfo.original.name),
               (copy.column = column.Header),
@@ -110,8 +112,8 @@ export default class WeaponsChart extends React.Component {
               });
           }
 
-          if (column.Header == "Accuracy"){
-            this.props.changeWeapon(rowInfo.original.name)
+          if (column.Header == "Accuracy") {
+            this.props.changeWeapon(rowInfo.original.name);
           }
           this.setState(copy);
         }

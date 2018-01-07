@@ -68,13 +68,13 @@ export default class LineChart extends Component {
   updateDimensions() {
     let node = this.node;
 
-    if (node.clientWidth < 500) {
-      this.setState({ width: 450, height: 102 });
-    } else {
-      let update_width = node.clientWidth;
-      let update_height = node.clientHeight;
-      this.setState({ width: update_width, height: update_height });
-    }
+    // if (node.clientWidth < 500) {
+    //   this.setState({ width: 450, height: 102 });
+    // } else {
+    //   let update_width = node.clientWidth;
+    //   let update_height = node.clientHeight;
+    //   this.setState({ width: update_width, height: update_height });
+    // }
     d3
       .select(this.node)
       .selectAll("*")

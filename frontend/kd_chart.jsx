@@ -94,18 +94,6 @@ export default class KDChart extends React.Component {
         kills.forEach(kill => insertData(side, "kills", kill.weapon, kill));
       }
     });
-
-    // let ctdeaths = sides["Counter-Terrorist"].deaths;
-    // for (let team in sides) {
-    //   for (let status in sides[team]) {
-    //     for (let key in sides[team][status]) {
-    //       insertData(team, status, key, sides[team][status][key]);
-    //     }
-    //   }
-    // }
-
-    debugger;
-
     let newData = { ctKills: {} };
 
     this.setState({ data });
