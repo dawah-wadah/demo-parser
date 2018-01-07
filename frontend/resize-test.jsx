@@ -15,10 +15,12 @@ export default class ResizableTest extends React.Component {
 
   changeWeapon(weaponName) {
     let width = "40%";
+    let x = "60%"
     let oldWeapon = this.state.weaponName;
     if (oldWeapon == weaponName) {
       width = 0;
       weaponName = "";
+      x = "100%"
     }
 
     this.setState({ width, weaponName, x });
@@ -27,13 +29,13 @@ export default class ResizableTest extends React.Component {
   render() {
     let cb = this.changeWeapon;
 
-    const { weaponName } = this.state;
+    const { weaponName, x } = this.state;
     const { player } = this.props;
 
     return (
       <div className="resize-parent">
         <div className="flex full">
-          <div className="resize-child first">
+          <div className="resize-child first" style={{width: x}}>
             <WeaponsChart
               weapons={this.props.data}
               player={player}

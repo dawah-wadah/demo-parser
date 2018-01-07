@@ -3,7 +3,7 @@ import firebase from "firebase";
 import * as d3 from "d3";
 import { values } from "lodash";
 
-class Foo extends Component {
+export default class LineChart extends Component {
   constructor(props) {
     super(props);
 
@@ -31,7 +31,7 @@ class Foo extends Component {
   componentDidMount() {
     const { player, weaponName, col } = this.props;
     this.makeSVG();
-    let margin = { top: 50, right: 20, bottom: 30, left: 50 },
+    let margin = { top: 50, right: 50, bottom: 30, left: 50 },
       width = +this.svg.attr("width") - margin.left - margin.right,
       height = +this.svg.attr("height") - margin.top - margin.bottom;
 
@@ -67,7 +67,6 @@ class Foo extends Component {
 
   updateDimensions() {
     let node = this.node;
-    debugger;
 
     if (node.clientWidth < 500) {
       this.setState({ width: 450, height: 102 });
@@ -84,32 +83,6 @@ class Foo extends Component {
     this.makeSVG();
 
     this.createChart();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props !== nextProps) {
-      let node = this.node;
-      debugger;
-
-      if (node.clientWidth < 500) {
-        this.setState({ width: 450, height: 102 });
-      } else {
-        let update_width = node.clientWidth;
-        let update_height = node.clientHeight;
-        this.setState({
-          width: update_width,
-          height: update_height
-        });
-      }
-      d3
-        .select(this.node)
-        .selectAll("*")
-        .remove();
-
-      this.makeSVG();
-
-      this.createChart();
-    }
   }
 
   createChart() {
@@ -149,16 +122,12 @@ class Foo extends Component {
       .y(function(d) {
         return y(d[accessor]);
       });
-    x.domain(
-      d3.extent(weapon, function(d) {
+    x.domain(d3.extent(weapon, function(d) {
         return d.match;
-      })
-    );
-    y.domain(
-      d3.extent(weapon, function(d) {
+      }));
+    y.domain(d3.extent(weapon, function(d) {
         return parseFloat(d[accessor]);
-      })
-    );
+      }));
     let axis = d3
       .axisLeft(y)
       .tickValues(d3.range(y.domain()[0], y.domain()[1] + 1, 1))
@@ -190,86 +159,39 @@ class Foo extends Component {
       .attr("stroke-width", 2.5)
       .attr("d", line);
 
-    // var curtain = this.svg
-    //   .append("rect")
-    //   .attr("x", -1 * width * 2)
-    //   .attr("y", -1 * height * 2)
-    //   .attr("height", height * 2)
-    //   .attr("width", width * 2)
-    //   .attr("class", "curtain")
-    //   .attr("transform", "rotate(180)")
-    //   .style("fill", "#1d3244");
-    // var guideline = this.svg
-    //   .append("line")
-    //   .attr("stroke", "#333")
-    //   .attr("stroke-width", 0)
-    //   .attr("class", "guide")
-    //   .attr("x1", 1)
-    //   .attr("y1", 1)
-    //   .attr("x2", 1)
-    //   .attr("y2", height);
+    var curtain = this.svg
+      .append("rect")
+      .attr("x", -1 * width * 2)
+      .attr("y", -1 * height * 2)
+      .attr("height", height * 2)
+      .attr("width", width * 2)
+      .attr("class", "curtain")
+      .attr("transform", "rotate(180)")
+      .style("fill", "#1d3244");
+    var guideline = this.svg
+      .append("line")
+      .attr("stroke", "#333")
+      .attr("stroke-width", 0)
+      .attr("class", "guide")
+      .attr("x1", 1)
+      .attr("y1", 1)
+      .attr("x2", 1)
+      .attr("y2", height);
 
-    // var t = this.svg
-    //   .transition()
-    //   .delay(150)
-    //   .duration(500)
-    //   .ease(d3.easeLinear);
+    var t = this.svg
+      .transition()
+      .delay(150)
+      .duration(500)
+      .ease(d3.easeLinear);
 
-    // t.select("rect.curtain").attr("width", 0);
+    t.select("rect.curtain").attr("width", 0);
   }
 
   render() {
-    if (!this.state.weapon) {
-      return null;
-    }
-    const { weapon, col } = this.state;
-
-    let accessor;
-
-    switch (col) {
-      case "Shots Fired":
-        accessor = "totalShots";
-        break;
-      case "Damage Dealt":
-        accessor = "damage_dealt";
-        break;
-      case "Total Hits":
-        accessor = "totalHits";
-        break;
-      default:
-        accessor = "accuracy";
-        break;
-    }
-    chartSeries = [
-      {
-        field: accessor,
-        name: col,
-        color: "#ff7f0e"
-      }
-    ];
-
-    var width = 500,
-      height = 300,
-      margins = { left: 100, right: 100, top: 50, bottom: 50 };
-
-    let data = weapon.map(game => game[accessor]);
-    debugger;
     return (
       <div id="weapons-chart" ref={node => (this.node = node)}>
-          <LineChart
-            margins={margin}
-            data={data}
-            width={width}
-            height={height}
-            chartSeries={chartSeries}
-          />
+        {this.createChart()}
       </div>
     );
   }
 }
-{
-  /* <LineChart showXGrid={false} showYGrid={false} margins={margins} title={title} data={chartData} width={width} height={height} chartSeries={chartSeries} x={x} /> */
-}
-
-export default Foo;
-

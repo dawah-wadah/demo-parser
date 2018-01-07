@@ -1,7 +1,7 @@
 import React from "react";
 import { values } from "lodash";
 import firebase from "firebase";
-import Foo from "./foo";
+import Foo from "./line-chart";
 import ReactTable from "react-table";
 
 export default class WeaponsChart extends React.Component {
@@ -12,37 +12,6 @@ export default class WeaponsChart extends React.Component {
       player: this.props.player,
       expandedRows: []
     };
-  }
-
-  componentDidMount() {
-    const { weapons, player } = this.state;
-    const username = "76561198027906568";
-
-    // firebase
-    //   .database()
-    //   .ref(`/${player}/Weapons Data`)
-    //   .limitToLast(25)
-    //   .once("value", snapshot => {
-    //     let games = values(snapshot.val());
-    //     let i = games.length;
-    //     this.setState({
-    //       weapons: snapshot.val()
-    //     });
-    //   });
-  }
-
-  handleRowClick(rowId) {
-    const currentExpandedRows = this.state.expandedRows;
-    const isRowCurrentlyExpanded = currentExpandedRows.includes(rowId);
-
-    const newExpandedRows = [rowId];
-    // const newExpandedRows = isRowCurrentlyExpanded
-    //   ? currentExpandedRows.filter(id => id !== rowId)
-    //   : currentExpandedRows.concat(rowId);
-
-    this.setState({
-      expandedRows: newExpandedRows
-    });
   }
 
   processData() {
@@ -124,54 +93,48 @@ export default class WeaponsChart extends React.Component {
         )
       }
     ];
+
     const onRowClick = (state, rowInfo, column, instance) => {
       return {
         onClick: e => {
-          console.log("It was in this column:", column);
-          console.log("It was in this row:", rowInfo);
+          let copy = this.state;
+          if (copy.expandedRows[rowInfo.index]) {
+            copy.expandedRows[rowInfo.index] = !copy.expandedRows[
+              rowInfo.index
+            ];
+          } else {
+            (copy.weapon = rowInfo.original.name),
+              (copy.column = column.Header),
+              (copy.expandedRows = {
+                [rowInfo.index]: !copy.expandedRows[rowInfo.index]
+              });
+          }
+
+          if (column.Header == "Accuracy"){
+            this.props.changeWeapon(rowInfo.original.name)
+          }
+          this.setState(copy);
         }
       };
     };
     if (!this.state.weapons) {
       return null;
     }
+    const { column } = this.state;
     return (
       <ReactTable
         className="-striped -highlight"
         defaultSorted={[{ id: "fired", desc: true }]}
         data={data}
         columns={shit}
-        onExpandedChange={(newExpanded, index, event) => {
-          console.log(newExpanded);
-          this.setState({ expandedRows: { [index]: !expandedRows[index] } });
-        }}
         expanded={expandedRows}
-        getTrProps={onRowClick}
+        getTdProps={onRowClick}
         SubComponent={row => {
-          debugger;
-          return <Foo weaponName={row.original.name} player={player} />;
+          return (
+            <Foo weaponName={row.original.name} col={column} player={player} />
+          );
         }}
       />
     );
   }
 }
-
-const TableRow = ({ row, renderDamage }) => {
-  return [
-    <tr onClick={() => renderDamage(row.name)}>
-      <td>
-        <img src={`assets/weapons/weapon_${row.name}.svg`} />
-      </td>
-      <td>{row.name}</td>
-      <td>{row.shotsFired}</td>
-      <td>{row.damageDone}</td>
-      <td>{row.totalHits}</td>
-      <td>{Math.floor((row.totalHits / row.shotsFired).toFixed(2) * 100)}%</td>
-    </tr>,
-    <tr>
-      <td id="chart-shit" colSpan="6">
-        <Foo />
-      </td>
-    </tr>
-  ];
-};

@@ -1,6 +1,4 @@
 import React from "react";
-
-import axios from "axios";
 import h337 from "heatmap.js";
 import { assign, merge, values } from "lodash";
 

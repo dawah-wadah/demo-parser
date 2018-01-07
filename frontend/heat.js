@@ -1,8 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 // import * as APIKeys from "../keys.json";
-import axios from "axios";
-
 import { assign, merge, values } from "lodash";
 import firebase from "firebase";
 import h337 from "heatmap.js";
