@@ -80,7 +80,7 @@ const RecentGame = (gameData, weapons) => {
       gameData.outcome = "Draw"
       break;
   }
-  debugger
+  
 
   let gun = (
     <div className="panel-tile">

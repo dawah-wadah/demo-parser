@@ -53,7 +53,7 @@ export default class WeaponsChart extends React.Component {
   
   render() {
     const data = this.processData();
-    debugger
+    
     const { expandedRows, player } = this.state;
     const shit = [
       {

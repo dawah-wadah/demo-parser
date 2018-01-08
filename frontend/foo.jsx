@@ -67,7 +67,7 @@ class Foo extends Component {
 
   updateDimensions() {
     let node = this.node;
-    debugger;
+    ;
 
     if (node.clientWidth < 500) {
       this.setState({ width: 450, height: 102 });
@@ -89,7 +89,7 @@ class Foo extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
       let node = this.node;
-      debugger;
+      ;
 
       if (node.clientWidth < 500) {
         this.setState({ width: 450, height: 102 });
@@ -253,7 +253,7 @@ class Foo extends Component {
       margins = { left: 100, right: 100, top: 50, bottom: 50 };
 
     let data = weapon.map(game => game[accessor]);
-    debugger;
+    ;
     return (
       <div id="weapons-chart" ref={node => (this.node = node)}>
           <LineChart
