@@ -57,7 +57,9 @@ const WeaponTile = weapon => (
         </div>
         <div className="map-info-tags">
           <span>Fired: {weapon.shotsFired}</span>
-          <img className="map-info-img" src={`/assets/weapons/crosshair.svg`} alt="crosshair" />
+            <div className="map-info-img">
+              <img src={`/assets/weapons/crosshair.svg`} alt="trophy" />
+            </div>
         </div>
       </div>
     </div>

@@ -43,16 +43,16 @@
   height: 100%;
   margin: 1px 0;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  align-content: center;
 }
 
 .weapon-data-foo {
-  font-size: 30px;
   height: 100%;
   width: 100%;
   display: flex;
-  padding: 0 24px;
+  align-items: center;
   justify-content: space-between;
+  font-size: 30px;
+  padding: 0 24px;
   color: rgba(11, 179, 214, 0.9);
   box-sizing: border-box;
 }
