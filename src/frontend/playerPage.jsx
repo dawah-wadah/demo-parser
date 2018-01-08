@@ -42,8 +42,6 @@ export default class PlayerPage extends React.Component {
     //currently locked to my account 'Taylor Swift' alter it with the match.params.id, assuming the address bar will link to the steamid
     const playerId = this.props.match.params.id;
 
-    // const player = require ("../taylor.json.json");
-    // this.setState({ player });
     firebase
       .database()
       .ref(`/players/${playerId}`)
@@ -98,8 +96,10 @@ export default class PlayerPage extends React.Component {
     if (!this.state.player) {
       return null;
     }
+
     const { player } = this.state;
     const { steamInfo, games } = player;
+
     return (
       <div className="player-page">
         <PlayerHeader steamInfo={steamInfo} />
