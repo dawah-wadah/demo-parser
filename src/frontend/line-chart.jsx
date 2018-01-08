@@ -19,8 +19,7 @@ export default class LineChart extends Component {
       .attr("height", node.clientHeight)
       .attr("width", node.clientWidth);
 
-    let margin = { top: 50, right: 20, bottom: 30, left: 50 }
-
+    let margin = { top: 50, right: 20, bottom: 30, left: 50 };
 
     this.g = this.svg
       .append("g")
@@ -33,10 +32,9 @@ export default class LineChart extends Component {
     let margin = { top: 50, right: 50, bottom: 30, left: 50 },
       width = +this.svg.attr("width") - margin.left - margin.right,
       height = +this.svg.attr("height") - margin.top - margin.bottom;
-
     firebase
       .database()
-      .ref(`/${player}/Weapons Data/${weaponName}`)
+      .ref(`/players/${player}/Weapons Data/${weaponName}`)
       .limitToLast(25)
       .once("value", snapshot => {
         let games = values(snapshot.val());
@@ -65,7 +63,6 @@ export default class LineChart extends Component {
   }
 
   updateDimensions() {
-
     // if (node.clientWidth < 500) {
     //   this.setState({ width: 450, height: 102 });
     // } else {
@@ -100,7 +97,7 @@ export default class LineChart extends Component {
         accessor = "totalShots";
         break;
       case "Damage Dealt":
-        accessor = "damage_dealt";
+        accessor = "damageDealt";
         break;
       case "Total Hits":
         accessor = "totalHits";
@@ -118,7 +115,13 @@ export default class LineChart extends Component {
         return x(d.match);
       })
       .y(function(d) {
-        return y(d[accessor]);
+        let num;
+        if (accessor === "accuracy") {
+          num = (d.totalHits || 0 / d.totalShots) * 100;
+        } else {
+          num = parseFloat(d[accessor]);
+        }
+        return y(num);
       });
     x.domain(
       d3.extent(weapon, function(d) {
@@ -128,7 +131,7 @@ export default class LineChart extends Component {
     y.domain(
       d3.extent(weapon, function(d) {
         if (accessor === "accuracy") {
-          return (d.totalHits / d.totalShots / 100).toFixed(2);
+          return (d.totalHits || 0 / d.totalShots) * 100;
         } else {
           return parseFloat(d[accessor]);
         }
@@ -157,7 +160,6 @@ export default class LineChart extends Component {
       .attr("stroke-linecap", "round")
       .attr("stroke-width", 2.5)
       .attr("d", line);
-
 
     var t = this.svg
       .transition()

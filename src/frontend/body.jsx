@@ -51,10 +51,11 @@ export default class Body extends React.Component {
     firebase
       .database()
       // .ref("/76561198027906568/Weapons Data/awp")
-      .ref("/players" + id + "/Weapons Data/" + weapon)
+      .ref("/players/" + id + "/Weapons Data/" + weapon)
       .once("value", snap => {
         Object.keys(snap.val()).forEach(push => {
           let slice = snap.val()[push].hitGroups;
+          if (!slice) {return}
           Object.keys(slice).forEach(section => {
             hitGroups[section] += slice[section] || 0;
           });
@@ -65,7 +66,7 @@ export default class Body extends React.Component {
   }
 
   backgroundImage(limb) {
-    return "url(../assets/body-parts/" + limb.split(" ").join("-") + ".png)";
+    return "url(/assets/body-parts/" + limb.split(" ").join("-") + ".png)";
   }
 
   calcOpacity(limb) {
