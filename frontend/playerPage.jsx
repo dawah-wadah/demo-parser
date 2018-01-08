@@ -4,8 +4,6 @@ import { values, capitalize } from "lodash";
 import firebase from "firebase";
 import Overview from "./player_page/overview";
 import PropsRoute from "./prop_routes";
-import * as APIKeys from "../keys.json";
-
 import Heatmap from "./heatmap";
 import Resize from "./resize-test.jsx";
 import PlayerHeader from "./player-header";
@@ -65,7 +63,7 @@ export default class PlayerPage extends React.Component {
     let url =
       "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?" +
       "key=" +
-      APIKeys.steamKey +
+      process.env.steamKey +
       "&steamids=" +
       id;
 
