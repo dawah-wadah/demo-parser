@@ -1,6 +1,6 @@
 module.exports = {
   context: __dirname,
-  entry: "./main.jsx",
+  entry: "./frontend/main.jsx",
   output: { filename: "./vlad.js" },
   module: {
     loaders: [
