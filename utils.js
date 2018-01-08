@@ -60,3 +60,11 @@ exports.getGrenadeName = grenade => {
       return "Decoy";
   }
 };
+
+exports.iterates = (obj,key, amt) => {
+  if (obj[key]) {
+    obj[key] += amt || 1;
+  } else {
+    obj[key] = amt || 1;
+  }
+};

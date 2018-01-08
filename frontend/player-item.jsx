@@ -15,34 +15,3 @@ const PlayerItem = ({ player, callback }) => {
 
 };
 export default PlayerItem;
-
-//
-// <div className="checkboxes">
-//   <input
-//     type="checkbox"
-//     className="checkbox"
-//     value={`${player.steamInfo.id} Counter-Terrorist kills`}
-//     onClick={callback}
-//   />
-//   <div className="vert-line" />
-//   <input
-//     type="checkbox"
-//     className="checkbox"
-//     value={`${player.steamInfo.id} Counter-Terrorist deaths`}
-//     onClick={callback}
-//   />
-//   <div className="vert-line" />
-//   <input
-//     type="checkbox"
-//     className="checkbox"
-//     value={`${player.steamInfo.id} Terrorist kills`}
-//     onClick={callback}
-//   />
-//   <div className="vert-line" />
-//   <input
-//     type="checkbox"
-//     className="checkbox"
-//     value={`${player.steamInfo.id} Terrorist deaths`}
-//     onClick={callback}
-//   />
-// </div>

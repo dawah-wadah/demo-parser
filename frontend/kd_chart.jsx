@@ -26,7 +26,7 @@ export default class KDChart extends React.Component {
 
     firebase
       .database()
-      .ref(`/${username}/games`)
+      .ref(`/players/${username}/games`)
       .once("value", snapshot => {
         this.extractData(snapshot.val());
       });

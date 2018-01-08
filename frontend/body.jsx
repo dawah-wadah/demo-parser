@@ -51,12 +51,12 @@ export default class Body extends React.Component {
     firebase
       .database()
       // .ref("/76561198027906568/Weapons Data/awp")
-      .ref("/" + id + "/Weapons Data/" + weapon)
+      .ref("/players" + id + "/Weapons Data/" + weapon)
       .once("value", snap => {
         Object.keys(snap.val()).forEach(push => {
           let slice = snap.val()[push].hitGroups;
           Object.keys(slice).forEach(section => {
-            hitGroups[section] += slice[section];
+            hitGroups[section] += slice[section] || 0;
           });
           hitGroups.total += snap.val()[push].totalHits;
         });

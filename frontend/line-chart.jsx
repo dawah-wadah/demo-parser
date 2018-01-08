@@ -122,12 +122,20 @@ export default class LineChart extends Component {
       .y(function(d) {
         return y(d[accessor]);
       });
-    x.domain(d3.extent(weapon, function(d) {
+    x.domain(
+      d3.extent(weapon, function(d) {
         return d.match;
-      }));
-    y.domain(d3.extent(weapon, function(d) {
-        return parseFloat(d[accessor]);
-      }));
+      })
+    );
+    y.domain(
+      d3.extent(weapon, function(d) {
+        if (accessor == "accuracy") {
+          return (d.totalHits / d / totalShots / 100).toFixed(2);
+        } else {
+          return parseFloat(d[accessor]);
+        }
+      })
+    );
     let axis = d3
       .axisLeft(y)
       .tickValues(d3.range(y.domain()[0], y.domain()[1] + 1, 1))

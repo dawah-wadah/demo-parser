@@ -69,19 +69,23 @@ const RecentGame = (gameData, weapons) => {
   switch (gameData.Win) {
     case true:
       styling = win;
+      gameData.outcome = "Won"
       break;
-    case false:
+      case false:
       styling = loss;
+      gameData.outcome = "Loss"
       break;
-    default:
+      default:
       styling = draw;
+      gameData.outcome = "Draw"
       break;
   }
+  debugger
 
   let gun = (
     <div className="panel-tile">
       <div className="player-outcome" style={styling}>
-        Outcome: {gameData.Win}
+        Outcome: {gameData.outcome}
       </div>
         <div>Best Weapon</div>
         <div className="weapon-img">
@@ -94,7 +98,7 @@ const RecentGame = (gameData, weapons) => {
           <div className="right-side">
             <span>{mostUsedWeapon.kills}</span>
             <div className="shots-fired-img w-stats-img" />
-            <span>{stats.accuracy + "%"} </span>
+            <span>{(100*stats.totalHits/ stats.totalShots).toFixed(2) + "%"} </span>
             <div className="accuracy-img w-stats-img" />
         </div>
       </div>

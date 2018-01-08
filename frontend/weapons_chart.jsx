@@ -1,7 +1,7 @@
 import React from "react";
 import { values } from "lodash";
 import firebase from "firebase";
-import Foo from "./line-chart";
+import LineGraph from "./line-chart";
 import ReactTable from "react-table";
 
 export default class WeaponsChart extends React.Component {
@@ -39,20 +39,21 @@ export default class WeaponsChart extends React.Component {
     let totalHits = 0;
 
     values(this.state.weapons[name]).forEach(game => {
-      damageDone += game.damage_dealt;
-      shotsFired += game.totalShots;
-      totalHits += game.totalHits;
-
-      Object.keys(game.hitGroups).forEach(limb => {
-        hitGroups[limb] += game.hitGroups[limb];
+      damageDone += game.damageDealt || 0;
+      shotsFired += game.totalShots || 0;
+      totalHits += game.totalHits || 0;
+      
+      values(game.hitGroups).forEach(limb => {
+        hitGroups[limb] += limb || 0;
       });
     });
-
+    
     return { name, hitGroups, damageDone, shotsFired, totalHits };
   }
-
+  
   render() {
     const data = this.processData();
+    debugger
     const { expandedRows, player } = this.state;
     const shit = [
       {
@@ -133,7 +134,7 @@ export default class WeaponsChart extends React.Component {
         getTdProps={onRowClick}
         SubComponent={row => {
           return (
-            <Foo weaponName={row.original.name} col={column} player={player} />
+            <LineGraph weaponName={row.original.name} col={column} player={player} />
           );
         }}
       />

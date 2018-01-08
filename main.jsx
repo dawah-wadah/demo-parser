@@ -13,8 +13,6 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Switch, Route, HashRouter } from "react-router-dom";
 import WeaponsChart from "./frontend/weapons_chart";
-import ResizableTest from "./frontend/resize-test";
-import foofoo from "./frontend/foofoo";
 
 initializeFB();
 document.addEventListener("DOMContentLoaded", () => {
@@ -31,13 +29,10 @@ class App extends React.Component {
           <Switch>
             <Route exact path="/" component={Mainpage} />
             <Route path="/players/:id" component={Player} />
-            <Route exact path="/player/:id/weapons" component={ResizableTest} />
             <Route exact path="/player/:id/kd" component={KDChart} />
             <Route exact path="/body" component={Body} />
             <Route exact path="/foo" component={Foo} />
             <Route exact path="/bar" component={WeaponsChart} />
-            <Route exact path="/baz" component={ResizableTest} />
-
           </Switch>
           <Footer />
         </div>

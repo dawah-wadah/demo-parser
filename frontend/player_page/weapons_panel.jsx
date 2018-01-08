@@ -16,12 +16,13 @@ const processWeapon = (name, weapons) => {
     let totalHits = 0;
 
     values(weapons[name]).forEach(game => {
+      debugger
         damageDone += game.damage_dealt;
         shotsFired += game.totalShots;
         totalHits += game.totalHits;
 
-        Object.keys(game.hitGroups).forEach(limb => {
-            hitGroups[limb] += game.hitGroups[limb];
+        values(game.hitGroups).forEach(limb => {
+            hitGroups[limb] += limb;
         });
     });
 

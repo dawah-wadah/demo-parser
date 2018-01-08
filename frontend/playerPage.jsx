@@ -50,7 +50,7 @@ export default class PlayerPage extends React.Component {
     // this.setState({ player });
     firebase
       .database()
-      .ref(`/${playerId}`)
+      .ref(`/players/${playerId}`)
       .once("value", snap => {
         this.setState({ player: snap.val() });
         return snap.val();
@@ -89,12 +89,12 @@ export default class PlayerPage extends React.Component {
       .database()
       .ref("/")
       .update({
-        [`${id}/steamInfo/name`]: player.personaname,
-        [`${id}/steamInfo/imageFull`]: player.avatarfull,
-        [`${id}/steamInfo/imageMed`]: player.avatarmedium,
-        [`${id}/steamInfo/imageSmall`]: player.avatar,
-        [`${id}/steamInfo/id`]: player.steamid,
-        [`${id}/steamInfo/profile`]: player.profileurl
+        [`players/${id}/steamInfo/name`]: player.personaname,
+        [`players/${id}/steamInfo/imageFull`]: player.avatarfull,
+        [`players/${id}/steamInfo/imageMed`]: player.avatarmedium,
+        [`players/${id}/steamInfo/imageSmall`]: player.avatar,
+        [`players/${id}/steamInfo/id`]: player.steamid,
+        [`players/${id}/steamInfo/profile`]: player.profileurl
       });
   }
 

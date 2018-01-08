@@ -17,7 +17,7 @@ export default class PlayerFilter extends React.Component {
   componentDidMount() {
     firebase
       .database()
-      .ref("/")
+      .ref("/players/")
       .once("value", snap => this.setState({ players: snap.val() }));
   }
 
