@@ -167,14 +167,13 @@
   padding: 0.3em 0.4em;
   text-decoration: none;
   color: white;
-  border: 6px solid #23234d;
 }
 
 .active {
   background-color: #FCB83A;
 }
 
-.player-tabs > a:not(.active):hover {
+.player-tabs a:not(.active):hover {
   background-color: #317597;
 }
 
@@ -691,5 +690,33 @@ td > img {
   100% {
     transform: perspective(120px) rotateY(0deg);
     -webkit-transform: perspective(120px) rotateY(0deg);
+  }
+}
+
+
+/* Media Queries */
+
+@media (max-width: 670px) {
+  .player-page {
+    margin: 0 auto;
+  }
+
+  .player-tabs {
+    font-size: 35px;
+  }
+
+  .navbar-wrapper a {
+    padding: 20px;
+  }
+
+}
+
+@media (max-width: 550px) {
+  .player-tabs {
+    font-size: 25px;
+  }
+
+  .navbar-wrapper a {
+    padding: 12.5px;
   }
 }
