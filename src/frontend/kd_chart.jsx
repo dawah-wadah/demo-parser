@@ -15,13 +15,13 @@ export default class KDChart extends React.Component {
 
   componentDidMount() {
     const username = this.props.match.params.id;
-    let node = this.refs.kd
-    this.width = node.clientWidth
-    this.height = node.clientHeight
+    let node = this.refs.kd;
+
+    this.height = node.clientHeight;
     this.svg = d3
       .select(this.refs.kd)
       .append("svg")
-      .attr("height", this.height )
+      .attr("height", this.height)
       .attr("width", this.width);
 
     firebase
@@ -30,6 +30,14 @@ export default class KDChart extends React.Component {
       .once("value", snapshot => {
         this.extractData(snapshot.val());
       });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (values(this.state).length > 0) {
+      return false;
+    }
+
+    return true;
   }
 
   generateArc(options) {
@@ -47,6 +55,7 @@ export default class KDChart extends React.Component {
       .innerRadius(d => Math.max(0, y(d.y0)))
       .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
   }
+
   generateArc2(options) {
     let multiplier = options.multiplier ? options.multiplier : 1;
     let radius = options.radius
@@ -148,12 +157,13 @@ export default class KDChart extends React.Component {
       )
       .on("mouseover", this.showInfo.bind(this))
       .on("click", click.bind(this));
+
     let percents = this.path
       .append("text")
       .attr("id", "percentage")
-      .attr("x", d => -50)
+      .attr("x", d => -90)
       .attr("y", d => 0)
-      .style("font-size", "3em");
+      .style("font-size", "1.5em");
 
     function click(d) {
       // d3.selectAll("path").on("mouseover", null);
@@ -238,7 +248,7 @@ export default class KDChart extends React.Component {
     if (d.parent) {
       const percentValue = (100 * d.value / d.parent.value).toPrecision(2);
       let multiplier = d.height == 0 ? 2 : 1;
-      d3.select("#percentage").text(`${percentValue}% - ${d.data.name}`);
+      d3.select("#percentage").text(`${percentValue}% ${d.data.name}`);
 
       const sequenceArray = d.ancestors().reverse();
 
