@@ -227,6 +227,10 @@
 
 /* Progress Bar */
 
+.ReactTable .rt-tbody .rt-td:last-child {
+  cursor: pointer;
+}
+
 .progress-bar {
   position: relative;
 }
@@ -234,7 +238,7 @@
 .progress-bar > span {
   position: absolute;
   top: 45%;
-  left: 45%;
+  left: 37%;
 }
 
 .col {

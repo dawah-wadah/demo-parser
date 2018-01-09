@@ -17,6 +17,7 @@ export default class KDChart extends React.Component {
     const username = this.props.match.params.id;
     let node = this.refs.kd;
 
+    this.width = node.clientWidth;
     this.height = node.clientHeight;
     this.svg = d3
       .select(this.refs.kd)

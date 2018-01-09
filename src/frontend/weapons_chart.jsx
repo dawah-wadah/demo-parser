@@ -20,9 +20,9 @@ export default class WeaponsChart extends React.Component {
       return null;
     }
 
-    let weapons = Object.keys(this.state.weapons).map(name =>
-      this.processWeapon(name)
-    );
+    let weapons = Object.keys(this.state.weapons)
+      .map(name => this.processWeapon(name))
+      .filter(weapon => weapon.shotsFired !== 0);
 
     return weapons.sort((a, b) => b.shotsFired - a.shotsFired);
   }
@@ -77,16 +77,20 @@ export default class WeaponsChart extends React.Component {
       {
         Header: "Accuracy",
         id: "accuracy",
-        accessor: d => (d.totalHits / d.shotsFired).toFixed(2) * 100,
+        accessor: d => {
+          let result = (d.totalHits / d.shotsFired).toFixed(2) * 100;
+          return result <= 100 ? result : 100;
+        },
         Cell: row => (
           <div
             style={{
               width: "100%",
               height: "100%",
-              backgroundColor: "#86868c",
+              backgroundColor: "#86868c"
             }}
           >
-            <div className="progress-bar"
+            <div
+              className="progress-bar"
               style={{
                 width: `${row.value}%`,
                 height: "100%",
@@ -97,7 +101,7 @@ export default class WeaponsChart extends React.Component {
                 transition: "all .2s ease-out"
               }}
             >
-            <span>{row.value.toFixed()}%</span>
+              <span>{row.value.toFixed()}%</span>
             </div>
           </div>
         )
@@ -139,13 +143,12 @@ export default class WeaponsChart extends React.Component {
         expanded={expandedRows}
         getTdProps={onRowClick}
         SubComponent={row => (
-            <LineGraph
-              weaponName={row.original.name}
-              col={column}
-              player={player}
-            />
-          )
-        }
+          <LineGraph
+            weaponName={row.original.name}
+            col={column}
+            player={player}
+          />
+        )}
       />
     );
   }
