@@ -8,9 +8,9 @@ const PlayersIndex = ({ players, filteredPlayers }) => {
     return <div className="spinning-logo" />;
   }
 
-  const playerRows = values(filteredPlayers).map(player => (
-    <PlayerItem key={player.steamInfo.id} player={player} />
-  ));
+  const playerRows = values(filteredPlayers)
+    .slice(0, 15)
+    .map(player => <PlayerItem key={player.steamInfo.id} player={player} />);
 
   const result =
     playerRows.length > 0 ? (

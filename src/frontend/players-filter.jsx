@@ -18,7 +18,26 @@ export default class PlayerFilter extends React.Component {
     firebase
       .database()
       .ref("/players/")
-      .once("value", snap => this.setState({ players: snap.val() }));
+      .once("value")
+      .then(snap => {
+        let players = snap.val();
+        delete players["0"];
+
+        let playerIds = Object.keys(players);
+        let sortedPlayers = {};
+
+        playerIds
+          .filter(id => players[id].games)
+          .sort((a, b) => {
+            return (
+              Object.keys(players[b].games).length -
+              Object.keys(players[a].games).length
+            );
+          })
+          .forEach(id => (sortedPlayers[id] = players[id]));
+
+        this.setState({ players: sortedPlayers });
+      });
   }
 
   // TO DO: rewrite the function, use closure maybe?

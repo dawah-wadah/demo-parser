@@ -1,11 +1,13 @@
 import React from "react";
 import { values } from "lodash";
+
 import LineGraph from "./line-chart";
 import ReactTable from "react-table";
 
 export default class WeaponsChart extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       weapons: this.props.weapons,
       player: this.props.player,
@@ -17,9 +19,11 @@ export default class WeaponsChart extends React.Component {
     if (!this.state.weapons) {
       return null;
     }
+
     let weapons = Object.keys(this.state.weapons).map(name =>
       this.processWeapon(name)
     );
+
     return weapons.sort((a, b) => b.shotsFired - a.shotsFired);
   }
 
@@ -51,10 +55,14 @@ export default class WeaponsChart extends React.Component {
   }
 
   render() {
+    if (!this.state.weapons) {
+      return null;
+    }
+
     const data = this.processData();
 
     const { expandedRows, player } = this.state;
-    const shit = [
+    const chartData = [
       {
         Header: "",
         id: "image",
@@ -75,11 +83,10 @@ export default class WeaponsChart extends React.Component {
             style={{
               width: "100%",
               height: "100%",
-              backgroundColor: "#dadada",
-              borderRadius: "2px"
+              backgroundColor: "#86868c",
             }}
           >
-            <div
+            <div className="progress-bar"
               style={{
                 width: `${row.value}%`,
                 height: "100%",
@@ -87,14 +94,17 @@ export default class WeaponsChart extends React.Component {
                   row.value > 66
                     ? "#85cc00"
                     : row.value > 33 ? "#ffbf00" : "#ff2e00",
-                borderRadius: "2px",
                 transition: "all .2s ease-out"
               }}
-            />
+            >
+            <span>{row.value.toFixed()}%</span>
+            </div>
           </div>
         )
       }
     ];
+
+    const { column } = this.state;
 
     const onRowClick = (state, rowInfo, column, instance) => {
       return {
@@ -119,27 +129,23 @@ export default class WeaponsChart extends React.Component {
         }
       };
     };
-    if (!this.state.weapons) {
-      return null;
-    }
-    const { column } = this.state;
+
     return (
       <ReactTable
         className="-striped -highlight"
         defaultSorted={[{ id: "fired", desc: true }]}
         data={data}
-        columns={shit}
+        columns={chartData}
         expanded={expandedRows}
         getTdProps={onRowClick}
-        SubComponent={row => {
-          return (
+        SubComponent={row => (
             <LineGraph
               weaponName={row.original.name}
               col={column}
               player={player}
             />
-          );
-        }}
+          )
+        }
       />
     );
   }

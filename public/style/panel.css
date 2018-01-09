@@ -83,6 +83,13 @@
   font: 1em sans-serif;
 }
 
+.domain, .tick line {
+  stroke: white;
+}
+
+.tick text {
+  fill: white;
+}
 
 tr  {
   width: 100%

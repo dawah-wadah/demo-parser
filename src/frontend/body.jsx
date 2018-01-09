@@ -26,16 +26,16 @@ export default class Body extends React.Component {
   }
 
   componentDidMount() {
-    this.getShit(this.props)
+    this.getAccuracyData(this.props)
   }
 
   componentWillReceiveProps(nextProps){
     if (this.props !== nextProps) {
-      this.getShit(nextProps)
+      this.getAccuracyData(nextProps)
     }
   }
 
-  getShit(props){
+  getAccuracyData(props){
     let hitGroups = {
       head: 0,
       "left-arm": 0,

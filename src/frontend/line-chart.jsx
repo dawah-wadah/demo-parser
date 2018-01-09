@@ -84,10 +84,10 @@ export default class LineChart extends Component {
     if (!this.state.weapon) {
       return null;
     }
-    this.drawShit();
+    this.drawChart();
   }
 
-  drawShit() {
+  drawChart() {
     const { height, width, weapon, col } = this.state;
 
     let accessor;

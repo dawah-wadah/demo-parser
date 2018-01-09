@@ -116,10 +116,10 @@ class Foo extends Component {
     if (!this.state.weapon) {
       return null;
     }
-    this.drawShit();
+    this.drawChart();
   }
 
-  drawShit() {
+  drawChart() {
     const { height, width, weapon, col } = this.state;
 
     let accessor;
@@ -272,4 +272,3 @@ class Foo extends Component {
 }
 
 export default Foo;
-

@@ -43,6 +43,7 @@
 
 .filter > input {
   outline: none;
+  background-color: #ffffff;
   border: 1px solid #ddd;
   border-radius: 2px;
   padding: 0.5em 1em;
@@ -189,6 +190,46 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+}
+
+/* Weapon Data Table */
+
+.rt-thead {
+  background-color: #368d90;
+}
+
+.rt-tr {
+  font-size: 1.2em;
+}
+
+.ReactTable .rt-thead .rt-th, .ReactTable .rt-thead .rt-td {
+  padding: 0.8em;
+  line-height: 1em;
+}
+
+.ReactTable .rt-thead .rt-th.-sort-desc {
+  box-shadow: inset 0 -3px 0 0 rgba(255, 255, 255, 0.59);
+}
+
+.ReactTable .rt-thead .rt-th.-sort-asc {
+  box-shadow: inset 0 3px 0 0 rgba(255, 255, 255, 0.59);
+}
+
+.rt-td {
+  padding-top: 1em;
+  padding-bottom: -1em;
+}
+
+/* Progress Bar */
+
+.progress-bar {
+  position: relative;
+}
+
+.progress-bar > span {
+  position: absolute;
+  top: 45%;
+  left: 45%;
 }
 
 .col {
@@ -448,7 +489,8 @@ td > img {
 }
 
 .resize-parent {
-  width: 92%;
+  width: 100%;
+  color: #ffffff;
 }
 
 .resize-child {
@@ -729,8 +771,13 @@ td > img {
 }
 
 @media (max-width: 550px) {
+  .player-header-image {
+    width: 130px;
+    height: 130px;
+  }
+
   .player-info {
-    font-size: 1em;
+    font-size: 1.5em;
   }
 
   .player-tabs {
