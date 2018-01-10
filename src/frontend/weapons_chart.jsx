@@ -16,10 +16,6 @@ export default class WeaponsChart extends React.Component {
   }
 
   processData() {
-    if (!this.state.weapons) {
-      return null;
-    }
-
     let weapons = Object.keys(this.state.weapons)
       .map(name => this.processWeapon(name))
       .filter(weapon => weapon.shotsFired !== 0);
@@ -29,13 +25,13 @@ export default class WeaponsChart extends React.Component {
 
   processWeapon(name) {
     let hitGroups = {
-      head: 0,
+      "head": 0,
       "left-arm": 0,
       "left-leg": 0,
       "right-arm": 0,
       "right-leg": 0,
-      torso: 0,
-      total: 0
+      "torso": 0,
+      "total": 0
     };
     let damageDone = 0;
     let shotsFired = 0;
@@ -64,13 +60,19 @@ export default class WeaponsChart extends React.Component {
     const { expandedRows, player } = this.state;
     const chartData = [
       {
-        Header: "",
+        Header: "Weapon",
         id: "image",
-        accessor: d => (
-          <img src={`/assets/weapons/weapon_${d.name}.svg`} alt="weapon" />
+        accessor: "name",
+        Cell: row => (
+          <div className="weapon-name-row">
+            <div>
+              <img src={`/assets/weapons/weapon_${row.value}.svg`} alt="weapon" />
+            </div>
+            <div>{row.value}</div>
+          </div>
         )
       },
-      { Header: "Weapon Name", accessor: "name" },
+      // { Header: "Weapon Name", accessor: "name" },
       { Header: "Shots Fired", id: "fired", accessor: "shotsFired" },
       { Header: "Damage Dealt", accessor: "damageDone" },
       { Header: "Total Hits", accessor: "totalHits" },
