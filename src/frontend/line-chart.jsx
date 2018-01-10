@@ -149,7 +149,7 @@ export default class LineChart extends Component {
       .attr("y", 10)
       .attr("dy", "1em")
       .attr("text-anchor", "end")
-      .text(col === "Weapon Name" ? "Accuracy" : col || "Accuracy");
+      .text(col === "Weapon" ? "Accuracy" : col || "Accuracy");
 
     this.g
       .append("path")
