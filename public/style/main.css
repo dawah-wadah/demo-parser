@@ -708,6 +708,91 @@ td > img {
   background-size: contain;
   background-repeat: no-repeat;
 }
+
+/* Craetors */
+
+.creators-main {
+  min-height: 816px;
+  margin: 2em;
+  font-family: "Roboto", sans-serif;
+  color: white;
+}
+
+.whoweare {
+  padding-top: 1em;
+}
+
+.wrapper {
+  width: 90%;
+  max-width: 65em;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 3.5em;
+  text-align: center;
+}
+
+.brief-info {
+  margin-top: 0.5em;
+  text-align: center;
+  font-size: 1.3em;
+  font-weight: 300;
+  line-height: 28px;
+}
+
+.developers:before {
+  content: " ";
+  display: block;
+  background-color: #ffffff;
+  height: 1px;
+  width: 40%;
+  margin: 3em auto;
+}
+
+.dev-wrap {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.developer {
+  display: inline-block;
+  margin: 1em 0.5em 0 0.5em;
+  width: 300px;
+  max-width: 500px;
+}
+
+.dev-photo {
+  width: 250px;
+  height: 250px;
+  margin: 0 auto;
+}
+
+.dev-photo img {
+  border-radius: 50%;
+}
+
+.dev-info {
+  text-align: center;
+  font-size: 2em;
+}
+
+.dev-info, .links {
+  margin-top: 1.25em;
+}
+
+.links {
+  display: flex;
+  justify-content: space-between;
+}
+
+.link {
+  width: 90px;
+}
+
+
+
 /* img {
   height: auto;
   width: 100%;
