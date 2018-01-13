@@ -35,7 +35,7 @@ const Creators = () => {
           <img src="https://cdn0.iconfinder.com/data/icons/flat-social-media-icons-set-round-style-1/550/github-128.png" />
         </a>
         <a className="link" href={dev.linkedin}>
-          <img src="https://image.flaticon.com/icons/svg/220/220201.svg" />
+          <img src="https://cdn1.iconfinder.com/data/icons/logotypes/32/circle-linkedin-128.png" />
         </a>
       </div>
     </div>
