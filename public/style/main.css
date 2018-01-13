@@ -9,7 +9,7 @@
 
 #header,
 #footer {
-  padding: 25px;
+  padding: 35px 25px;
   background: #171a21;
   text-align: center;
 }
@@ -17,20 +17,25 @@
 #footer,
 #header > h1 {
   color: #ffffff;
-  letter-spacing: 5px;
-  font-size: 2em;
+  font-size: 3em;
 }
 
 #footer {
-  font-size: 1em;
+  font-family: "Ubuntu", sans-serif;
+  font-size: 1.4em;
+  padding: 25px;
+}
+
+#footer a:hover {
+  color: #fcaf33;
 }
 
 #main-body {
   background: #1d3244;
 }
 
-.body-main {
-  min-height: 100vh;
+.body-main, .creators-main {
+  min-height: 84vh;
 }
 
 .players-container {
@@ -712,14 +717,12 @@ td > img {
 /* Craetors */
 
 .creators-main {
-  min-height: 816px;
-  margin: 2em;
   font-family: "Roboto", sans-serif;
   color: white;
 }
 
 .whoweare {
-  padding-top: 1em;
+  padding-top: 2em;
 }
 
 .wrapper {
