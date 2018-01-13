@@ -35,7 +35,7 @@
 }
 
 .body-main, .creators-main {
-  min-height: 84vh;
+  min-height: 83vh;
 }
 
 .players-container {
@@ -47,8 +47,8 @@
 /* Filter */
 
 .filter {
-  /* text-align: center; */
-  margin: 2em auto;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
 }
 
 .filter > input {
@@ -75,6 +75,7 @@
 }
 
 .players-table {
+  font-family: "Ubuntu", sans-serif;
   width: 600px;
   height: 700px;
   margin-bottom: 2em;
@@ -84,10 +85,12 @@
 
 #table-header {
   background-color: #171d28;
+  color: #ffffff;
   text-align: center;
   padding: 0.5em;
-  font-size: 3em;
-  color: #fff;
+
+  font-size: 2.2em;
+  letter-spacing: 1.5px;
 }
 
 .players-list {
@@ -131,6 +134,7 @@
 }
 
 .player-info {
+  font-family: "Ubuntu", sans-serif;
   display: flex;
   flex-direction: column;
   font-size: 4em;
@@ -141,6 +145,12 @@
 
 .player-header-name {
   margin-bottom: 0.5em;
+}
+
+.player-header-name:hover {
+  color: #79beec;
+  -webkit-filter: drop-shadow(0 0 20px #8fd5dc);
+  filter: drop-shadow(0 0 20px #8fd5dc);
 }
 
 .player-steam {
@@ -281,6 +291,8 @@
 }
 
 .profile-image {
+  min-width: 70px;
+  min-height: 70px;
   width: 70px;
   height: 70px;
   margin-right: 3em;
