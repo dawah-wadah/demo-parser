@@ -3,6 +3,8 @@ import firebase from "firebase";
 import * as d3 from "d3";
 import { values } from "lodash";
 
+import StatsBar from "./stats-bar";
+
 export default class KDChart extends React.Component {
   constructor(props) {
     super(props);
@@ -278,9 +280,12 @@ export default class KDChart extends React.Component {
 
   render() {
     return (
-      <div id="kd-chart" ref={"kd"}>
-        <div id="insights">Insights: <span id="percentage"></span></div>
-        {this.createChart()}
+      <div className="wrapper">
+        <div id="kd-chart" ref={"kd"}>
+          <StatsBar games={Object.values(this.props.games)} />
+          <div id="insights">Insights: <span id="percentage"></span></div>
+          {this.createChart()}
+        </div>
       </div>
     );
   }
