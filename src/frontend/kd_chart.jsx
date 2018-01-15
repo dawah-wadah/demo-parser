@@ -1,5 +1,4 @@
 import React from "react";
-import firebase from "firebase";
 import * as d3 from "d3";
 import { values } from "lodash";
 
@@ -28,13 +27,6 @@ export default class KDChart extends React.Component {
       .attr("width", this.width);
 
     this.extractData(this.props.games);
-
-    // firebase
-    //   .database()
-    //   .ref(`/players/${username}/games`)
-    //   .once("value", snapshot => {
-    //     this.extractData(snapshot.val());
-    //   });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
