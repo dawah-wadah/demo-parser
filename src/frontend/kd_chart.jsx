@@ -23,6 +23,7 @@ export default class KDChart extends React.Component {
     this.svg = d3
       .select(this.refs.kd)
       .append("svg")
+      .attr("class", "dachart")
       .attr("height", this.height)
       .attr("width", this.width);
 
@@ -232,11 +233,12 @@ export default class KDChart extends React.Component {
 
   generateText(node) {
     if (node.depth === 1) {
-      return node.data.name;
+      let nodeName = node.data.name;
+      return nodeName.charAt(0).toUpperCase() + nodeName.slice(1);
     } else if (node.depth === 2) {
       return this.generateText(node.parent) + " as " + node.data.name;
     } else {
-      return this.generateText(node.parent) + " by " + node.data.name;
+      return this.generateText(node.parent) + " by " + node.data.name.toUpperCase();
     }
   }
 
@@ -281,9 +283,13 @@ export default class KDChart extends React.Component {
   render() {
     return (
       <div className="wrapper">
+        <StatsBar games={Object.values(this.props.games)} />
+        <div className="chart-info">
+          <div className="diagram-icon" />
+          <p>Kill/Death Ratio Diagram</p>
+        </div>
+        <div id="insights">Insights: <span id="percentage"></span></div>
         <div id="kd-chart" ref={"kd"}>
-          <StatsBar games={Object.values(this.props.games)} />
-          <div id="insights">Insights: <span id="percentage"></span></div>
           {this.createChart()}
         </div>
       </div>
