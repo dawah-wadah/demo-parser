@@ -3,6 +3,10 @@
   src: url("/assets/cs_regular.ttf");
 }
 
+#insights {
+  visibility: hidden;
+}
+
 #root {
   min-height: 100vh;
 }
@@ -216,6 +220,7 @@
 
 .rt-thead {
   background-color: #368d90;
+  font-family: "Ubuntu", sans-serif;
 }
 
 .rt-tr {

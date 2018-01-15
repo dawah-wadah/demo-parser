@@ -6,7 +6,7 @@ import PropsRoute from "./prop_routes";
 import Heatmap from "./heatmap";
 import PlayerHeader from "./player-header";
 import PlayerTabs from "./player-tab";
-import KDChart from './kd_chart'
+import KDChart from "./kd_chart";
 import ResizableTest from "./resize-test.jsx";
 
 export default class PlayerPage extends React.Component {
@@ -106,7 +106,13 @@ export default class PlayerPage extends React.Component {
         <PlayerTabs id={steamInfo.id} />
         <div className="player-body">
           <Switch>
-            <Route exact path={`/players/:id`} component={KDChart}/>
+            <PropsRoute
+              exact
+              path={`/players/:id`}
+              component={KDChart}
+              games={games}
+              id={steamInfo.id}
+            />
             <PropsRoute
               exact
               path={`/players/:id/overview`}
@@ -116,7 +122,12 @@ export default class PlayerPage extends React.Component {
             <Route
               exact
               path={`/players/:id/weapons`}
-              render={() => <ResizableTest data={player["Weapons Data"]} player={steamInfo.id} />}
+              render={() => (
+                <ResizableTest
+                  data={player["Weapons Data"]}
+                  player={steamInfo.id}
+                />
+              )}
             />
             <Route
               exact
