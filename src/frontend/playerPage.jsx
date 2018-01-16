@@ -94,7 +94,12 @@ export default class PlayerPage extends React.Component {
 
   render() {
     if (!this.state.player) {
-      return null;
+      debugger
+      return (
+      <div className="player-page">
+        <div className="spinning-logo" />;
+      </div>
+    );
     }
 
     const { player } = this.state;

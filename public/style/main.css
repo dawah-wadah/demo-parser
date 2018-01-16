@@ -79,6 +79,7 @@ img {
 /* Players list */
 
 .spinning-logo {
+  margin: 0 auto;
   margin-top: 4em;
   width: 100px;
   height: 100px;
