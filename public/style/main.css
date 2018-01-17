@@ -779,7 +779,7 @@ td > img {
 
 .developer {
   display: inline-block;
-  margin: 1em 0.5em 0 0.5em;
+  margin: 0.5em 0.5em 2em 0.5em;
   width: 300px;
   max-width: 500px;
 }

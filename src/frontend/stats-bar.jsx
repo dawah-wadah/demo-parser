@@ -3,9 +3,12 @@ import React from "react";
 const StatsBar = ({ games }) => {
   const gameStats = games.reduce(
     (prev, next) => {
-      prev.assists += next.A;
-      prev.deaths += next.D;
-      prev.kills += next.K;
+      if (next.A) {
+        prev.assists += next.A;
+        prev.deaths += next.D;
+        prev.kills += next.K;
+      }
+      
       if (next.Win) {
         prev.wins += 1;
       }
@@ -13,7 +16,7 @@ const StatsBar = ({ games }) => {
     },
     { assists: 0, deaths: 0, kills: 0, wins: 0 }
   );
-
+  debugger
   return (
     <div className="stats-bar">
       <ul>
