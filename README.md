@@ -1,6 +1,6 @@
 # Counter-Stats: GO
 
-![CS-Stats-Logo] (/public/assets/readme/cs-stats-logo.png)
+![CS-Stats-Logo](public/assets/readme/cs-stats-logo.png)
 
 ### [Counter-Stats: GO Live Link][firebase]
 [firebase]: https://cs-go-33263.firebaseapp.com
@@ -118,7 +118,7 @@ filterPlayers() {
   }
   ```
 
-![filter] (/public/assets/readme/filter.gif)
+![filter](/public/assets/readme/filter.gif)
 
 ### Player's page
 Player's page features player's info and general stats as well as a links to other specific stats: [Overview](###overview), [Weapons](###weapons) and [Heatmap](###heatmap).
@@ -133,7 +133,7 @@ Clicking on any chart's arc will create a zoom-in effect while clicking on a cen
 ### Overview
 Overview consists of three panels: `Favorite map`, `Recent game`, `Favorite weapon`. It's a sneak peek on some of the player's match data.
 
-![overview] (/public/assets/readme/Overview.gif)
+![overview](/public/assets/readme/Overview.gif)
 
 ### Weapons
 Weapons tab is the best resource for learning more about player's weapon preferences and skills. All data is stored in a table where each row is assigned to a specific weapon. Weapons table consists of 5 columns: `Weapon's name`, `Shots Fired`, `Damage Dealt`, `Total Hits` and `Accuracy Bar`.
@@ -142,4 +142,4 @@ Clicking on any of these columns will reveal a `linear chart`. Charts use the va
 
 Each weapon in Counter-Strike has its own unique spray pattern and recoil compensation. Players are aware of this aspect of the game and work on mastering these patterns. Clicking on accuracy bar will reveal an extra chart with character body parts. It uses in-game data and distributes it accordingly throughout the body parts. Players might find this chart extremely helpful as it tells players how they should correct their spraying skills for each weapon.
 
-![weapons] (/public/assets/readme/Weapons.gif)
+![weapons](/public/assets/readme/Weapons.gif)
