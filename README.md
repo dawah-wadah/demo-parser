@@ -121,14 +121,14 @@ filterPlayers() {
 ![filter](/public/assets/readme/filter.gif)
 
 ### Player's page
-Player's page features player's info and general stats as well as a links to other specific stats: [Overview](###overview), [Weapons](###weapons) and [Heatmap](###heatmap).
+Player's page features player's info and general stats as well as a links to other specific stats: [Overview](#overview), [Weapons](#weapons) and [Heatmap](#heatmap).
 
 ### KD Chart
 Player's page also displays Kill/Death Ratio Diagram, a zoomable sunburst chart built with `D3.js`. User can inspect player's KD stats for each team as well as weapons that had been used in each case.
 
 Clicking on any chart's arc will create a zoom-in effect while clicking on a center circle will reverse it back to previous layer.
 
-![KD-chart] (/public/assets/readme/KD.gif)
+![KD-chart](/public/assets/readme/KD.gif)
 
 ### Overview
 Overview consists of three panels: `Favorite map`, `Recent game`, `Favorite weapon`. It's a sneak peek on some of the player's match data.
