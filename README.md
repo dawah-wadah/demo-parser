@@ -31,7 +31,7 @@ Below is an example of how data is structured and stored in database.
 
 **Games records** holds basic info about each game: name of the map and players' ids.
 
-```
+```json
 {
   "games": {
     "-L2QgK_cci7V0J4Ir9xq": {
@@ -46,7 +46,7 @@ Below is an example of how data is structured and stored in database.
 ```
 **Players records** is the massive one. It stores everything you need to know about each player: games played, results, weapon usage data and many more. Here's a short sample:
 
-```
+```json
 {
   "players": {
     "76561197960386362": {
@@ -104,7 +104,7 @@ Mainpage lists top 15 players based on the amount of matches they played.
 
 There's a search bar on top of the page that supports a live search and displays the result as user types.
 
-```  
+```javascript
 filterPlayers() {
     const { players } = this.state;
 
