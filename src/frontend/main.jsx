@@ -1,8 +1,9 @@
-import Header from "./header";
-import Mainpage from "./mainpage";
-import Footer from "./footer";
+import Header from "./header/header";
+import Mainpage from "./mainpage/mainpage";
 import Player from './playerPage';
-import Creators from "./creators";
+import Creators from "./creators/creators";
+import Footer from "./footer/footer";
+
 
 import React from "react";
 import ReactDOM from "react-dom";

@@ -40,7 +40,6 @@ export default class PlayerFilter extends React.Component {
       });
   }
 
-  // TO DO: rewrite the function, use closure maybe?
   filterPlayers() {
     const { players } = this.state;
 
