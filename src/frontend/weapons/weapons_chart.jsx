@@ -1,7 +1,7 @@
 import React from "react";
 import { values } from "lodash";
 
-import LineGraph from "./line-chart";
+import LineGraph from "../line-chart/line-chart";
 import ReactTable from "react-table";
 
 export default class WeaponsChart extends React.Component {

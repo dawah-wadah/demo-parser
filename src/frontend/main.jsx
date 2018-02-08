@@ -1,6 +1,6 @@
 import Header from "./header/header";
 import Mainpage from "./mainpage/mainpage";
-import Player from './playerPage';
+import Player from "./player-page/player-page";
 import Creators from "./creators/creators";
 import Footer from "./footer/footer";
 

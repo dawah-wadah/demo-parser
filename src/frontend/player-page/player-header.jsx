@@ -7,8 +7,13 @@ const PlayerHeader = ({ steamInfo }) => (
       <img src={steamInfo.imageFull} />
     </div>
     <div className="player-info">
-      <div className="player-header-name"><Link to={`/players/${steamInfo.id}`}>{steamInfo.name}</Link></div>
-      <a className="player-steam" href={`https://steamcommunity.com/profiles/${steamInfo.id}`}>
+      <div className="player-header-name">
+        <Link to={`/players/${steamInfo.id}`}>{steamInfo.name}</Link>
+      </div>
+      <a
+        className="player-steam"
+        href={`https://steamcommunity.com/profiles/${steamInfo.id}`}
+      >
         <div className="steam-logo" />
       </a>
     </div>

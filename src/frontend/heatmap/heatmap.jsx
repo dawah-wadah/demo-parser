@@ -129,7 +129,6 @@ class Heatmap extends React.Component {
   extractLocation(gameEvent, role) {
     let mapData = [];
 
-
     //  You can get the map origin from the original CSGO folder, in the
     let mapOrigin = {
       x: -2476,

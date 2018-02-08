@@ -32,6 +32,7 @@ export default class LineChart extends Component {
     let margin = { top: 50, right: 50, bottom: 30, left: 50 },
       width = +this.svg.attr("width") - margin.left - margin.right,
       height = +this.svg.attr("height") - margin.top - margin.bottom;
+
     firebase
       .database()
       .ref(`/players/${player}/Weapons Data/${weaponName}`)
@@ -76,7 +77,6 @@ export default class LineChart extends Component {
       .remove();
 
     this.makeSVG();
-
     this.createChart();
   }
 
@@ -84,12 +84,12 @@ export default class LineChart extends Component {
     if (!this.state.weapon) {
       return null;
     }
+
     this.drawChart();
   }
 
   drawChart() {
     const { height, width, weapon, col } = this.state;
-
     let accessor;
 
     switch (col) {
@@ -106,10 +106,10 @@ export default class LineChart extends Component {
         accessor = "accuracy";
         break;
     }
-    var x = d3.scaleLinear().rangeRound([0, width]);
+    let x = d3.scaleLinear().rangeRound([0, width]);
 
-    var y = d3.scaleLinear().rangeRound([height, 0]);
-    var line = d3
+    let y = d3.scaleLinear().rangeRound([height, 0]);
+    let line = d3
       .line()
       .x(function(d) {
         return x(d.match);
@@ -161,7 +161,7 @@ export default class LineChart extends Component {
       .attr("stroke-width", 2.5)
       .attr("d", line);
 
-    var t = this.svg
+    let t = this.svg
       .transition()
       .delay(150)
       .duration(500)

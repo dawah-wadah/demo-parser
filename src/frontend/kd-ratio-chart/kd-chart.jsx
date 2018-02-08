@@ -2,7 +2,7 @@ import React from "react";
 import * as d3 from "d3";
 import { values } from "lodash";
 
-import StatsBar from "./stats-bar";
+import StatsBar from "../player-page/stats-bar";
 
 export default class KDChart extends React.Component {
   constructor(props) {
@@ -261,15 +261,6 @@ export default class KDChart extends React.Component {
 
   hideInfo(d) {
     d3.select("#insights").style("visibility", "hidden");
-
-    // d3.selectAll("path")
-    //   .transition()
-    //   .duration(500)
-    //   .style("opacity", 1)
-    //   .attr("d", this.generateArc({}))
-    //   .on("end", d => {
-    //     d3.selectAll("path").on("mouseover", this.showInfo.bind(this));
-    //   });
   }
 
   render() {

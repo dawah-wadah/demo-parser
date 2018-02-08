@@ -1,13 +1,14 @@
 import React from "react";
 import { Switch, Route } from "react-router-dom";
 import firebase from "firebase";
-import Overview from "./player_page/overview";
-import PropsRoute from "./prop_routes";
-import Heatmap from "./heatmap";
+
+import PropsRoute from "../prop-routes/prop-routes";
 import PlayerHeader from "./player-header";
 import PlayerTabs from "./player-tab";
-import KDChart from "./kd_chart";
-import ResizableTest from "./resize-test.jsx";
+import KDChart from "../kd-ratio-chart/kd-chart";
+import Overview from "../overview/overview";
+import WeaponsMain from "../weapons/weapons-main";
+import Heatmap from "../heatmap/heatmap";
 
 export default class PlayerPage extends React.Component {
   constructor(props) {
@@ -32,7 +33,6 @@ export default class PlayerPage extends React.Component {
         return { state: "Looking For Trade", color: "purple" };
       case 6:
         return { state: "Looking to Play", color: "white" };
-
       default:
         break;
     }
@@ -77,8 +77,8 @@ export default class PlayerPage extends React.Component {
   }
 
   updateFirebaseInfo(player) {
-    let id = player.steamid;
-    //this will refetch any data from steam, may not work if you try this out locally because of CORS, so u may need to download a CORS Anywhere extension
+    const id = player.steamid;
+
     return firebase
       .database()
       .ref("/")
@@ -127,7 +127,7 @@ export default class PlayerPage extends React.Component {
               exact
               path={`/players/:id/weapons`}
               render={() => (
-                <ResizableTest
+                <WeaponsMain
                   data={player["Weapons Data"]}
                   player={steamInfo.id}
                 />

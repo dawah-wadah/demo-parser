@@ -1,9 +1,10 @@
 import React from "react";
 import { values, capitalize } from "lodash";
-import RecentGame from "./recent_game";
-import MapTile from "./map_tile";
-import Weapons from './weapons_panel'
+
 import Panel from "./panel";
+import MapTile from "./map-tile";
+import RecentGame from "./recent-game";
+import Weapons from "./weapons-panel";
 
 const newMap = string => ({
   name: capitalize(string.split("_")[1]),

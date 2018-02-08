@@ -1,9 +1,9 @@
 import React from "react";
+
 import WeaponsChart from "./weapons_chart.jsx";
+import Body from "../body-silhouette/body.jsx";
 
-import Body from "./body.jsx";
-
-export default class ResizableTest extends React.Component {
+export default class WeaponsMain extends React.Component {
   constructor(props) {
     super(props);
 
@@ -15,12 +15,13 @@ export default class ResizableTest extends React.Component {
 
   changeWeapon(weaponName) {
     let width = "25%";
-    let x = "75%"
+    let x = "75%";
     let oldWeapon = this.state.weaponName;
+
     if (oldWeapon === weaponName) {
       width = 0;
       weaponName = "";
-      x = "100%"
+      x = "100%";
     }
 
     this.setState({ width, weaponName, x });

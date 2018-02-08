@@ -1,6 +1,7 @@
 const firebase = require("firebase");
+
 const initializeFB = () => {
-  var config = {
+  let config = {
     apiKey: "AIzaSyDRCpjpBXCtkTVM9pz5SDSICn8DMw0_lvY",
     authDomain: "cs-go-33263.firebaseapp.com",
     databaseURL: "https://cs-go-33263.firebaseio.com",

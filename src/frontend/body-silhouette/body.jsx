@@ -1,14 +1,15 @@
 import React from "react";
-import Limb from "./limb.jsx";
 import firebase from "firebase";
+
+import Limb from "./limb.jsx";
 
 const fullBody = () => ({
   display: "flex",
-//   justifyContent: "center",
   flexDirection: "column",
   height: "500px",
   width: "275px"
 });
+
 export default class Body extends React.Component {
   constructor(props) {
     super(props);
@@ -26,16 +27,17 @@ export default class Body extends React.Component {
   }
 
   componentDidMount() {
-    this.getAccuracyData(this.props)
+    this.getAccuracyData(this.props);
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     if (this.props !== nextProps) {
-      this.getAccuracyData(nextProps)
+      this.getAccuracyData(nextProps);
     }
   }
 
-  getAccuracyData(props){
+  getAccuracyData(props) {
+    let weapon = props.weapon.weaponName;
     let hitGroups = {
       head: 0,
       "left-arm": 0,
@@ -45,17 +47,20 @@ export default class Body extends React.Component {
       torso: 0,
       total: 0
     };
-    let weapon = props.weapon.weaponName
-    if (!weapon) {return null;}
-    let id = props.id
+
+    if (!weapon) return null;
+
+    let {id} = props;
+
     firebase
       .database()
-      // .ref("/76561198027906568/Weapons Data/awp")
-      .ref("/players/" + id + "/Weapons Data/" + weapon)
+      .ref(`/players/${id}/Weapons Data/${weapon}`)
       .once("value", snap => {
         Object.keys(snap.val()).forEach(push => {
           let slice = snap.val()[push].hitGroups;
-          if (!slice) {return}
+
+          if (!slice) return;
+
           Object.keys(slice).forEach(section => {
             hitGroups[section] += slice[section] || 0;
           });
@@ -66,7 +71,8 @@ export default class Body extends React.Component {
   }
 
   backgroundImage(limb) {
-    return "url(/assets/body-parts/" + limb.split(" ").join("-") + ".png)";
+    const bodyPart =  limb.split(" ").join("-");
+    return `url(/assets/body-parts/${bodyPart}.png)`;
   }
 
   calcOpacity(limb) {

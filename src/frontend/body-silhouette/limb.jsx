@@ -8,6 +8,7 @@ const Limb = ({ image, classname, width, opacity }) => {
     display: "flex",
     justifyContent: "center"
   });
+  
   return (
     <div className={classname} style={parentStyle()}>
       <div
