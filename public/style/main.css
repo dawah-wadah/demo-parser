@@ -158,6 +158,7 @@ img {
 .player-info {
   display: flex;
   flex-direction: column;
+  justify-content: space-evenly;
   font-size: 4em;
   color: white;
   padding-left: 30px;
@@ -165,13 +166,17 @@ img {
 }
 
 .player-header-name {
-  margin-bottom: 0.5em;
+  font-size: 80%;
 }
 
 .player-header-name:hover {
   color: #79beec;
   -webkit-filter: drop-shadow(0 0 20px #8fd5dc);
   filter: drop-shadow(0 0 20px #8fd5dc);
+}
+
+.played {
+  font-size: 30px;
 }
 
 .player-steam {
@@ -955,7 +960,12 @@ td > img {
 /* Media Queries */
 
 @media (max-width: 1270px) {
-  . {
+  .player-header-image {
+    min-width: 200px;
+    min-height: 200px;
+  }
+
+  .player-page {
     padding: 1em 0;
   }
 
@@ -982,8 +992,26 @@ td > img {
     font-size: 2em;
   }
 
+  .player-header-image {
+    min-width: 150px;
+    min-height: 150px;
+  }
+
+  .player-header-name {
+    font-size: 100%;
+  }
+
+  .played {
+    font-size: 0.8em;
+  }
+
   .player-tabs {
     font-size: 35px;
+  }
+
+  .player-steam {
+    width: 40px;
+    height: 40px;
   }
 
   .navbar-wrapper a {
@@ -993,7 +1021,13 @@ td > img {
 }
 
 @media (max-width: 550px) {
+  #header > h1 {
+    font-size: 2em;
+  }
+
   .player-header-image {
+    min-width: 130px;
+    min-height: 130px;
     width: 130px;
     height: 130px;
   }
@@ -1004,6 +1038,11 @@ td > img {
 
   .player-tabs {
     font-size: 25px;
+  }
+
+  .player-steam {
+    width: 30px;
+    height: 30px;
   }
 
   .navbar-wrapper a {

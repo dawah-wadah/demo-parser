@@ -106,7 +106,7 @@ export default class PlayerPage extends React.Component {
 
     return (
       <div className="player-page">
-        <PlayerHeader steamInfo={steamInfo} />
+        <PlayerHeader games={Object.keys(games).length} steamInfo={steamInfo} />
         <PlayerTabs id={steamInfo.id} />
         <div className="player-body">
           <Switch>
