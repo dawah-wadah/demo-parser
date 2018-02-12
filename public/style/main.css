@@ -22,6 +22,14 @@ img {
   font-family: csgo;
 }
 
+#header a:hover > span:nth-child(1) {
+  color: #79beec;
+}
+
+#header a:hover > span:nth-child(2) {
+  color: #fcaf33;
+}
+
 #header,
 #footer {
   padding: 35px 25px;
@@ -93,8 +101,7 @@ img {
   width: 600px;
   height: 700px;
   margin-bottom: 2em;
-  box-shadow: -2px 2px 5px 0px #12141a, -2px -2px 5px 0px #12141a,
-    3px 3px 5px 0px #12141a, 4px -2px 3px 0px #12141a;
+  box-shadow: 0px 2px 7px 5px #12141a;
 }
 
 #table-header {
@@ -201,7 +208,7 @@ img {
 }
 
 .active {
-  background-color: #FCB83A;
+  background-color: #fcaf33;
 }
 
 .player-tabs a:not(.active):hover {
