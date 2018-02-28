@@ -38,20 +38,20 @@ export default class KDChart extends React.Component {
   }
 
   generateArc(options) {
-    let multiplier = options.multiplier ? options.multiplier : 1;
+    // let multiplier = options.multiplier ? options.multiplier : 1;
 
     let radius = options.radius
       ? options.radius
       : Math.min(this.width, this.height);
     let x = options.x ? options.x : d3.scaleLinear().range([0, 2 * Math.PI]);
-    let y = options.y ? options.y : d3.scaleSqrt().range([0, radius / 2]);
+    let y = options.y ? options.y : d3.scaleSqrt().range([0, radius]);
 
     return d3
       .arc()
       .startAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x0))))
       .endAngle(d => Math.max(0, Math.min(2 * Math.PI, x(d.x1))))
       .innerRadius(d => Math.max(0, y(d.y0)))
-      .outerRadius(d => Math.max(0, y(d.y1 * multiplier)));
+      .outerRadius(d => Math.max(0, y(d.y1)));
   }
 
   extractData(sides) {
@@ -107,9 +107,8 @@ export default class KDChart extends React.Component {
     };
 
     const x = d3.scaleLinear().range([0, 2 * Math.PI]);
-    const y = d3.scaleSqrt().range([0, radius / 2]);
-    this.g = d3
-      .select("svg")
+    const y = d3.scaleSqrt().range([0, radius]);
+    this.g = this.svg
       .append("g")
       .attr(
         "transform",
@@ -117,6 +116,7 @@ export default class KDChart extends React.Component {
       );
 
     let partition = d3.partition();
+
     let root = d3
       .hierarchy(parsedData)
       .sum(d => d.size)
