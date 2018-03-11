@@ -901,6 +901,9 @@ td > img {
   cursor: pointer;
 }
 
+progress {
+  background-color: white;
+}
 
 /* img {
   height: auto;
